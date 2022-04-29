@@ -1,32 +1,44 @@
 {
   "expo": {
-    "name": "monist",
+    "name": "Monist",
     "slug": "monist",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icons/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "transparent"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
+    "plugins": [
+      [
+        "@react-native-voice/voice",
+        {
+          "microphonePermission": false,
+          "speechRecognitionPermission": "Allow $(PRODUCT_NAME) to securely recognize user speech to generate transcripts that you can edit later.",
+          "microphone": false,
+          "speechRecognition": false
+        }
+      ]
+    ],
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.monist.monist"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.monist.monist"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/img/favicon.png"
     }
   }
 }

@@ -1,0 +1,110 @@
+import React from 'react';
+import { StyleSheet, View, Pressable  } from 'react-native';
+import { Audio, Video } from 'expo-av';
+
+import { Spinner } from './Spinner';
+
+import { containers, dimensions } from '../styles';
+
+type Props = {
+  videoUri: string
+  isPlaying: any,
+  setIsPlaying: any
+}
+
+const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element => {
+  const video = React.useRef(null);
+
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);  // TODO: set loading handling
+  const [status, setStatus] = React.useState({'isPlaying': false});  // TODO: set props for status object
+
+  const togglePlay = () => {
+    status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
+    setIsPlaying(!isPlaying);
+  }
+
+  // Audio settings for this video
+  React.useEffect(() => {
+    const setAudioModes = async () => {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        staysActiveInBackground: true,
+        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+        playsInSilentModeIOS: true,       // this option is unreliable at the moment
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+        playThroughEarpieceAndroid: false,
+      });
+
+      setIsLoading(false);  
+      setStatus({'isPlaying': true});
+    }
+
+    setAudioModes();
+  }, []);
+
+
+  return (
+    isLoading
+    ?
+    <View style={styles.container}>
+      <Spinner />
+    </View>
+    :
+    <View style={styles.container}>
+      <Pressable onPress={togglePlay}>
+        <Video
+          ref={video}
+          style={styles.video}
+          source={{ uri: videoUri }}
+          useNativeControls={false}
+          resizeMode="cover"
+          isLooping
+          shouldPlay
+          onPlaybackStatusUpdate={status => setStatus(status)}
+        />
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    ...containers.DEFAULT,
+    // paddingTop: Constants.statusBarHeight,
+  },
+  video: {
+    width: dimensions.width,
+    height: dimensions.height
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
+});
+
+  // This useEffect is not currently used, but will handle sound not playing properly. 
+  // Keep for now
+  // useEffect(() => {
+  //   Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+
+    // Tricks to fix that the audio doesn't work even if we set the configuration on iOS: `playsInSilentModeIOS`
+    // See: https://github.com/expo/expo/issues/7485#issuecomment-852221060
+  //   if (Platform.OS === 'ios') {
+  //       const playSilentSound = async () => {
+  //           await sound.loadAsync(require('./silent-sound.mp3'))
+  //           await sound.playAsync()
+  //           await sound.setIsLoopingAsync(true)
+  //       }
+  //       void playSilentSound()
+  //   }
+
+  //   // on component unmount
+  //   return () => {
+  //       void sound.stopAsync()
+  //       void sound.unloadAsync()
+  //   }
+  // }, []
+
+export default VideoPlayer;

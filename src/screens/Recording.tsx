@@ -1,0 +1,316 @@
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
+
+import { Camera } from 'expo-camera';
+import * as FileSystem from 'expo-file-system';
+import * as VideoThumbnails from 'expo-video-thumbnails';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+import { checkRecordingPermissions } from '../utils/permissions';
+import { VIDEO_DIRECTORY, RATING_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
+
+import { text, containers, icons, spacings, dimensions } from '../styles';
+
+import GoBack from '../components/GoBack';
+import SpeechToText from '../components/SpeechToText';
+import CustomIcon from '../components/CustomIcon';
+
+const MAX_DURATION = 600;  // seconds
+
+export const Recording = ({ navigation }): JSX.Element => {
+  const [finalTranscript, setFinalTranscript] = useState<string>('');
+  const [hasPermission, setHasPermission] = useState<null | boolean>(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [isRecording, setIsRecording] = useState<null | boolean>(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [videoStorePath, setVideoStorePath] = useState<string>('');
+  const [ratingFile, setRatingFile] = useState<string>('');
+
+  // Setup: Get permissions for camera from user first
+  useEffect(() => {
+    const asyncWrapper = async () => {
+      // At this point, user should already have permissions from Home unless it was denied earlier
+      // TODO: if they still don't have permissions, two options
+      // Request recording permissions here: recording tends to fail in this case
+      // OR send them back to home and request permissions again there
+      // NOTE: Expo seems to ask one more permission for some reason
+      await setHasPermission(await checkRecordingPermissions()); 
+    }
+
+    asyncWrapper();
+  }, []);
+
+  // "Callback method" for when the final transcript is ready.
+  useEffect(() => {
+    if ((finalTranscript.length > 0) &&
+        (videoStorePath.length > 0) && (ratingFile.length > 0)) {
+      console.log("Recording.tsx: Final Transcript and videoStorePath received, moving to Rating.tsx")
+
+      // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
+      // Now we can move to the next page with the final transcript result
+      // Clean up and reset state
+      navigateToRating();
+    }
+  }, [finalTranscript, videoStorePath, ratingFile]);
+
+  const flipCamera = async () => {
+    setIsRecording(null); // TODO: side effect of moving to the next screen. Maybe this just sets to null?
+    setType(
+      type === Camera.Constants.Type.back
+        ? Camera.Constants.Type.front
+        : Camera.Constants.Type.back
+    );
+  }
+
+  const startRecording = async () => {
+    try {
+      if (cameraRef){
+        setIsRecording(true);
+        let video = await cameraRef.recordAsync({ maxDuration: MAX_DURATION });
+
+        // Create video and thumbnail files.
+        let timestamp = Math.floor(Date.now() / 1000);
+        let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
+        setVideoStorePath(videoStorePath);
+        setRatingFile(RATING_DIRECTORY + timestamp.toString());
+
+        // Handles the logic for extracting the video from storage and saving thumbnail
+        FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
+          () => {
+            VideoThumbnails.getThumbnailAsync(
+              videoStorePath,
+              { time: 0 }
+            ).then(
+              ( { uri } ) => {
+                let thumbnailPath = THUMBNAIL_DIRECTORY +
+                  timestamp.toString() + ".jpg";
+                FileSystem.copyAsync({'from': uri, 'to': thumbnailPath });
+              }
+            ).catch(
+              error => {
+                console.log("Recording:getThumbnailAsync:", error);
+              }
+            )
+          }
+        )
+      }
+     } catch(err){
+        console.log(err);
+     }
+  };
+
+  // Currently unused, as opting for no direct "return to gallery" button
+  const navigateToGallery = () => {
+    navigation.navigate('Gallery');
+  }
+
+  const navigateToRating = () => {
+    navigation.navigate('Rating', {
+      finalResult: finalTranscript,
+      videoStorePath: videoStorePath,
+      ratingFile: ratingFile
+    });
+  }
+
+  const getTranscriptResult = (result: string) => {
+    setFinalTranscript(result);
+  }
+
+  const stopRecording = async () => {
+    let endVideo = await cameraRef.stopRecording();
+    setIsRecording(false);
+  }
+
+  // Renders an icon that takes you to Gallery when pressed 
+  // Currently not used, as this feature is not requested right now
+  const renderGalleryIcon = () => {
+    return (
+      <Pressable onPress={navigateToGallery} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+        <MaterialCommunityIcons name={'folder-multiple-image'} style={[icons.MEDIUM, { color: 'white' }]} />
+      </Pressable>
+    )
+  }
+
+  // Renders options to select recording length (time in seconds) in a ScrollView
+  // Currently not used, as this feature is not requested right now
+  const renderRecordOptions = (recording: boolean) => {
+    return (
+      isRecording
+      ?
+      <View style={styles.scrollContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentOffset={{x: 0, y: 0}}
+        >
+          <View style={styles.numberButtonContainer}><Pressable><Text style={styles.numbersText}>15</Text></Pressable></View>
+          <View style={styles.numberButtonContainer}><Pressable><Text style={styles.numbersText}>30</Text></Pressable></View>
+          <View style={styles.numberButtonContainer}><Pressable><Text style={styles.numbersText}>60</Text></Pressable></View>
+        </ScrollView>
+      </View>
+      :
+      <></>
+    )
+  }
+
+  const renderRecordIcon = (recording: boolean) => {
+    return (
+      isRecording
+      ?
+      <Pressable onPress={stopRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.recordIcon]}>
+        <View style={styles.centeredContainer}>
+          <View style={styles.recordCircleOutline}></View>
+          <View style={styles.recordSquare}></View>
+        </View>
+      </Pressable>
+      :
+      <Pressable onPress={startRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+        <View style={styles.centeredContainer}>
+          <View style={styles.recordCircleOutline}></View>
+          <View style={styles.recordCircle}></View>
+        </View>
+      </Pressable>
+    )
+  }
+
+  const renderCamera = () => {
+    if (hasPermission === null) {
+      return <View />;
+    } else if (hasPermission === false) {
+      return (<View style={styles.centeredContainer}><Text>No access to camera or microphone.</Text></View>);
+    } else {
+      return (
+        <>
+          <GoBack navigation={navigation} />
+
+          <View style={styles.flipCameraContainer}>
+            <Pressable onPress={flipCamera} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+              <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
+            </Pressable>
+          </View>
+
+          <Camera
+            style={styles.cameraContainer}
+            type={type}
+            ref={(ref) => {
+                setCameraRef(ref);
+              }}
+            >
+
+            <View style={styles.captionContainer}>
+              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+            </View>
+
+            <View style={styles.recordContainer}>
+              {/* {renderGalleryIcon()} */}
+              {renderRecordIcon(isRecording)}
+            </View>
+
+            {/* {renderRecordOptions(isRecording)} */}
+          </Camera>
+        </>
+      );
+    }
+  }
+
+  return (
+    <View style={styles.container}>
+      {renderCamera()}
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    ...containers.DEFAULT
+  },
+  centeredContainer: {
+    ...containers.DEFAULT,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  cameraContainer: {
+    flex: 1,
+    justifyContent: 'flex-end'
+  },
+  // Similar to Gallery record button
+  // TODO: Consider refactoring to common component
+  recordContainer: {
+    position: 'absolute',
+    width: "100%",
+    bottom: dimensions.height / 10,
+  },
+  // Currently unused, as the record button is just a circular View at the moment rather than an icon
+  // recordIcon: {
+  //   ...icons.HUGE,
+  //   fontSize: 76,
+  //   color: colors.BACKGROUND,
+  //   borderWidth: 5,
+  //   borderColor: 'red',
+  // },
+  recordCircleOutline: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'white',
+    width: icons.LARGE.fontSize + 15,
+    height: icons.LARGE.fontSize + 15,
+    borderRadius: icons.HUGE.fontSize / 2,  // to make a circle border, borderRadius = width / 2
+  },
+  recordCircle: {
+    backgroundColor: 'red',
+    width: icons.LARGE.fontSize,
+    aspectRatio: 1,
+    borderRadius: icons.LARGE.fontSize / 2,  // to make a circle border, borderRadius = width / 2
+  },
+  recordSquare: {
+    backgroundColor: 'red',
+    aspectRatio: 1,
+    borderRadius: 4,  // to make a circle border, borderRadius = width / 2
+    width: icons.MEDIUM.fontSize + 5,
+  },
+  stopIcon: {
+    ...icons.HUGE,
+    fontSize: icons.HUGE.fontSize - 25,
+    color: 'red'
+  },
+  flipCameraContainer: {
+    position: 'absolute',
+    right: spacings.MASSIVE,
+    top: spacings.ABSOLUTE_OFFSET_MEDIUM,
+    zIndex: 100
+  },
+  flipCameraIcon: {
+    ...icons.MEDIUM,
+    color: "white"
+  },
+  captionContainer: {
+    display: 'none',
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: spacings.MEDIUM,
+    top: 150,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    // zIndex: 999
+  },
+  numbersText: {
+    ...text.p,
+    color: 'white',
+  },
+  // TODO: make the scroll container's left side start at exactly center?
+  scrollContainer: {
+    position: 'absolute',
+    // borderWidth: 1,
+    // borderColor: 'white',
+    width: "100%",
+    bottom: spacings.ABSOLUTE_OFFSET_LARGE,
+    left: dimensions.width / 2,
+  },
+  numberButtonContainer: {
+    marginHorizontal: spacings.LARGE,
+  }
+});
+
+export default Recording;
