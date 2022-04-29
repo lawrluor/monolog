@@ -8,6 +8,7 @@ import * as FileSystem from 'expo-file-system';
 import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
+import MoodChart from '../components/MoodChart';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import SignInButton from '../components/SignInButton';
 
@@ -19,7 +20,7 @@ import VideosContext from '../context/VideosContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
 
-const VIDEOS_THRESHOLD = 300;
+const VIDEOS_THRESHOLD = 1;
 
 const Home = ({ navigation }): JSX.Element => {
   // See this component's useEffect for more information about why we extract userData here.
@@ -78,7 +79,7 @@ const Home = ({ navigation }): JSX.Element => {
   }
 
   const renderVistasSummaryHeader = (videosCount: number) => {
-    if (videosCount > VIDEOS_THRESHOLD) {
+    if (videosCount >= VIDEOS_THRESHOLD) {
       return (
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Vistas Summary</Text>
@@ -93,7 +94,7 @@ const Home = ({ navigation }): JSX.Element => {
   }
 
   const renderWordChartSummary = (videosCount: number) => {
-    if (videosCount > VIDEOS_THRESHOLD) {
+    if (videosCount >= VIDEOS_THRESHOLD) {
       return (
         <View style={[styles.featureContainer]}>
           <WordChart numOfWords={5} />
@@ -115,11 +116,10 @@ const Home = ({ navigation }): JSX.Element => {
   }
 
   const renderMoodChartSummary = (videosCount: number) => {
-    if (videosCount > VIDEOS_THRESHOLD) {
+    if (videosCount >= VIDEOS_THRESHOLD) {
       return (
         <View style={[styles.featureContainer]}>
-          {/* TODO: Render actual Mood Tracker here */}
-          <Text style={styles.featureTitle}>Mood Tracker</Text>
+          <MoodChart />
         </View>
       )
     } else {
