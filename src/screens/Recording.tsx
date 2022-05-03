@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Pressable, ScrollView, Alert } from 'react-native';
 
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
@@ -11,6 +11,7 @@ import { VIDEO_DIRECTORY, RATING_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils
 
 import { text, containers, icons, spacings, dimensions } from '../styles';
 
+import { Spinner } from '../components/Spinner';
 import GoBack from '../components/GoBack';
 import SpeechToText from '../components/SpeechToText';
 import CustomIcon from '../components/CustomIcon';
@@ -20,14 +21,16 @@ const MAX_DURATION = 600;  // seconds
 export const Recording = ({ navigation }): JSX.Element => {
   const [finalTranscript, setFinalTranscript] = useState<string>('');
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [type, setType] = useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = useState<null | boolean>(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [videoStorePath, setVideoStorePath] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
   const [ratingFile, setRatingFile] = useState<string>('');
 
   // Setup: Get permissions for camera from user first
   useEffect(() => {
+    console.log(isLoading);
     const asyncWrapper = async () => {
       // At this point, user should already have permissions from Home unless it was denied earlier
       // TODO: if they still don't have permissions, two options
@@ -35,15 +38,21 @@ export const Recording = ({ navigation }): JSX.Element => {
       // OR send them back to home and request permissions again there
       // NOTE: Expo seems to ask one more permission for some reason
       await setHasPermission(await checkRecordingPermissions()); 
+      setIsLoading(false);
     }
 
     asyncWrapper();
   }, []);
 
   // "Callback method" for when the final transcript is ready.
+  // Note: isRecording must be false, meaning stopRecording() was explicitly called.
+  // Otherwise, if isRecording is just null, means that we have not begun recording,
+    // or we have simply switched the camera type between front or back.
   useEffect(() => {
     if ((finalTranscript.length > 0) &&
-        (videoStorePath.length > 0) && (ratingFile.length > 0)) {
+        (videoStorePath.length > 0) && 
+        (ratingFile.length > 0) &&
+        (isRecording === false)) {
       console.log("Recording.tsx: Final Transcript and videoStorePath received, moving to Rating.tsx")
 
       // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
@@ -54,52 +63,71 @@ export const Recording = ({ navigation }): JSX.Element => {
   }, [finalTranscript, videoStorePath, ratingFile]);
 
   const flipCamera = async () => {
-    setIsRecording(null); // TODO: side effect of moving to the next screen. Maybe this just sets to null?
+    setIsLoading(true);    
+    setIsRecording(null); 
+    
+    Alert.alert(
+      "Please Note",
+      "Flipping the camera will stop any ongoing recording.",
+      [
+        { 
+          text: "OK"
+        }
+      ]
+    );
+
     setType(
       type === Camera.Constants.Type.back
         ? Camera.Constants.Type.front
         : Camera.Constants.Type.back
     );
+
+    setIsLoading(false);
+  }
+
+
+  // TODO: Refactor into localStorageUtils?
+  const getVideoAndCreateThumbnail = () => {
+    // Create video and thumbnail files.
+    let timestamp = Math.floor(Date.now() / 1000);
+    let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
+    setVideoStorePath(videoStorePath);
+    setRatingFile(RATING_DIRECTORY + timestamp.toString());
+
+    // Handles the logic for extracting the video from storage and saving thumbnail
+    FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
+      () => {
+        VideoThumbnails.getThumbnailAsync(
+          videoStorePath,
+          { time: 0 }
+        ).then(
+          ( { uri } ) => {
+            let thumbnailPath = THUMBNAIL_DIRECTORY +
+              timestamp.toString() + ".jpg";
+            FileSystem.copyAsync({'from': uri, 'to': thumbnailPath });
+          }
+        ).catch(
+          error => {
+            console.log("Recording:getThumbnailAsync:", error);
+          }
+        )}
+      )
   }
 
   const startRecording = async () => {
     try {
       if (cameraRef){
-        setIsRecording(true);
+        setIsRecording(true);  // TODO: should this be after awaiting .recordAsync?
+
+        // TODO: Set loading states to improve the user experience
         let video = await cameraRef.recordAsync({ maxDuration: MAX_DURATION });
-
-        // Create video and thumbnail files.
-        let timestamp = Math.floor(Date.now() / 1000);
-        let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
-        setVideoStorePath(videoStorePath);
-        setRatingFile(RATING_DIRECTORY + timestamp.toString());
-
-        // Handles the logic for extracting the video from storage and saving thumbnail
-        FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
-          () => {
-            VideoThumbnails.getThumbnailAsync(
-              videoStorePath,
-              { time: 0 }
-            ).then(
-              ( { uri } ) => {
-                let thumbnailPath = THUMBNAIL_DIRECTORY +
-                  timestamp.toString() + ".jpg";
-                FileSystem.copyAsync({'from': uri, 'to': thumbnailPath });
-              }
-            ).catch(
-              error => {
-                console.log("Recording:getThumbnailAsync:", error);
-              }
-            )
-          }
-        )
+        getVideoAndCreateThumbnail();
       }
-     } catch(err){
-        console.log(err);
+     } catch(err) {
+        console.log("[ERROR] Recording.jsx: startRecording", err);
      }
   };
 
-  // Currently unused, as opting for no direct "return to gallery" button
   const navigateToGallery = () => {
     navigation.navigate('Gallery');
   }
@@ -181,8 +209,6 @@ export const Recording = ({ navigation }): JSX.Element => {
     } else {
       return (
         <>
-          <GoBack navigation={navigation} />
-
           <View style={styles.flipCameraContainer}>
             <Pressable onPress={flipCamera} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
               <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
@@ -215,7 +241,16 @@ export const Recording = ({ navigation }): JSX.Element => {
 
   return (
     <View style={styles.container}>
-      {renderCamera()}
+      {
+        isLoading 
+        ?
+        <Spinner size={'large'}></Spinner>
+        :
+        <>
+          <GoBack navigation={navigation} />
+          {renderCamera()}
+        </>
+      }
     </View>
   )
 }
