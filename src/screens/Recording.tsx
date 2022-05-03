@@ -95,7 +95,7 @@ export const Recording = ({ navigation }): JSX.Element => {
         let timestamp = Math.floor(Date.now() / 1000);
         let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
         setVideoStorePath(videoStorePath);
-        setRatingFile(RATING_DIRECTORY + timestamp.toString());
+        setRatingFile(RATING_DIRECTORY + timestamp.toString() + ".txt");
 
         // Handles the logic for extracting the video from storage and saving thumbnail
         FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(

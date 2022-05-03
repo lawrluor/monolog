@@ -7,11 +7,13 @@ import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
 
-import { getCurrentWeekFromTodayMMDD } from '../utils/dates';
+import { getCurrentWeekFromTodayMMDD, getCurrentDate } from '../utils/dates';
 
 import { dimensions, spacings, icons, colors, text, sizes, debug } from '../styles';
 
 const Vistas = ({ navigation }):  JSX.Element => {
+  console.log(getCurrentDate());
+
   return (
     <>
       <SafeAreaTop />

@@ -20,7 +20,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
   const { ratingFile } = route.params;
   const { finalResult } = route.params;
 
-  const updateMoodMap = async (emojiValue) => {
+  const updateMoodMap = async (emojiValue: number) => {
     // Global Data Structure is sorted by date
     let today = new Date();
     if (moodData.week.days[0].date.toLocaleDateString() !=
@@ -44,10 +44,12 @@ const Rating = ({ route, navigation }): JSX.Element => {
 
   const submitRating = () => {
     if (selectedEmojiIndex >= 0) {
-      updateMoodMap(selectedEmojiIndex)
-      FileSystem.writeAsStringAsync(ratingFile, selectedEmojiIndex.toString());
+      updateMoodMap(selectedEmojiIndex);
+
+      // to ratings/filename.txt, we write "😍4", and parse this later as needed
+      FileSystem.writeAsStringAsync(ratingFile, `${emojis[selectedEmojiIndex]}${selectedEmojiIndex.toString()}`);
       
-      toggleVideosRefresh();  // TODO: move this somewhere better
+      // toggleVideosRefresh();  // TODO: move this somewhere better
       navigateToTranscript(emojis[selectedEmojiIndex]);
     } else {
       Alert.alert(

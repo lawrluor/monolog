@@ -10,22 +10,16 @@ import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import { FullPageSpinner } from '../components/Spinner';
 
 import { comingSoonAlert } from '../utils/customAlerts';
-import { deleteAllTranscripts } from '../utils/localStorageUtils';
+import { deleteAllData, deleteAllVideos } from '../utils/localStorageUtils';
 
 import VideosContext from '../context/VideosContext';
 
 import { dimensions, text, spacings, icons, colors, sizes, debug } from '../styles';
 
 const Gallery = ({ navigation }):  JSX.Element => {
-  const { videosData, isLoading, deleteAllVideos, submitQuery } = React.useContext(VideosContext);
+  const { videosData, isLoading, submitQuery } = React.useContext(VideosContext);
   const [ modalShown, setModalShown ] = React.useState(false);
   const [ searchQuery, setSearchQuery ] = React.useState(false);
-
-  // NOTE: TESTING ONLY
-  const deleteData = () => {
-    deleteAllVideos(); 
-    deleteAllTranscripts();
-  }
 
   const navigateToRecording = () => {
     navigation.navigate('Recording');
@@ -129,11 +123,11 @@ const Gallery = ({ navigation }):  JSX.Element => {
     :
     <View style={styles.container}>
       <SafeAreaTop />
-
+  
       {/* FOR TESTING PURPOSES ONLY: Calls method that deletes videos from the database */}
-      {/* <Pressable onPress={() => { deleteData() }} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+      <Pressable onPress={() => { deleteAllData() }} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
         <AntDesign name={'delete'} style={[icons.MEDIUM, { zIndex: 100, color: colors.ERROR }]} />
-      </Pressable>  */}
+      </Pressable> 
 
       <SafeAreaBottom transparent>
         {/* TODO: Try to make linear gradient header - will have to be done in SafeAreaTop */}

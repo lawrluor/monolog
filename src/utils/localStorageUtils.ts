@@ -241,9 +241,34 @@ export const processAllWordsFromTranscripts = async (allWords: string[], numberO
 }
 
 export const deleteAllTranscripts = async () => {
-  let transcriptDirectory = FileSystem.documentDirectory + "transcripts/";
-  await getTranscripts(FileSystem.deleteAsync(transcriptDirectory));
+  await getTranscripts(FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY));
   console.log("Deleted all transcripts");
+}
+
+export const deleteAllRatings = async () => {
+  await getTranscripts(FileSystem.deleteAsync(RATING_DIRECTORY));
+  console.log("Deleted all ratings");
+}
+
+// Deletes all videos with optional parameter of deleting X number of videos
+export const deleteAllVideos = async (numberOfVideosToDelete=0) => {
+  await FileSystem.readDirectoryAsync(VIDEO_DIRECTORY)
+    .then(async (files) => {
+      // default is 0, so delete all videos by default
+      let numberOfVideos = Math.max(0, files.length - numberOfVideosToDelete);  
+      for (let i=0; i<numberOfVideos; i++) {
+        await FileSystem.deleteAsync(VIDEO_DIRECTORY + files[i]);
+      }
+    })
+    .catch((err) => console.log("[ERROR] VideosContext: deleteAllVideos", err));
+}
+
+export const deleteAllData = async () => {
+  deleteAllRatings();
+  deleteAllTranscripts();
+  deleteAllVideos();
+  deleteUserData();
+  console.log("Deleted all data");
 }
 
 // Helper function to get the base uri of the local file system.
@@ -254,7 +279,7 @@ export const getBaseFileSystemUri = (): string => {
 }
 
 export const getTranscriptContent = async (transcriptUri: string) => {
-  let transcript_content = "";
+  let transcript_content: string = "";
 
   if (transcriptUri) { 
     transcript_content = await FileSystem.readAsStringAsync(transcriptUri)
@@ -263,7 +288,7 @@ export const getTranscriptContent = async (transcriptUri: string) => {
         return content;
       })
       .catch((err: any) => {
-        console.log("[ERROR]: VideosContext.tsx: getTranscriptContent", err);
+        // console.log("[ERROR]: VideosContext.tsx: getTranscriptContent", err);
         return "";
       })
   }
@@ -271,8 +296,25 @@ export const getTranscriptContent = async (transcriptUri: string) => {
   return transcript_content;
 }
 
-// Filename is always "/path/to/file/${14 digit timestamp}.txt"
+export const getRating = async (uri: string) => {
+  let rating: string = "";
+  let ratingFullUri = `${RATING_DIRECTORY}${uri}.txt`;
 
+  if (uri) { 
+    rating = await FileSystem.readAsStringAsync(ratingFullUri)
+      .then((content: string) => {
+        return content;
+      })
+      .catch((err: any) => {
+        console.log("[ERROR]: VideosContext.tsx: getRating", err);
+        return "";
+      })
+  }
+
+  return rating;
+}
+
+// Filename is always "/path/to/file/${14 digit timestamp}.txt"
 export const writeFinalTranscript = async (transcriptUri: string, text: string) => {
   let transcriptDirectory = FileSystem.documentDirectory + "transcripts/";
   let result;  // assigned a boolean value based on success of writing file
@@ -299,3 +341,4 @@ export const writeFinalTranscript = async (transcriptUri: string, text: string) 
     
     return result;
 }
+
