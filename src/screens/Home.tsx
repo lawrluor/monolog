@@ -276,6 +276,7 @@ const Home = ({ navigation }): JSX.Element => {
   React.useEffect((): void => {
     initializeMoodTracker();
   }, []);
+  
   return (
     <>
       <SafeAreaTop />
@@ -302,7 +303,11 @@ const Home = ({ navigation }): JSX.Element => {
             <Divider color={colors.BACKGROUND} />
           </View>
 
-          <ScrollView style={styles.bodyContainer}>
+          <ScrollView 
+            style={styles.bodyContainer}
+            contentContainerStyle={styles.scrollContentContainerStyle}
+            showsVerticalScrollIndicator={false}
+          >
             {renderVistasSummaryHeader(videosCount)}
             {renderNewUserAlert(videosCount)}
             {renderWordChartSummary(videosCount)}
@@ -315,7 +320,6 @@ const Home = ({ navigation }): JSX.Element => {
               </View>
             </Pressable>
           </ScrollView>
-
         </LinearGradient>
       </SafeAreaBottom>
     </>
@@ -334,12 +338,16 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   bodyContainer: {
-    padding: spacings.HUGE
+    paddingHorizontal: spacings.HUGE,
+  },
+  scrollContentContainerStyle: {
+    paddingVertical: spacings.HUGE,
   },
   titleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
+    paddingBottom: spacings.LARGE
   },
   title: {
     ...text.h2
@@ -359,7 +367,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.BACKGROUND,
     borderRadius: 20,
     width: "100%",
-    marginVertical: spacings.LARGE,
+    marginBottom: spacings.HUGE,
     padding: spacings.HUGE,
     shadowColor: '#000000',
     shadowOffset: { width: 2, height: 2 },

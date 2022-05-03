@@ -1,78 +1,36 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, Pressable } from 'react-native';
+import { ScrollView, StyleSheet, View, Text } from 'react-native';
 
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
 
-import { dimensions, spacings, icons, colors, sizes, debug } from '../styles';
+import { getCurrentWeekFromTodayMMDD } from '../utils/dates';
+
+import { dimensions, spacings, icons, colors, text, sizes, debug } from '../styles';
 
 const Vistas = ({ navigation }):  JSX.Element => {
-  const [ modalShown, setModalShown ] = React.useState(false);
-
-  // Calls setModalShown, then focuses the textInput that opens
-  const setModal = () => {
-    setModalShown(!modalShown);
-  }
-
-  const renderModal = () => {
-    return (
-      modalShown
-      ?
-      <>
-        <SearchEntry modalShown editable isTextBox onFinish={makeSearchQuery} setModal={setModal}><Ionicons name='search' style={styles.searchIcon} /></SearchEntry>
-        {/* <FullModal /> */}
-      </>
-      :
-      <Ionicons name='ios-search-circle-sharp' style={styles.searchIcon} />
-    )
-  }
-
-  const navigateToRecord = () => {
-    navigation.navigate('Recording');
-  }
-
-  // TODO: add profile page and navigation
-  const navigateToProfile = () => {
-    comingSoonAlert(() => {
-      console.log("uploading picture...");
-    });
-  }
-
-  // Calls setModalShown, then focuses the textInput that opens
-
-  // TODO: To blur the focused search text entry, we must tap to focus on a different element
-  // Clicking inside a ScrollView (or List that implements ScrollView) changes the focus automatically
-  // Whereas clicking inside a regular View does NOT automatically change focus
-  // Hacky solution: put "No Results" text, which doesn't include the SectionList VideoList component,
-    // into a ScrollView so that when no videos are found, users can still focus and exit out of search entry
-
-  // TODO: Debug on Android
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <SafeAreaTop />
-        <SafeAreaBottom transparent>
-          <View style={styles.headerContainer}>
-            <View style={styles.searchIconContainer}>
-              <Pressable onPress={() => setModalShown(!modalShown)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-                {renderModal()}
-              </Pressable>
-            </View>
-            <View style={styles.headerRightIconContainer}>
-              <Pressable onPress={navigateToRecord} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-                <FontAwesome name='plus-square-o' style={styles.plusIcon} />
-              </Pressable>
+    <>
+      <SafeAreaTop />
 
-              <Pressable onPress={navigateToProfile} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-                <Ionicons name='person-circle' style={styles.profileIcon} />
-              </Pressable>
-            </View>
+      <SafeAreaBottom>
+        <LinearGradient
+          colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+          style={styles.container}
+        >
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>Vistas Summary</Text>
+            <Text style={styles.subtitle}>{getCurrentWeekFromTodayMMDD()}</Text>
           </View>
 
-          <View style={styles.bodyContainer}>
+          <ScrollView 
+            style={styles.bodyContainer} 
+            contentContainerStyle={styles.scrollContentContainer}
+            showsVerticalScrollIndicator={false}
+          > 
             <View style={styles.featureContainer}>
               <WordChart numOfWords={10} showMoreButton={true} />
             </View>
@@ -80,10 +38,10 @@ const Vistas = ({ navigation }):  JSX.Element => {
             <View style={styles.featureContainer}>
               <MoodChart />
             </View>
-          </View>
-        </SafeAreaBottom>
-      </View>
-    </ScrollView>
+          </ScrollView>
+        </LinearGradient>
+      </SafeAreaBottom>
+    </>
   )
 }
 
@@ -96,18 +54,17 @@ const styles = StyleSheet.create({
   // This ensures that the image does not overflow the container
   // A padding on the brandHeader ensures adequate vertical spacing no matter the image size
   headerContainer: {
-    ...debug,
-    width: "100%",
     flexDirection: 'row',
+    paddingVertical: spacings.HUGE,
+    paddingHorizontal: spacings.HUGE,
     justifyContent: 'space-between',
-    backgroundColor: colors.HIGHLIGHT,
-    paddingBottom: spacings.LARGE,
-    paddingHorizontal: spacings.MEDIUM,
-    borderBottomLeftRadius: 5,
-    borderBottomRightRadius: 5,
+    alignItems: 'flex-end'
   },
   bodyContainer: {
-    marginHorizontal: spacings.LARGE
+    paddingHorizontal: spacings.HUGE
+  },
+  scrollContentContainer: {
+    paddingBottom: spacings.HUGE
   },
   videoListContainer: {
     ...debug,
@@ -137,6 +94,16 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: icons.LARGE.fontSize / 2,
     overflow: 'hidden'
+  },
+  title: {
+    ...text.h2
+  },
+  subtitle: {
+    ...text.h3
+  },
+  profileTitle: {
+    ...text.h2,
+    fontFamily: 'Coconat-Regular',
   },
   searchIconContainer: {
     ...debug,
@@ -171,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.BACKGROUND,
     borderRadius: 20,
     width: "100%",
-    marginVertical: spacings.LARGE,
+    marginBottom: spacings.HUGE,
     padding: spacings.HUGE,
     shadowColor: '#000000',
     shadowOffset: { width: 2, height: 2 },

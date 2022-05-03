@@ -33,6 +33,7 @@ const MoodChart = () => {
     revInPlace(days, rotations, days.length - 1);
     revInPlace(days, 0, days.length - 1)
   }
+  
 
   const renderMoodTracker = () => {
     // Datastructure that contains all data to render.
