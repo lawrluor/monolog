@@ -169,7 +169,7 @@ const MoodChart = () => {
     const Clips = ({ x, width }) => (
       <Defs key={ 'clips' }>
         {clipIndex.map((elem, index) => (
-          <ClipPath id={ "clip-path-" + index }>
+          <ClipPath key={index} id={ "clip-path-" + index }>
             <Rect x={ x(elem[0]) } y={ '0' } width={ x(elem[1]) - x(elem[0]) } height={ '100%' }/>
           </ClipPath>
         ))}

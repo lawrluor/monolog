@@ -11,7 +11,6 @@ import { VIDEO_DIRECTORY, RATING_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils
 
 import { text, containers, icons, spacings, dimensions } from '../styles';
 
-import { Spinner } from '../components/Spinner';
 import GoBack from '../components/GoBack';
 import SpeechToText from '../components/SpeechToText';
 import CustomIcon from '../components/CustomIcon';
@@ -19,18 +18,17 @@ import CustomIcon from '../components/CustomIcon';
 const MAX_DURATION = 600;  // seconds
 
 export const Recording = ({ navigation }): JSX.Element => {
+  // TODO: experiment with adding loading states (carefully) to improve UX
   const [finalTranscript, setFinalTranscript] = useState<string>('');
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const [type, setType] = useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = useState<null | boolean>(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [videoStorePath, setVideoStorePath] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
   const [ratingFile, setRatingFile] = useState<string>('');
 
   // Setup: Get permissions for camera from user first
   useEffect(() => {
-    console.log(isLoading);
     const asyncWrapper = async () => {
       // At this point, user should already have permissions from Home unless it was denied earlier
       // TODO: if they still don't have permissions, two options
@@ -38,7 +36,6 @@ export const Recording = ({ navigation }): JSX.Element => {
       // OR send them back to home and request permissions again there
       // NOTE: Expo seems to ask one more permission for some reason
       await setHasPermission(await checkRecordingPermissions()); 
-      setIsLoading(false);
     }
 
     asyncWrapper();
@@ -62,72 +59,70 @@ export const Recording = ({ navigation }): JSX.Element => {
     }
   }, [finalTranscript, videoStorePath, ratingFile]);
 
-  const flipCamera = async () => {
-    setIsLoading(true);    
-    setIsRecording(null); 
+  const flipCameraCallback = () => {
+    const flipCamera = () => {
+      setIsRecording(null);
+
+      setType(
+        type === Camera.Constants.Type.back
+          ? Camera.Constants.Type.front
+          : Camera.Constants.Type.back
+      );
+    }
     
     Alert.alert(
       "Please Note",
       "Flipping the camera will stop any ongoing recording.",
       [
         { 
-          text: "OK"
+          text: "Cancel",
+        },
+        { 
+          text: "Continue",
+          onPress: flipCamera
         }
       ]
     );
-
-    setType(
-      type === Camera.Constants.Type.back
-        ? Camera.Constants.Type.front
-        : Camera.Constants.Type.back
-    );
-
-    setIsLoading(false);
-  }
-
-
-  // TODO: Refactor into localStorageUtils?
-  const getVideoAndCreateThumbnail = () => {
-    // Create video and thumbnail files.
-    let timestamp = Math.floor(Date.now() / 1000);
-    let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
-    setVideoStorePath(videoStorePath);
-    setRatingFile(RATING_DIRECTORY + timestamp.toString());
-
-    // Handles the logic for extracting the video from storage and saving thumbnail
-    FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
-      () => {
-        VideoThumbnails.getThumbnailAsync(
-          videoStorePath,
-          { time: 0 }
-        ).then(
-          ( { uri } ) => {
-            let thumbnailPath = THUMBNAIL_DIRECTORY +
-              timestamp.toString() + ".jpg";
-            FileSystem.copyAsync({'from': uri, 'to': thumbnailPath });
-          }
-        ).catch(
-          error => {
-            console.log("Recording:getThumbnailAsync:", error);
-          }
-        )}
-      )
   }
 
   const startRecording = async () => {
     try {
       if (cameraRef){
-        setIsRecording(true);  // TODO: should this be after awaiting .recordAsync?
-
-        // TODO: Set loading states to improve the user experience
+        setIsRecording(true);
         let video = await cameraRef.recordAsync({ maxDuration: MAX_DURATION });
-        getVideoAndCreateThumbnail();
+
+        // Create video and thumbnail files.
+        let timestamp = Math.floor(Date.now() / 1000);
+        let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
+        setVideoStorePath(videoStorePath);
+        setRatingFile(RATING_DIRECTORY + timestamp.toString());
+
+        // Handles the logic for extracting the video from storage and saving thumbnail
+        FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
+          () => {
+            VideoThumbnails.getThumbnailAsync(
+              videoStorePath,
+              { time: 0 }
+            ).then(
+              ( { uri } ) => {
+                let thumbnailPath = THUMBNAIL_DIRECTORY +
+                  timestamp.toString() + ".jpg";
+                FileSystem.copyAsync({'from': uri, 'to': thumbnailPath });
+              }
+            ).catch(
+              error => {
+                console.log("Recording:getThumbnailAsync:", error);
+              }
+            )
+          }
+        )
       }
-     } catch(err) {
-        console.log("[ERROR] Recording.jsx: startRecording", err);
+     } catch(err){
+        console.log(err);
      }
   };
 
+  // Currently unused, as opting for no direct "return to gallery" button
   const navigateToGallery = () => {
     navigation.navigate('Gallery');
   }
@@ -209,8 +204,10 @@ export const Recording = ({ navigation }): JSX.Element => {
     } else {
       return (
         <>
+          <GoBack navigation={navigation} />
+
           <View style={styles.flipCameraContainer}>
-            <Pressable onPress={flipCamera} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+            <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
               <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
             </Pressable>
           </View>
@@ -241,16 +238,7 @@ export const Recording = ({ navigation }): JSX.Element => {
 
   return (
     <View style={styles.container}>
-      {
-        isLoading 
-        ?
-        <Spinner size={'large'}></Spinner>
-        :
-        <>
-          <GoBack navigation={navigation} />
-          {renderCamera()}
-        </>
-      }
+      {renderCamera()}
     </View>
   )
 }
