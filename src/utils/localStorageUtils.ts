@@ -284,12 +284,11 @@ export const getTranscriptContent = async (transcriptUri: string) => {
   if (transcriptUri) { 
     transcript_content = await FileSystem.readAsStringAsync(transcriptUri)
       .then((content: string) => {
-        // console.log("getTranscriptContent: success: ", content);
         return content;
       })
       .catch((err: any) => {
-        // console.log("[ERROR]: VideosContext.tsx: getTranscriptContent", err);
-        return "";
+        console.log("[ERROR]: VideosContext.tsx: getTranscriptContent", err);
+        return "Error loading transcript content.";
       })
   }
 
@@ -316,17 +315,16 @@ export const getRating = async (uri: string) => {
 
 // Filename is always "/path/to/file/${14 digit timestamp}.txt"
 export const writeFinalTranscript = async (transcriptUri: string, text: string) => {
-  let transcriptDirectory = FileSystem.documentDirectory + "transcripts/";
   let result;  // assigned a boolean value based on success of writing file
 
-  await FileSystem.getInfoAsync(transcriptDirectory).then(
+  result = await FileSystem.getInfoAsync(TRANSCRIPT_DIRECTORY).then(
     // TODO: check error handling on making the directory
     async ({ exists, _ }) => {
       if (!exists) {
-        FileSystem.makeDirectoryAsync(transcriptDirectory);
+        FileSystem.makeDirectoryAsync(TRANSCRIPT_DIRECTORY);
       }
 
-      result = await FileSystem.writeAsStringAsync(transcriptUri, text)
+      let writeSuccess = await FileSystem.writeAsStringAsync(transcriptUri, text)
         .then(() => {
           return true;
         })
@@ -334,9 +332,11 @@ export const writeFinalTranscript = async (transcriptUri: string, text: string) 
           console.log("[ERROR] Transcript:FileSystem.writeAsStringAsync:", error);
           return false;
         });
+
+      return writeSuccess;
     }).catch((error) => {
       console.log("[ERROR] Transcript:FileSystem.getInfoAsync:", error);
-      result = false;
+      return false;
     });
     
     return result;

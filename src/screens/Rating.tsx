@@ -46,10 +46,11 @@ const Rating = ({ route, navigation }): JSX.Element => {
     if (selectedEmojiIndex >= 0) {
       updateMoodMap(selectedEmojiIndex);
 
-      // to ratings/filename.txt, we write "😍4", and parse this later as needed
+      // to ratings/filename.txt, we write with format "${emoji}{index} i.e. "😍4"
+      // We will parse the rating file later as needed
       FileSystem.writeAsStringAsync(ratingFile, `${emojis[selectedEmojiIndex]}${selectedEmojiIndex.toString()}`);
       
-      // toggleVideosRefresh();  // TODO: move this somewhere better
+      toggleVideosRefresh();  // TODO: move this somewhere better
       navigateToTranscript(emojis[selectedEmojiIndex]);
     } else {
       Alert.alert(
@@ -89,7 +90,6 @@ const Rating = ({ route, navigation }): JSX.Element => {
             <Pressable
               key={elem}
               onPress={() => setSelectedEmojiWrapper(index)}
-              // style={ ({pressed}) => [styles.emojiBackground, {opacity: pressed ? 0.3 : 1, borderColor: elem===selectedEmoji ? 'transparent' : 'transparent', borderWidth: elem===selectedEmoji ? 1 : 0, backgroundColor: elem===selectedEmoji ? "#000000" + "22" : 'transparent', borderRadius: 10000}]}
             >
               <View style={elem===emojis[selectedEmojiIndex] ? styles.emojiSelectedBackground : styles.emojiBackground}>
                 <Text style={styles.emojiText}>{elem}</Text>

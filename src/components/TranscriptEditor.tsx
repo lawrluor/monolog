@@ -1,6 +1,7 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Pressable, Text, TextInput, Platform, KeyboardAvoidingView } from 'react-native';
+import { ScrollView, StyleSheet, View, Pressable, Text, TextInput, Platform, KeyboardAvoidingView, Keyboard, Alert } from 'react-native';
 
+import { Spinner } from './Spinner';
 import CustomIcon from './CustomIcon';
 
 import VideosContext from '../context/VideosContext';
@@ -21,47 +22,82 @@ type Props = {
 // Essentially, it is the transcript part itself that has been factored out, and is editable 
 // Its props include modalShown and setModalShown, which come from the parent VideoPlayer component.
 // and can set this to be visible or not visible depending on if the `show transcript` icon is pressed.
-const TranscriptEditor = ({ setModalShown, modalShown, textContent, transcriptUri, date }: Props) => {
+const TranscriptEditor = ({ setModalShown, modalShown, transcriptUri, date }: Props) => {
   const textRef = React.useRef();
 
   const { toggleVideosRefresh } = React.useContext(VideosContext);
 
-  const [textIsEditable, setTextIsEditable] = React.useState(false);
+  const [textIsEditable, setTextIsEditable] = React.useState<boolean>(false);
   const [pointerEvents, setPointerEvents] = React.useState('none');
-  const [text, setChangeText] = React.useState('');
+  const [cachedStartingText, setCachedStartingText] = React.useState<string>('');
+  const [text, setChangeText] = React.useState<string>('');
+  const [editMade, setEditMade] = React.useState<boolean>(false);  // Flag
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);  // Ensure transcript fetched first
 
-  // TODO: Handle Captions.
-  // TODO: Allow updating mood selection inside this component,
-  // or creating separate MoodSelector component that is embedded here.
+  // Get transcript content from local storage given the URI, and set contents 
+  // If this is a new recording, the transcript file doesn't exist yet, so no contents from file 
+  // Therefore, we use the textContent prop, which passes the newly created transcript 
+  // text content from the Recording.
+  // Else, simply set the transcript content to that which it reads from transcript file
+  const setTranscriptContent = async () => {
+    setIsLoading(true);
+    let fetchedTranscriptContent = await getTranscriptContent(transcriptUri);
+    setChangeText(fetchedTranscriptContent);  // Either the content, or "Error message" string
+    setCachedStartingText(fetchedTranscriptContent);
+    setIsLoading(false);
+  }
+
   React.useEffect(() => {
-    // Get transcript content from local storage given the URI, and set contents 
-    // If this is a new recording, the transcript file doesn't exist yet, so no contents from file 
-    // Therefore, we use the textContent prop, which passes the newly created transcript 
-    // text content from the Recording.
-    // Else, simply set the transcript content to that which it reads from transcript file
-    const setTranscriptContent = async () => {
-      let fetchedTranscriptContent = await getTranscriptContent(transcriptUri);
-
-      if (fetchedTranscriptContent) {
-        console.log("fetching transcript content");
-        setChangeText(fetchedTranscriptContent);
-      } else {
-        console.log("No transcript content found, setting to basic textContent");
-        setChangeText(textContent);
-      }
-    }
-
     setTranscriptContent();
   }, []);
 
-  const disableEditing = async () => {
+  const modalPressCallback = () => {
+    setModalShown(!modalShown);
+  }
+
+  // Unfortunately, this does not seem to track updated states,
+    // only using original state values at initialization, otherwise this would be an ideal solution
+    // Basically, only when the keyboard is dismissed in any way would we save the transcript.
+    // However, we can mimic this effect by adding a state editMade that changes whenever keyboard dismissed
+  React.useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => setEditMade(true)
+    );
+    
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+  
+  React.useEffect(() => {
+    // Only show save messages if changes have been made
+    // console.log(`\nCached: ${cachedStartingText}\nEdited: ${text}`);
+    if (editMade && cachedStartingText !== text) {
+      disableEditing();
+      saveTranscript();
+    }
+  }, [editMade])
+
+  const disableEditing = () => {
     setTextIsEditable(false);
     setPointerEvents('none');
+  }
 
-    // TODO: use a .then on writeFinalTranscript instead of returning boolean?
+  const saveTranscript = async () => {
     let transcriptWriteSuccess = await writeFinalTranscript(transcriptUri, text);
     if (transcriptWriteSuccess) {
+      Alert.alert(
+        "Success",
+        "Transcript saved!",
+        [
+          {"title": "OK"}
+        ]
+      );
+      
       console.log("transcript write success, refreshing videos:", transcriptWriteSuccess);
+      setTranscriptContent();
+      setEditMade(false);
       toggleVideosRefresh();
     }
   }
@@ -74,48 +110,41 @@ const TranscriptEditor = ({ setModalShown, modalShown, textContent, transcriptUr
     textRef.current.focus();  
   }
 
-  React.useEffect(() => {
-    // Whenever modalShown changes (transcript is shown or hidden), save transcript 
-    // TODO: refactor into single function for reusability
-    let transcriptWriteSuccess = writeFinalTranscript(transcriptUri, text);
-    if (transcriptWriteSuccess) {
-      console.log("transcript write success, refreshing videos:", transcriptWriteSuccess);
-      toggleVideosRefresh();
-    }
-  }, [modalShown]);
-
   return (
     modalShown
     ?
-    <Pressable style={styles.modalOutside} onPress={() => setModalShown(!modalShown)}>
-      <KeyboardAvoidingView 
-        style={styles.textContainer}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.modalDown}>
-              <Pressable onPress={() => setModalShown(!modalShown)} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-                <CustomIcon name={'down_arrow_head'} style={styles.iconActions} />
-              </Pressable>
-            </View>
-
-            <Pressable style={styles.editTextPressable} onLongPress={enableEditing} delayLongPress={250}>
-              <View pointerEvents={pointerEvents}>
-                <Text style={styles.subTitle}>{date}</Text>
-                <TextInput
-                  style={styles.body}
-                  onChangeText={(text) => setChangeText(text)}
-                  onEndEditing={disableEditing}
-                  value={text}
-                  multiline={true}
-                  editable={textIsEditable}
-                  ref={textRef}
-                />
+      isLoading 
+      ?
+      <Spinner />
+      :
+      <Pressable style={styles.modalOutside} onPress={modalPressCallback}>
+        <KeyboardAvoidingView 
+          style={styles.textContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={styles.modalDown}>
+                <Pressable onPress={() => setModalShown(!modalShown)} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+                  <CustomIcon name={'down_arrow_head'} style={styles.iconActions} />
+                </Pressable>
               </View>
-            </Pressable>
-          </ScrollView>
-      </KeyboardAvoidingView>
-    </Pressable>
+
+              <Pressable style={styles.editTextPressable} onLongPress={enableEditing} delayLongPress={250}>
+                <View pointerEvents={pointerEvents}>
+                  <Text style={styles.subTitle}>{date}</Text>
+                  <TextInput
+                    style={styles.body}
+                    onChangeText={(text) => setChangeText(text)}
+                    value={text}
+                    multiline={true}
+                    editable={textIsEditable}
+                    ref={textRef}
+                  />
+                </View>
+              </Pressable>
+            </ScrollView>
+        </KeyboardAvoidingView>
+      </Pressable>
     :
     <></>
   )
