@@ -20,7 +20,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
   const { ratingFile } = route.params;
   const { finalResult } = route.params;
 
-  const updateMoodMap = async (emojiValue) => {
+  const updateMoodMap = async (emojiValue: number) => {
     // Global Data Structure is sorted by date
     let today = new Date();
     if (moodData.week.days[0].date.toLocaleDateString() !=
@@ -44,8 +44,11 @@ const Rating = ({ route, navigation }): JSX.Element => {
 
   const submitRating = () => {
     if (selectedEmojiIndex >= 0) {
-      updateMoodMap(selectedEmojiIndex)
-      FileSystem.writeAsStringAsync(ratingFile, selectedEmojiIndex.toString());
+      updateMoodMap(selectedEmojiIndex);
+
+      // to ratings/filename.txt, we write with format "${emoji}{index} i.e. "😍4"
+      // We will parse the rating file later as needed
+      FileSystem.writeAsStringAsync(ratingFile, `${emojis[selectedEmojiIndex]}${selectedEmojiIndex.toString()}`);
       
       toggleVideosRefresh();  // TODO: move this somewhere better
       navigateToTranscript(emojis[selectedEmojiIndex]);
@@ -87,7 +90,6 @@ const Rating = ({ route, navigation }): JSX.Element => {
             <Pressable
               key={elem}
               onPress={() => setSelectedEmojiWrapper(index)}
-              // style={ ({pressed}) => [styles.emojiBackground, {opacity: pressed ? 0.3 : 1, borderColor: elem===selectedEmoji ? 'transparent' : 'transparent', borderWidth: elem===selectedEmoji ? 1 : 0, backgroundColor: elem===selectedEmoji ? "#000000" + "22" : 'transparent', borderRadius: 10000}]}
             >
               <View style={elem===emojis[selectedEmojiIndex] ? styles.emojiSelectedBackground : styles.emojiBackground}>
                 <Text style={styles.emojiText}>{elem}</Text>

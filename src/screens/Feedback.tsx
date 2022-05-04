@@ -47,24 +47,54 @@ const Settings = ({ navigation }): JSX.Element => {
     setFeedbackText(text);
   }
 
-  // Hides the keyboard and allows User to send feedback, with fields populated, via email
-  const handleSubmit = () => {
-    Keyboard.dismiss();
+  const sendEmailButtonCallback = () => {
+    sendEmail("monist@monist.me", "Monist App Feedback", feedbackText);
 
+     // Hacky way to have a "callback" for when sending feedback through outside email app
+     // Have a delay so that there is no "whiplash" from navigating screen immediately 
+     // After they either send or don't send the email, on navigating back to Monist,
+      // they will have been navigated to the moe page with this confirmation alert.
+    // NOTE: we could clear the Feedback textarea, but better to leave it there
+    // in case users would like to edit their text later or accidentally leave the screen.
+    setTimeout(submitFeedbackConfirmation, 3000); 
+  }
+
+  const submitFeedbackConfirmation = () => {
+    // Navigate first, then display alert. 
+    // TODO: better to stay on Feedback page, then navigate after onPress of the alert?
+    navigation.navigate('Home');  
+
+    Alert.alert(
+      "Feedback Sent",
+      "Thank you for sending the Monist team your feedback!",
+      [
+        { 
+          text: "OK"
+        }
+      ]
+    );
+  }
+
+  const openEmailAppAlert = () => {
     Alert.alert(
       "Sending Feedback...",
       "This will open your default email app.",
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
         { text: "OK",
-          onPress: async () => sendEmail("luolawrence1@gmail.com", "Monist App Feedback", feedbackText)
+          onPress: sendEmailButtonCallback
         }
       ]
     );
+  }
+
+  // Hides the keyboard and allows User to send feedback, with fields populated, via email
+  const handleSubmit = () => {
+    Keyboard.dismiss();
+    openEmailAppAlert();
   }
 
   return (

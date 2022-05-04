@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, View, Pressable, Text, TextInput, Platform } from 'react-native';
+import { StyleSheet, ScrollView, View, Pressable, Text, TextInput, Platform, Alert } from 'react-native';
 
 import TranscriptEditor from './TranscriptEditor';
 import VideoCaption from './VideoCaption';
@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getBaseFileSystemUri } from '../utils/localStorageUtils';
 
 import { icons, spacings, text } from '../styles';
+import { getCurrentDate } from '../utils/dates';
 
 type Props = {
   videoData: any,
@@ -27,17 +28,6 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   let fileTimestamp = videoUri.substring(videoUri.length - 14, videoUri.length - 4);  
   let transcriptUri = getBaseFileSystemUri() + `transcripts/${fileTimestamp}.txt`;
 
-  // Currently not used.
-  const renderBackButton = () => {
-    return (
-      <View style={styles.button}>
-        <Pressable onPress={() => navigation.goBack()} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-          <CustomIcon name='back_arrow' style={styles.iconActions} />
-        </Pressable>
-      </View>
-    )
-  }
-
   // Displays a button that can be clicked to reveal the entire transcript text 
   const renderShowTranscriptButton = () => {
     return (
@@ -49,6 +39,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
     )
   }
 
+  // Not currently displaying captions
   const renderCaption = () => {
     return (
       !modalShown 
@@ -58,6 +49,18 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
       </View>
       :
       <></>
+    )
+  }
+
+  const changeRating = () => {
+    Alert.alert(
+      "Coming Soon",
+      "In new versions of Monist, you'll be able to change the rating & emoji that you previously had chosen.",
+      [
+        {
+          text: "OK"
+        }
+      ]
     )
   }
 
@@ -75,7 +78,10 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
         </View>
 
         <View style={styles.button}>
-          <Text style={styles.emojiText}>{videoData.rating || '😃'}</Text>
+          
+          <Pressable onPress={changeRating} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+            <Text style={styles.emojiText}>{videoData.rating.substring(0, 2) || '❔'}</Text>
+          </Pressable>
         </View>
       </View>
     )
@@ -104,7 +110,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
         setModalShown={setModalShown}
         textContent={videoData.transcript_content}
         transcriptUri={transcriptUri} 
-        date={videoData.date || "03/01/22"}
+        date={videoData.date || getCurrentDate()}
       />
     </>
   )

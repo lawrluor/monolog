@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { text, spacings, icons, dimensions } from '../styles';
 
 import VideoContainer from '../components/VideoContainer';
-import VideoCaption from '../components/VideoCaption';
+import { getCurrentDate } from '../utils/dates';
 
 const Transcript = ({ route, navigation }): JSX.Element => {
   const { finalResult, selection, videoStorePath } = route.params;
@@ -13,20 +13,12 @@ const Transcript = ({ route, navigation }): JSX.Element => {
   // Joins the array of strings into one long string.
   const finalResultString = finalResult.join(' ')
 
-  const getCurrentDate = () => {
-    let now = new Date();
-    let year = now.getFullYear();
-    let month = now.getMonth() + 1;
-    let day = now.getDate();
-    let date = `${month}/${day}/${year}`;
-    return date;
-  }
-
   // Doesn't contain our final data, yet but shares the same name when passed to VideoContainer 
   // For fully processed logs, videoData will include: transcript_uri, thumbnail_uri, etc.
-  const videoData = { 
+  let videoData = { 
     'uri': videoStorePath,
     'transcript_content': finalResultString,
+    'rating': selection,
     'date': getCurrentDate()
  }
 

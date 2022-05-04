@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Pressable, ScrollView, Alert } from 'react-native';
 
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
@@ -18,9 +18,10 @@ import CustomIcon from '../components/CustomIcon';
 const MAX_DURATION = 600;  // seconds
 
 export const Recording = ({ navigation }): JSX.Element => {
+  // TODO: experiment with adding loading states (carefully) to improve UX
   const [finalTranscript, setFinalTranscript] = useState<string>('');
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [type, setType] = useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = useState<null | boolean>(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [videoStorePath, setVideoStorePath] = useState<string>('');
@@ -41,9 +42,14 @@ export const Recording = ({ navigation }): JSX.Element => {
   }, []);
 
   // "Callback method" for when the final transcript is ready.
+  // Note: isRecording must be false, meaning stopRecording() was explicitly called.
+  // Otherwise, if isRecording is just null, means that we have not begun recording,
+    // or we have simply switched the camera type between front or back.
   useEffect(() => {
     if ((finalTranscript.length > 0) &&
-        (videoStorePath.length > 0) && (ratingFile.length > 0)) {
+        (videoStorePath.length > 0) && 
+        (ratingFile.length > 0) &&
+        (isRecording === false)) {
       console.log("Recording.tsx: Final Transcript and videoStorePath received, moving to Rating.tsx")
 
       // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
@@ -53,12 +59,29 @@ export const Recording = ({ navigation }): JSX.Element => {
     }
   }, [finalTranscript, videoStorePath, ratingFile]);
 
-  const flipCamera = async () => {
-    setIsRecording(null); // TODO: side effect of moving to the next screen. Maybe this just sets to null?
-    setType(
-      type === Camera.Constants.Type.back
-        ? Camera.Constants.Type.front
-        : Camera.Constants.Type.back
+  const flipCameraCallback = () => {
+    const flipCamera = () => {
+      setIsRecording(null);
+
+      setType(
+        type === Camera.Constants.Type.back
+          ? Camera.Constants.Type.front
+          : Camera.Constants.Type.back
+      );
+    }
+    
+    Alert.alert(
+      "Please Note",
+      "Flipping the camera will stop any ongoing recording.",
+      [
+        { 
+          text: "Cancel",
+        },
+        { 
+          text: "Continue",
+          onPress: flipCamera
+        }
+      ]
     );
   }
 
@@ -72,7 +95,7 @@ export const Recording = ({ navigation }): JSX.Element => {
         let timestamp = Math.floor(Date.now() / 1000);
         let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
         setVideoStorePath(videoStorePath);
-        setRatingFile(RATING_DIRECTORY + timestamp.toString());
+        setRatingFile(RATING_DIRECTORY + timestamp.toString() + ".txt");
 
         // Handles the logic for extracting the video from storage and saving thumbnail
         FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
@@ -184,7 +207,7 @@ export const Recording = ({ navigation }): JSX.Element => {
           <GoBack navigation={navigation} />
 
           <View style={styles.flipCameraContainer}>
-            <Pressable onPress={flipCamera} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+            <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
               <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
             </Pressable>
           </View>
