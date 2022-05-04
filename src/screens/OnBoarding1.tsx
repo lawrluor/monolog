@@ -53,7 +53,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
       <View style={styles.textEntriesContainer}>
         <View style={styles.textEntryContainer}><TextEntry placeholderValue="First Name" editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)}/></View>
         <View style={styles.textEntryContainer}><TextEntry placeholderValue="Last Name" editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)}/></View>
-        <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" editable isTextBox returnKeyType="next" innerRef={textRefs[2]} textState={email} setTextState={setEmail}  onFinish={() => handleTextOnFinish(2)}/></View>
+        <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" editable isTextBox returnKeyType="done" innerRef={textRefs[2]} textState={email} setTextState={setEmail}  onFinish={() => handleTextOnFinish(2)}/></View>
       </View>
     )
   }
