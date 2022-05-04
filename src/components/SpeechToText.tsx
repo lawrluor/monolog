@@ -77,7 +77,6 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
 
   // Setup: Links the respective user-defined handler functions to call when specific Voice events occur.
   React.useEffect(() => {
-    console.log(Voice);
     setLoading(true);
     Voice.onSpeechStart = onSpeechStartHandler; 
     Voice.onSpeechRecognized = onSpeechRecognizedHandler;

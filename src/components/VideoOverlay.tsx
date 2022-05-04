@@ -26,7 +26,7 @@ type Props = {
 // These are absolute positioned towards the bottom of the screen
 const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element => {
   const { toggleVideosRefresh } = React.useContext(VideosContext);
-  const [modalShown, setModalShown] = React.useState(false);
+  const [modalShown, setModalShown] = React.useState<boolean>(false);
   
   const deleteLogCallback = () => {
     Alert.alert(
@@ -65,7 +65,6 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
         ]
       )
     }
-
   }
 
   // Displays a button that can be clicked to reveal the entire transcript text 

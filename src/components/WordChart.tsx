@@ -13,7 +13,7 @@ type Props = {
 // Display 10 words by default
 // Is overriden to a custom number by passing prop to WordChart from parent component
 const DEFAULT_NUM_OF_WORDS_TO_DISPLAY = 10;  
-const MAX_NUM_OF_WORDS_TO_DISPLAY = 25;
+const MAX_NUM_OF_WORDS_TO_DISPLAY = 50;
 
 // Renders the chart of words based on their counts
 // Each bar is a series of horizontal containers defined in the styles (barItemContainer, barItem, bar)
@@ -44,10 +44,12 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
   // TODO: Have each bar as a scroll view horizontally to allow for 
   // selecting options on list-items via swipe (iOS style)
   const renderBarWithText = (item: any) => {
+    const fullSizeBar = dimensions.width * 0.75;  // featureContainer is around 85% of screen width
+
     const renderBarWithTextInside = (item: any) => {
       return (
       <View key={item.word} style={styles.barItemContainer}>
-        <View key={item.word} style={[styles.bar, { width: dimensions.width * item.value }]}>
+        <View key={item.word} style={[styles.bar, { width: fullSizeBar * item.value }]}>
           <Text style={[styles.barText, { 'color': colors.BACKGROUND }]}>{item.word}</Text>
         </View>
 
@@ -61,7 +63,7 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
     const renderBarWithTextOutside = (item: any) => {
       return (
         <View key={item.word} style={styles.barItemContainer}>
-          <View key={item.word} style={[styles.bar, { width: dimensions.width * item.value }]}></View>
+          <View key={item.word} style={[styles.bar, { width: fullSizeBar * item.value }]}></View>
           <Text style={[styles.barText, { 'color': colors.HIGHLIGHT }]}>{item.word}</Text>
           
           <View style={styles.barNumberContainer}>
@@ -83,9 +85,7 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
   // Renders the word chart with appropriate number of words displayed
   const renderWordChart = () => {
     return wordChartData.slice(0, numOfWordsCurrentlyDisplayed)
-                        .map((item: any) => { 
-                          return renderBarWithText(item);
-                        });
+                        .map((item: any) => renderBarWithText(item));
   }
 
   // A Pressable that toggles state, to change number of words displayed
