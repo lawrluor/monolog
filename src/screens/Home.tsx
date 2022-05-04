@@ -22,7 +22,7 @@ import VideosContext from '../context/VideosContext';
 import { containers, icons, text, spacings, colors } from '../styles';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = true;
+const TESTING = false;
 
 const Home = ({ navigation }: any): JSX.Element => {
   const { userData, setUserData, videosCount, isLoading } = React.useContext(VideosContext);
