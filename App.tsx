@@ -10,7 +10,8 @@ import {
   createVideoDirectory,  
   createRatingDirectory,
   createThumbnailDirectory,
-  createTranscriptDirectory
+  createTranscriptDirectory,
+  createUserDataDirectory
 } from './src/utils/localStorageUtils';
 
 import { colors } from './src/styles';
@@ -47,6 +48,7 @@ const App = (): JSX.Element => {
     createThumbnailDirectory();
     createRatingDirectory();
     createTranscriptDirectory();
+    createUserDataDirectory();
   }, [])
 
   // if debugging, set debug borders on all elements

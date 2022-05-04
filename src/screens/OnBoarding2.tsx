@@ -26,12 +26,16 @@ const OnBoarding1 = ({ route, navigation }): JSX.Element => {
     // Although the AppStack navigator is selected and home screen is rendering,
     // the OnBoarding navigator and this current screen still stays on top.
     let finalUserData = {...userData}
+    finalUserData["onboarded"] = true;
+    finalUserData["cameraPermission"] = false;
+    finalUserData["micPermission"] = false;
+    finalUserData["speechToTextPermission"] = false;
+    finalUserData["tutorialMode"] = true;
     finalUserData["gender"] = gender;
     finalUserData["pronouns"] = pronouns;
-    finalUserData["age"] = age;
-    finalUserData["cameraPermissions"] = false;
+    finalUserData["age"] = age.toString();
 
-    writeUserData("user", finalUserData);
+    writeUserData(finalUserData);
     setShouldOnboard(false);
   }
 

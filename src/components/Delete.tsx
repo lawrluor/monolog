@@ -19,7 +19,7 @@ const DeleteAll = () => {
 export const DeleteVideoLog = ({ callback }: any) => {
   return (
     <Pressable onPress={callback} hitSlop={spacings.hitSlopLarge} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-      <Ionicons name={'trash'} style={[icons.SMALL, { zIndex: 100, color: colors.ERROR }]} />
+      <Ionicons name={'trash'} style={[icons.SMALL, { zIndex: 100, color: colors.BACKGROUND }]} />
     </Pressable> 
   )
 }
