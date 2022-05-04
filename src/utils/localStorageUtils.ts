@@ -209,8 +209,9 @@ export const processAllWordsFromTranscripts = async (allWordsByTranscript: strin
   }
 
   // Calculates the simple ratio of a given word against all relevant/non-filtered words.
+  // Multiplies by value to make it look better
   const calculateSimpleRatio = (count: number): number => {
-    return count / totalWordCount;
+    return (count / totalWordCount) * 6;
   }
 
   // Calculates the top X percent (percentile) of this word's count
@@ -219,14 +220,17 @@ export const processAllWordsFromTranscripts = async (allWordsByTranscript: strin
     let min = Math.min(...allWordCountsOnly);  // Must destructure array first
     let max = Math.max(...allWordCountsOnly); 
     let weightedPercentage = 0.1 + (0.8 * (count - min) / (max - min));  // Keep between 10% and 80% of bar width
-    console.log(weightedPercentage);
     return weightedPercentage
   }
 
   wordsByCount = Object.keys(wordsByCount)
                   .sort((a: string, b: string) => wordsByCount[b].count - wordsByCount[a].count)
                   .map((key: string) => { 
-                    wordsByCount[key].value = calculateWeightedRatio(wordsByCount[key].count);
+                    wordsByCount[key].value = 
+                      (totalWordCount > 200) 
+                      ? calculateWeightedRatio(wordsByCount[key].count) 
+                      : calculateSimpleRatio(wordsByCount[key].count);
+                      
                     return wordsByCount[key];
                   });
 

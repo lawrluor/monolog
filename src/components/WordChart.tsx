@@ -85,9 +85,7 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
   // Renders the word chart with appropriate number of words displayed
   const renderWordChart = () => {
     return wordChartData.slice(0, numOfWordsCurrentlyDisplayed)
-                        .map((item: any) => { 
-                          return renderBarWithText(item);
-                        });
+                        .map((item: any) => renderBarWithText(item));
   }
 
   // A Pressable that toggles state, to change number of words displayed
