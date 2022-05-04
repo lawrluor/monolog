@@ -7,12 +7,17 @@ import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
 
-import { getCurrentWeekFromTodayMMDD, getCurrentDate } from '../utils/dates';
+import VideosContext from '../context/VideosContext';
+
+import { getCurrentWeekFromTodayMMDD } from '../utils/dates';
 
 import { dimensions, spacings, icons, colors, text, sizes, debug } from '../styles';
+import NewUserMessage from '../components/NewUserMessage';
 
-const Vistas = ({ navigation }):  JSX.Element => {
-  console.log(getCurrentDate());
+const VIDEOS_THRESHOLD = 0;
+
+const Vistas = ({ navigation }: any):  JSX.Element => {
+  const { videosCount } = React.useContext(VideosContext);
 
   return (
     <>
@@ -33,13 +38,21 @@ const Vistas = ({ navigation }):  JSX.Element => {
             contentContainerStyle={styles.scrollContentContainer}
             showsVerticalScrollIndicator={false}
           > 
-            <View style={styles.featureContainer}>
-              <WordChart numOfWords={10} showMoreButton={true} />
-            </View>
-
-            <View style={styles.featureContainer}>
-              <MoodChart />
-            </View>
+            {
+              videosCount <= VIDEOS_THRESHOLD
+              ?
+              <NewUserMessage navigateCallback={() => navigation.navigate('Recording')} />
+              :
+              <>
+                <View style={styles.featureContainer}>
+                  <WordChart numOfWords={10} showMoreButton={true} />
+                </View>
+              
+                <View style={styles.featureContainer}>
+                  <MoodChart />
+                </View>
+              </>
+            }
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>

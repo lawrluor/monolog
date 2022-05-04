@@ -3,16 +3,12 @@ import { StyleSheet, View, Text, KeyboardAvoidingView,  Keyboard, Platform, Pres
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { containers, text, spacings, colors, icons } from '../styles';
+import { text, spacings, colors, icons } from '../styles';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import TextEntry from '../components/TextEntry';
-import { TextArea } from '../components/TextEntry';
 
-
-import { createUserDataDirectory, deleteUserData } from '../utils/localStorageUtils';
-
-const OnBoarding1 = ({ route, navigation }): JSX.Element => {
+const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   const textRefs = [textRef0, textRef1, textRef2, textRef3] = [React.createRef(), React.createRef(), React.createRef(), React.createRef()];
 
   const [firstName, setFirstName] = React.useState("");
@@ -61,15 +57,6 @@ const OnBoarding1 = ({ route, navigation }): JSX.Element => {
       </View>
     )
   }
-
-  React.useEffect(() => {
-    const asyncEffect = async () => {
-      // await deleteUserData();  // testing purposes only
-      await createUserDataDirectory();
-    }
-
-    asyncEffect();
-  }, []);
 
   return (
     <>

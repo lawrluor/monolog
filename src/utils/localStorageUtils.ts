@@ -99,15 +99,19 @@ export const deleteUserData = async () => {
 }
 
 export const readUserData = async () => {
-  let data: any = await FileSystem.readDirectoryAsync(USER_DATA_DIRECTORY)
+  let data: any = {};
+
+  if (!checkUserDataDirectory()) return data;
+
+  data = await FileSystem.readDirectoryAsync(USER_DATA_DIRECTORY)
     .then(async (files) => {
       // Use for loop as .forEach() cannot return any value
       // NOTE: There will only be one matching file (userData), so technically we don't need to loop
       for (const i in files) {
         let file = files[i];
         let fileContent = await FileSystem.readAsStringAsync(USER_DATA_DIRECTORY + file);
-        data = JSON.parse(fileContent);
-        return data;
+        fileContent = JSON.parse(fileContent);
+        return fileContent;
       }
     })
     .catch((err) => {
@@ -118,14 +122,14 @@ export const readUserData = async () => {
   // or empty object if it doesn't find one
   // This prevents error 'undefined is not an object' such as `undefined.firstName`
   // TODO: Note how often this happens? Unless empty object is ok upon initialization?
-  return data || {};  
+  return data;  
 }
 
 // Writes to the user data directory
 // TODO: This doesn't work properly or save user, getting error during writing
-export const writeUserData = (path: string, data: any) => {
+export const writeUserData = (data: any) => {
   try {
-    FileSystem.writeAsStringAsync(USER_DATA_DIRECTORY + path, JSON.stringify(data));
+    FileSystem.writeAsStringAsync(`${USER_DATA_DIRECTORY}user`, JSON.stringify(data));
   } catch (err) {
     console.log("[ERROR] localStorageUtils:writeUserData:", err);
   }

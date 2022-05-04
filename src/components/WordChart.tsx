@@ -1,9 +1,11 @@
 import React from 'react';
 import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
 
-import { text, spacings, colors, dimensions } from '../styles';
+import { Feather } from '@expo/vector-icons';
 
 import VideosContext from '../context/VideosContext';
+
+import { text, spacings, colors, dimensions, icons } from '../styles';
 
 type Props = {
   numOfWords?: number;  
@@ -96,9 +98,19 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
           {
             moreWordsShown
             ?
-            <Pressable onPress={toggleShowWords}><Text>{'<'} Show Less</Text></Pressable>
+            <Pressable onPress={toggleShowWords}>
+              <View style={styles.iconTextContainer}>
+                <Feather name={"chevron-up"} style={[icons.TINY, {position: 'relative', color: colors.PRIMARY}]}/>
+                <Text>Show Less</Text>
+              </View>
+            </Pressable>
             :
-            <Pressable onPress={toggleShowWords}><Text>Show More {'>'}</Text></Pressable>
+            <Pressable onPress={toggleShowWords}>
+              <View style={styles.iconTextContainer}>
+                <Feather name={"chevron-down"} style={[icons.TINY, {position: 'relative', color: colors.PRIMARY}]}/>
+                <Text>Show More</Text>
+              </View>
+            </Pressable>
           }
         </View>
       )
@@ -154,8 +166,13 @@ const styles = StyleSheet.create({
   showMoreContainer: {
     marginTop: spacings.MEDIUM,
     alignItems: 'flex-end',
+  },
+  iconTextContainer: {
+    // borderWidth: 1,
+    // borderColor: 'black',
+    flexDirection: 'row',
+    alignItems: 'center'
   }
-
 });
 
 export default WordChart;

@@ -10,8 +10,8 @@ import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
+import NewUserMessage from '../components/NewUserMessage';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
-import SignInButton from '../components/SignInButton';
 
 import { comingSoonAlert, simpleAlert } from '../utils/customAlerts';
 import { readUserData } from '../utils/localStorageUtils';
@@ -25,11 +25,10 @@ const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
 
 const Home = ({ navigation }: any): JSX.Element => {
-  // See this component's useEffect for more information about why we extract userData here.
-  const { userData, setUserData, videosData, isLoading } = React.useContext(VideosContext);
+  const { userData, setUserData, videosCount, isLoading } = React.useContext(VideosContext);
 
-  const [videosCount, setVideosCount] = React.useState(0);
-  const [alertVisible, setAlertVisible] = React.useState(false);
+  // Optionally used to allow for closing alert/promo messages in Home
+  const [alertVisible, setAlertVisible] = React.useState<boolean>(false); 
 
   const navigateToVistas = () => {
     navigation.navigate('Vistas');
@@ -43,39 +42,6 @@ const Home = ({ navigation }: any): JSX.Element => {
     comingSoonAlert(() => {
       console.log("uploading picture...");
     });
-  }
-
-  // This alert does not render if user has more than enough videos
-  // It also will not render if the user closes the alert
-  const renderNewUserAlert = (videosCount: number) => {
-    if (alertVisible && (videosCount < VIDEOS_THRESHOLD)) {
-      return (
-        <View style={[styles.featureContainer]}>
-          <View style={styles.newUserAlertTextContainer}>
-            <Text style={styles.newUserAlertText}>
-              Your vistas will appear after you record logs.
-              Press the button below to get started!
-            </Text>
-          </View>
-
-          <View style={styles.newUserAlertButtonContainer}>
-            <SignInButton 
-              background={colors.HIGHLIGHT}
-              onPress={navigateToRecord}
-            > 
-              <Text style={styles.newUserAlertButtonText}>Record</Text>
-            </SignInButton>
-          </View>
-
-          <Pressable 
-            onPress={() => setAlertVisible(false)} 
-            style={ ({pressed}) => [styles.closeButtonContainer, {opacity: pressed ? 0.3 : 1}] }
-          >
-            <Ionicons style={styles.closeButton} name="close" />
-          </Pressable>
-        </View>
-      )
-    }
   }
 
   const renderVistasSummaryHeader = (videosCount: number) => {
@@ -154,18 +120,10 @@ const Home = ({ navigation }: any): JSX.Element => {
   }, []);
 
   React.useEffect(() => {
-    const getVideosCount = () => {
-      if (!videosData[0]) return 0;  // new users that have no videos will not have data loaded
-      
-      return videosData[0]['data'][0]['list'].length;
-    }
-    
     if (!isLoading) {
-      let count = getVideosCount();
-      setVideosCount(count);
-      setAlertVisible(count < VIDEOS_THRESHOLD);
+      setAlertVisible(videosCount < VIDEOS_THRESHOLD);
     };
-  }, [isLoading, videosData])
+  }, [videosCount, isLoading])
 
   // TODO: consolidate with Rating.tsx. UNIT TEST THIS.
   // Given emojiValue {int} (mood of video), timestampSeconds {int} of the
@@ -311,7 +269,10 @@ const Home = ({ navigation }: any): JSX.Element => {
             showsVerticalScrollIndicator={false}
           >
             {renderVistasSummaryHeader(videosCount)}
-            {renderNewUserAlert(videosCount)}
+            {alertVisible && (videosCount < VIDEOS_THRESHOLD) 
+              ? <NewUserMessage navigateCallback={navigateToRecord} /> 
+              : null
+            }
             {renderWordChartSummary(videosCount)}
             {renderMoodChartSummary(videosCount)}
 
@@ -401,30 +362,7 @@ const styles = StyleSheet.create({
   lockIcon: {
     ...icons.TINY,
     color: colors.PRIMARY,
-  },
-  closeButtonContainer: {
-    position: 'absolute',
-    right: spacings.MEDIUM,
-    top: spacings.MEDIUM,
-  },
-  closeButton: {
-    ...icons.TINY,
-    color: colors.PRIMARY,
-  },
-  newUserAlertTextContainer: {
-    alignItems: 'center',
-    padding: spacings.MEDIUM,
-  },
-  newUserAlertText: {
-    ...text.p,
-    textAlign: 'center',
-  },
-  newUserAlertButtonContainer: {
-    alignItems: 'center'
-  },
-  newUserAlertButtonText: {
-    ...text.h4,
-  },
+  }
 })
 
 export default Home;

@@ -3,10 +3,14 @@ import { View, StyleSheet } from 'react-native';
 
 import Voice from '@react-native-voice/voice';
 
+import VideosContext from '../context/VideosContext';
+
 import VideoCaption from './VideoCaption';
 
 // TODO: Inherit stop/start state from parent (Recording) which toggles these states too.
 const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element => {
+  const { userData, setUserData } = React.useContext(VideosContext);
+
   const [result, setResult] = React.useState('');
   const [textWithTimestamps, setTextWithTimestamps] = React.useState({});  // Not currently used
   const [recordingStartTime, setRecordingStartTime] = React.useState(0);
@@ -92,10 +96,19 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
   }, []);
 
   // Immediately get permissions from the user, just one time.
+  // Once permissions are granted, we can set them. 
+  // TODO: Try to set permissions through a callback in this component, 
+      // but for now, we will set user data after they finish recording
+      // This is because they can't have recorded without granting speech-to-text permission
   // The key is this happens BEFORE the user can press the video record button, so video recording is not interrupted
+  // BUG: This makes it so that the speech to text starts BEFORE pressing the record button 
+    // Essentially, stopRecording() does nothing to immediately stop it and await causes things to break
   // TODO: No method for this that I can find, so just start and stop immediately.
   React.useEffect(() => {
-    stopRecording();
+    if (!userData || !userData.speechToTextPermission) {
+      startRecording()
+      stopRecording();  
+    }
   }, []);
 
   React.useEffect(() => {
@@ -110,6 +123,16 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
     } else if (isRecording === false) {
       // user has stopped the record button, or time has ran out: finish recording and navigate next
       finishRecording();
+
+      // Correctly set values for user permissions if not already set
+      // TODO: move this code elsewhere, preferably in callback in Recording or Home
+      if (!userData.speechToTextPermission || !userData.cameraPermission || !userData.micPermission) {
+        setUserData(Object.assign(userData, {
+          'speechToTextPermission': true,
+          'cameraPermission': true,
+          'micPermission': true 
+        }));
+      }
     }
   }, [isRecording]);
 

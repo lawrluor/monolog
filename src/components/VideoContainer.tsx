@@ -22,7 +22,7 @@ const VideoContainer = ({ videoData, navigation }: Props): JSX.Element => {
     
   return (
     <>
-      <VideoPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} videoUri={videoData.uri} />
+      <VideoPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} videoUri={videoData.uri} navigation={navigation} />
       <VideoOverlay videoData={videoData} isPlaying={isPlaying} navigation={navigation} />
     </>
   );

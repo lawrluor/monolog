@@ -6,8 +6,10 @@ import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+import VideosContext from '../context/VideosContext';
+
 import { checkRecordingPermissions } from '../utils/permissions';
-import { VIDEO_DIRECTORY, RATING_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
+import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
 
 import { text, containers, icons, spacings, dimensions } from '../styles';
 
@@ -19,7 +21,9 @@ import CustomIcon from '../components/CustomIcon';
 const MAX_DURATION = 600;  // seconds
 
 // NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording 
-export const Recording = ({ navigation }): JSX.Element => {
+export const Recording = ({ navigation }: any): JSX.Element => {
+  const { userData, setUserData } = React.useContext(VideosContext);
+
   // TODO: experiment with adding loading states (carefully) to improve UX
   const [finalTranscript, setFinalTranscript] = useState<string>('');
   const [recordingFinished, setRecordingFinished] = useState<boolean>(false);
@@ -77,19 +81,28 @@ export const Recording = ({ navigation }): JSX.Element => {
       );
     }
     
-    Alert.alert(
-      "Please Note",
-      "Flipping the camera will stop any ongoing recording.",
-      [
-        { 
-          text: "Cancel",
-        },
-        { 
-          text: "Continue",
-          onPress: flipCamera
-        }
-      ]
-    );
+    if (!userData || userData.tutorialMode) {
+      // First time user does this, notify them
+      Alert.alert(
+        "Please Note",
+        "Flipping the camera will stop any ongoing recording.",
+        [
+          { 
+            text: "Cancel",
+          },
+          { 
+            text: "Continue",
+            onPress: flipCamera
+          }
+        ]
+      );
+
+      // TODO: can make a specific state for this, like flipCameraNotified
+      setUserData(Object.assign(userData, { tutorialMode: false }))
+    } else {
+      // User already knows this, let them flip the camera at will
+      flipCamera();
+    }
   }
 
   const startRecording = async () => {

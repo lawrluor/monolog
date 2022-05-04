@@ -7,7 +7,7 @@ import { containers, dimensions, text, spacings, colors } from '../styles';
 
 import SignInButton from '../components/SignInButton';
 
-const Landing = ({ route, navigation }): JSX.Element => { 
+const Landing = ({ route, navigation }: any): JSX.Element => { 
   const { setShouldOnboard } = route.params;
 
   // Users go directly to the onboarding process.
@@ -41,7 +41,7 @@ const Landing = ({ route, navigation }): JSX.Element => {
           <View style={styles.titleContainer}>
             {/* <Text style={styles.title}>Monolog</Text> */}
             <Image style={styles.brandImage} source={require('../../assets/img/monist_logo_full.png')} />
-            <Text style={styles.subTitle}>Take control of your mental health one step at a time.</Text>
+            <Text style={styles.subTitle}>Improve your mental fitness one journal entry at a time.</Text>
           </View>
 
           <View style={styles.buttonContainer}>
