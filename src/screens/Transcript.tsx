@@ -1,36 +1,59 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
+import VideosContext from '../context/VideosContext';
+
+import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from '../utils/localStorageUtils';
+
+import { Spinner } from '../components/Spinner';
+import VideoContainer from '../components/VideoContainer';
+
 import { text, spacings, icons, dimensions } from '../styles';
 
-import VideoContainer from '../components/VideoContainer';
-import VideoCaption from '../components/VideoCaption';
-
 const Transcript = ({ route, navigation }): JSX.Element => {
-  const { finalResult, selection, videoStorePath } = route.params;
+  const { finalResult, selection, fileBaseName } = route.params;
+  const { toggleVideosRefresh } = React.useContext(VideosContext);
 
   // finalResultString contains the full transcript of the video
   // Joins the array of strings into one long string.
-  const finalResultString = finalResult.join(' ')
+  const finalResultString: string = finalResult.join(' ');
 
-  const getCurrentDate = () => {
-    let now = new Date();
-    let year = now.getFullYear();
-    let month = now.getMonth() + 1;
-    let day = now.getDate();
-    let date = `${month}/${day}/${year}`;
-    return date;
-  }
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [videoData, setVideoData] = React.useState(null);
 
   // Doesn't contain our final data, yet but shares the same name when passed to VideoContainer 
   // For fully processed logs, videoData will include: transcript_uri, thumbnail_uri, etc.
-  const videoData = { 
-    'uri': videoStorePath,
-    'transcript_content': finalResultString,
-    'date': getCurrentDate()
- }
+  // let videoData = { 
+  //   'uri': videoStorePath,
+  //   'transcript_content': finalResultString,
+  //   'rating': selection,
+  //   'date': getCurrentDate()
+  // }
+
+  // Ensure that videoData is properly initialized before moving to final screens,
+  // which includes the final transcript, rating, and more
+  React.useEffect(() => {
+    const asyncWrapper = async () => {
+      // queries videoData object from local DB, that has saved attributes from previous screens 
+      // such as rating file, video file name, etc.
+      // It will not find a saved transcript yet, as one does not exist yet
+      // So, we add the final transcript after getting the mostly finished videoData object.
+      let queriedVideoData = await initVideoDataObject(fileBaseName);  
+      queriedVideoData['transcript_content'] = finalResultString;
+      setVideoData(queriedVideoData);
+      setIsLoading(false);
+      writeFinalTranscript(await generateTranscriptUri(fileBaseName), finalResultString); 
+      toggleVideosRefresh();  // TODO: move this somewhere better   
+    }
+
+    asyncWrapper();
+  }, [])
 
   return (
+    isLoading 
+    ?
+    <Spinner />
+    :
     <VideoContainer videoData={videoData} navigation={navigation} />
   )
 }

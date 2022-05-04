@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 
+import DeleteAll from '../components/Delete';  // IN TESTING ONLY
 import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
@@ -13,7 +14,7 @@ import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import SignInButton from '../components/SignInButton';
 
 import { comingSoonAlert, simpleAlert } from '../utils/customAlerts';
-import { readUserData, createTranscriptDirectory, createVideoDirectory, createRatingDirectory, createThumbnailDirectory } from '../utils/localStorageUtils';
+import { readUserData } from '../utils/localStorageUtils';
 import { getRecordingPermissions } from '../utils/permissions';
 
 import VideosContext from '../context/VideosContext';
@@ -21,13 +22,12 @@ import VideosContext from '../context/VideosContext';
 import { containers, icons, text, spacings, colors } from '../styles';
 
 const VIDEOS_THRESHOLD = 1;
+const TESTING = false;
 
-const Home = ({ navigation }): JSX.Element => {
+const Home = ({ navigation }: any): JSX.Element => {
   // See this component's useEffect for more information about why we extract userData here.
   const { userData, setUserData, videosData, isLoading } = React.useContext(VideosContext);
 
-  // recorded_sections[section_key]["data"][0]["list"]
-  // videosData[0]['data'][0]['list'].length;
   const [videosCount, setVideosCount] = React.useState(0);
   const [alertVisible, setAlertVisible] = React.useState(false);
 
@@ -165,7 +165,7 @@ const Home = ({ navigation }): JSX.Element => {
       setVideosCount(count);
       setAlertVisible(count < VIDEOS_THRESHOLD);
     };
-  }, [isLoading])
+  }, [isLoading, videosData])
 
   // TODO: consolidate with Rating.tsx. UNIT TEST THIS.
   // Given emojiValue {int} (mood of video), timestampSeconds {int} of the
@@ -276,6 +276,7 @@ const Home = ({ navigation }): JSX.Element => {
   React.useEffect((): void => {
     initializeMoodTracker();
   }, []);
+  
   return (
     <>
       <SafeAreaTop />
@@ -286,6 +287,8 @@ const Home = ({ navigation }): JSX.Element => {
           style={styles.container}
         >
           <View style={styles.headerContainer}>
+            { TESTING ? <DeleteAll /> : null }
+            
             <View>
               <Text style={styles.subTitle}>Welcome,</Text>
               <Text style={styles.profileTitle}>{userData.firstName || "Journaler!"}</Text>
@@ -302,7 +305,11 @@ const Home = ({ navigation }): JSX.Element => {
             <Divider color={colors.BACKGROUND} />
           </View>
 
-          <ScrollView style={styles.bodyContainer}>
+          <ScrollView 
+            style={styles.bodyContainer}
+            contentContainerStyle={styles.scrollContentContainerStyle}
+            showsVerticalScrollIndicator={false}
+          >
             {renderVistasSummaryHeader(videosCount)}
             {renderNewUserAlert(videosCount)}
             {renderWordChartSummary(videosCount)}
@@ -315,7 +322,6 @@ const Home = ({ navigation }): JSX.Element => {
               </View>
             </Pressable>
           </ScrollView>
-
         </LinearGradient>
       </SafeAreaBottom>
     </>
@@ -334,12 +340,16 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   bodyContainer: {
-    padding: spacings.HUGE
+    paddingHorizontal: spacings.HUGE,
+  },
+  scrollContentContainerStyle: {
+    paddingVertical: spacings.HUGE,
   },
   titleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
+    paddingBottom: spacings.LARGE
   },
   title: {
     ...text.h2
@@ -359,7 +369,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.BACKGROUND,
     borderRadius: 20,
     width: "100%",
-    marginVertical: spacings.LARGE,
+    marginBottom: spacings.HUGE,
     padding: spacings.HUGE,
     shadowColor: '#000000',
     shadowOffset: { width: 2, height: 2 },

@@ -95,7 +95,6 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
   // The key is this happens BEFORE the user can press the video record button, so video recording is not interrupted
   // TODO: No method for this that I can find, so just start and stop immediately.
   React.useEffect(() => {
-    startRecording();
     stopRecording();
   }, []);
 

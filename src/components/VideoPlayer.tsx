@@ -22,7 +22,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
     status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
     setIsPlaying(!isPlaying);
   }
-
+    
   // Audio settings for this video
   React.useEffect(() => {
     const setAudioModes = async () => {
@@ -41,6 +41,18 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
     }
 
     setAudioModes();
+
+    // See: https://github.com/expo/expo/issues/3115
+    // See: https://docs.expo.dev/versions/latest/sdk/audio/#playing-sounds
+    return () => {
+      console.log("unmounting video player");
+      // video.current.stopAsync();
+      video.current.unloadAsync()
+        .then()
+        .catch((err: any) => {
+          console.log("[ERROR] VideoPlayer: useEffect", err);
+        });
+    }
   }, []);
 
 

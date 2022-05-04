@@ -6,6 +6,7 @@
 // TODO: consider refactoring/moving code handling local storage from other files to here.
 
 import * as FileSystem from 'expo-file-system';
+import { filteredWords, removePunctuation } from './textProcessing';
 
 export const USER_DATA_DIRECTORY = FileSystem.documentDirectory + 'userData/';
 export const TRANSCRIPT_DIRECTORY = FileSystem.documentDirectory + 'transcripts/';
@@ -170,80 +171,135 @@ export const getAllWordsFromTranscripts = async (numberOfTopWordsOnly: number=50
 // returns word chart data in the correct format with correct counts.
 // Optional param numberOfTopWordsOnly can slice the data, 
 // but for now we are sending ALL the data and having individual components slice the top words.
-export const processAllWordsFromTranscripts = async (allWords: string[], numberOfTopWordsOnly: number=0) => {
-  const VALUE_MULTIPLIER = 10;  // NOTE: just to increase bar size. TODO: Can change formula later and apply in rendering
-  
+export const processAllWordsFromTranscripts = async (allWordsByTranscript: string[], numberOfTopWordsOnly: number=0) => {  
   // Helper function to generate object for a single word in the correct format for WordChart
-  const initWordChartItemData = (word: string, count: number, totalWords: number) => {
-    let value = (count / totalWords) * VALUE_MULTIPLIER;  // TODO: change this ratio, just to make bars bigger
-    
+  const initWordChartItemData = (count: number, currentWord: string) => {    
     return {
-      'word': word,
-      'value': value,
+      'word': currentWord,
       'count': count
     }
   }
 
-  let fullWordList: string[] = [];
+  // TODO: make more efficient in as few loops as possible
+  // Can we do this in one pass?
+  let wordsByCount: any = {};
+  let totalWordCount: number = 0;
 
-  // TODO: Filter articles and other unnecessary words 
-  // TODO: make more efficient
-  // Seems faster to map the split function? and then just reduce list.
-  for (let i=0; i < allWords.length; i++) {
-    let splitWords = allWords[i].toLowerCase().split(' ');  // NOTE: lowercasing all strings
-    fullWordList = [...fullWordList, ...splitWords];
-  }
+  for (let i=0; i < allWordsByTranscript.length; i++) {
+    let transcript = allWordsByTranscript[i];
+    let splitWords = removePunctuation(transcript).toLowerCase().split(' ');
 
-  // TODO: get totalWords AFTER filtering unnecessary words
-  let totalWords = fullWordList.length;  
-  let wordCounts: any = {};
-  
-  for (let i=0; i < fullWordList.length; i++) {
-    let currentWord = fullWordList[i];
-    if (wordCounts[currentWord])  {
+    for (let currentWord of splitWords) {
+      if (filteredWords.includes(currentWord)) continue;  // skip filtered words
+
       // Updating values more memory efficient than reassigning whole obj using initWordChartItemData
       // This is because each call would have generated a shallow copy of the object
       // THEN assigned the whole obj with obj.count + 1
-      wordCounts[fullWordList[i]].count += 1;
-      wordCounts[fullWordList[i]].value = (wordCounts[fullWordList[i]].count / totalWords) * VALUE_MULTIPLIER;
-    } else {
-      wordCounts[fullWordList[i]] = initWordChartItemData(currentWord, 1, totalWords)
+      if (wordsByCount[currentWord]) {
+        wordsByCount[currentWord].count += 1; 
+        // can't recalculate the overall ratio because we don't know how many words exist yet
+        // even if we calculate with just the length of just the total words, will not be accurate
+        // Therefore, we have to do another pass/map/loop later
+      } else {
+        wordsByCount[currentWord] = initWordChartItemData(1, currentWord);
+      }
+
+      totalWordCount++;
     }
   }
 
-  // Determine unwanted words 
-  // TODO: see if language library can help us with this
-  // Stop word list: https://xpo6.com/wp-content/uploads/2015/01/stop-word-list.csv
-  // TODO: use regex may be more efficient 
-  // TODO: can break this up into lists and concat them
-  // TODO: refactor and make a util function for this?
-  // TODO: Make into an obj
-  const articles = ['the', 'a', 'an'];
-  const objects = ['this', 'these', 'them', 'they', 'we', 'do', 'he', 'she', 'it'];
-  const conjunctions = ['and', 'or'];
-  const prepositions = ['to', 'into'];
-  const stutters = ['um', 'ah', 'umm', 'hmm', 'hm', 'so'];
-  const specialChars =  ['\n', '\t', 'undefined'];
-  const unwantedWords = [...articles, ...objects, ...conjunctions, ...prepositions, ...stutters, ...specialChars];
-  // 'can', 'can\'t', 'cannot'
-  
-  // Sort in Ascending order (max first)
-  // NOTE: we cannot sort an object directly (inconsistent ordering), 
-  // but we can return a sorted array of keys, to then map back to the array of objects
-  // See: https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
-  
-  wordCounts = Object.keys(wordCounts)
-                .filter((a) => !unwantedWords.includes(a))  // TODO: Do this better/earlier, inefficient
-                .sort((a: any, b: any) => wordCounts[b].count - wordCounts[a].count)
-                .map(key => wordCounts[key])
+  // Calculates the simple ratio of a given word against all relevant/non-filtered words.
+  // Multiplies by value to make it look better
+  const calculateSimpleRatio = (count: number): number => {
+    return (count / totalWordCount) * 6;
+  }
 
-  return wordCounts;
+  // Calculates the top X percent (percentile) of this word's count
+  const calculateWeightedRatio = (count: number): number => {
+    let allWordCountsOnly: number[] = Object.keys(wordsByCount).map((key: string) => wordsByCount[key].count );
+    let min = Math.min(...allWordCountsOnly);  // Must destructure array first
+    let max = Math.max(...allWordCountsOnly); 
+    let weightedPercentage = 0.1 + (0.8 * (count - min) / (max - min));  // Keep between 10% and 80% of bar width
+    return weightedPercentage
+  }
+
+  wordsByCount = Object.keys(wordsByCount)
+                  .sort((a: string, b: string) => wordsByCount[b].count - wordsByCount[a].count)
+                  .map((key: string) => { 
+                    wordsByCount[key].value = 
+                      (totalWordCount > 200) 
+                      ? calculateWeightedRatio(wordsByCount[key].count) 
+                      : calculateSimpleRatio(wordsByCount[key].count);
+                      
+                    return wordsByCount[key];
+                  });
+
+  return wordsByCount;
 }
 
 export const deleteAllTranscripts = async () => {
-  let transcriptDirectory = FileSystem.documentDirectory + "transcripts/";
-  await getTranscripts(FileSystem.deleteAsync(transcriptDirectory));
+  // await getTranscripts(FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY));
+  await FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY)
   console.log("Deleted all transcripts");
+}
+
+export const deleteAllRatings = async () => {
+  await FileSystem.deleteAsync(RATING_DIRECTORY);
+  console.log("Deleted all ratings");
+}
+
+// Deletes all videos with optional parameter of deleting X number of videos
+export const deleteAllVideos = async (numberOfVideosToDelete=0) => {
+  await FileSystem.readDirectoryAsync(VIDEO_DIRECTORY)
+    .then(async (files) => {
+      // default is 0, so delete all videos by default
+      let numberOfVideos = Math.max(0, files.length - numberOfVideosToDelete);  
+      for (let i=0; i<numberOfVideos; i++) {
+        await FileSystem.deleteAsync(VIDEO_DIRECTORY + files[i]);
+      }
+    })
+    .catch((err) => console.log("[ERROR] VideosContext: deleteAllVideos", err));
+}
+
+export const deleteAllThumbnails = async () => {
+  await FileSystem.deleteAsync(THUMBNAIL_DIRECTORY);
+  console.log("Deleted all thumbnails");
+}
+
+export const deleteAllData = async () => {
+  try {
+    let promises = [
+      deleteAllRatings(),
+      deleteAllTranscripts(),
+      deleteAllVideos(),
+      deleteAllThumbnails(),
+      deleteUserData()
+    ]
+
+    await Promise.all(promises);
+    console.log("Deleted all data");
+  } catch (err) {
+    console.log("[ERROR] localStorageUtils: deleteAllData", err);
+  }
+}
+
+// Deletes a video log and its associated data, given the pure filename (123123123)
+export const deleteVideoLog = async (filename: string) => {
+  try {
+    let promises = [
+      FileSystem.deleteAsync(`${VIDEO_DIRECTORY}${filename}.mov`), 
+      FileSystem.deleteAsync(`${THUMBNAIL_DIRECTORY}${filename}.jpg`),
+      FileSystem.deleteAsync(`${TRANSCRIPT_DIRECTORY}${filename}.txt`),
+      FileSystem.deleteAsync(`${RATING_DIRECTORY}${filename}.txt`)
+    ]
+
+    await Promise.all(promises);
+    console.log(`Deleted log ${filename}`);
+    return true;
+  } catch(err) {
+    console.log(`[ERROR] localStorageUtils: deleteVideoLog`, err);
+    return false;
+  }
 }
 
 // Helper function to get the base uri of the local file system.
@@ -254,48 +310,76 @@ export const getBaseFileSystemUri = (): string => {
 }
 
 export const getTranscriptContent = async (transcriptUri: string) => {
-  let transcript_content = "";
+  let transcript_content: string = "";
 
-  if (transcriptUri) { 
-    transcript_content = await FileSystem.readAsStringAsync(transcriptUri)
-      .then((content: string) => {
-        // console.log("getTranscriptContent: success: ", content);
-        return content;
-      })
-      .catch((err: any) => {
-        console.log("[ERROR]: VideosContext.tsx: getTranscriptContent", err);
-        return "";
-      })
-  }
+  transcript_content = await FileSystem.readAsStringAsync(transcriptUri)
+    .then((content: string) => {
+      return content;
+    })
+    .catch((err: any) => {
+      console.log("[ERROR]: VideosContext.tsx: getTranscriptContent", err);
+      return "";
+    })
 
   return transcript_content;
 }
 
-// Filename is always "/path/to/file/${14 digit timestamp}.txt"
+export const getRating = async (uri: string) => {
+  let rating: string = "";
+  let ratingFullUri = `${RATING_DIRECTORY}${uri}.txt`;
 
-export const writeFinalTranscript = async (transcriptUri: string, text: string) => {
-  let transcriptDirectory = FileSystem.documentDirectory + "transcripts/";
-  let result;  // assigned a boolean value based on success of writing file
+  rating = await FileSystem.readAsStringAsync(ratingFullUri)
+    .then((content: string) => {
+      return content;
+    })
+    .catch((err: any) => {
+      console.log("[ERROR]: VideosContext.tsx: getRating", err);
+      return "";
+    })
 
-  await FileSystem.getInfoAsync(transcriptDirectory).then(
-    // TODO: check error handling on making the directory
-    async ({ exists, _ }) => {
-      if (!exists) {
-        FileSystem.makeDirectoryAsync(transcriptDirectory);
-      }
+  return rating;
+}
 
-      result = await FileSystem.writeAsStringAsync(transcriptUri, text)
-        .then(() => {
-          return true;
-        })
-        .catch((error) => {
-          console.log("[ERROR] Transcript:FileSystem.writeAsStringAsync:", error);
-          return false;
-        });
-    }).catch((error) => {
-      console.log("[ERROR] Transcript:FileSystem.getInfoAsync:", error);
-      result = false;
-    });
-    
-    return result;
+export const writeFinalTranscript = async (transcriptUri: string, text: string) => {  
+  try {
+    FileSystem.writeAsStringAsync(transcriptUri, text);  // No return value
+    return true;
+  } catch(err: any) {
+    console.log("[ERROR] Transcript:FileSystem.writeAsStringAsync:", err);
+    return false;
+  }  
+}
+
+export const generateThumbnailUri = (filename: string) => {
+  return `${THUMBNAIL_DIRECTORY}${filename}.jpg`;
+}
+
+export const generateTranscriptUri = (filename: string) => {
+  return `${TRANSCRIPT_DIRECTORY}${filename}.txt`;
+}
+
+export const generateVideoUri = (filename: string) => {
+  return `${FileSystem.documentDirectory}videos/${filename}.mov`;
+}
+
+export const generateRatingUri = (filename: string) => {
+  return `${RATING_DIRECTORY}${filename}.txt`;
+}
+
+export const initVideoDataObject = async (filename: string) => {
+  let transcriptUri = generateTranscriptUri(filename);
+  let transcriptContent = await getTranscriptContent(transcriptUri);
+  let rating = await getRating(filename);
+
+  let videoData = {
+    "baseName": filename,
+    "name": generateVideoUri(filename),
+    "uri": generateVideoUri(filename),
+    "thumbnail_uri": generateThumbnailUri(filename),
+    "transcript_uri": transcriptUri,
+    "transcript_content": transcriptContent,
+    "rating": rating
+  }
+
+  return videoData;
 }
