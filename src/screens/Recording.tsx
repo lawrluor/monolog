@@ -7,7 +7,7 @@ import * as VideoThumbnails from 'expo-video-thumbnails';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { checkRecordingPermissions } from '../utils/permissions';
-import { VIDEO_DIRECTORY, RATING_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
+import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
 
 import { text, containers, icons, spacings, dimensions } from '../styles';
 

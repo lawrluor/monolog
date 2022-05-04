@@ -29,6 +29,7 @@ const OnBoarding1 = ({ route, navigation }): JSX.Element => {
     finalUserData["onboarded"] = true;
     finalUserData["cameraPermission"] = false;
     finalUserData["micPermission"] = false;
+    finalUserData["speechToTextPermission"] = false;
     finalUserData["gender"] = gender;
     finalUserData["pronouns"] = pronouns;
     finalUserData["age"] = age.toString();
