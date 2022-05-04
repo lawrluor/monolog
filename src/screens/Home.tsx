@@ -14,7 +14,7 @@ import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import SignInButton from '../components/SignInButton';
 
 import { comingSoonAlert, simpleAlert } from '../utils/customAlerts';
-import { readUserData, createTranscriptDirectory, createVideoDirectory, createRatingDirectory, createThumbnailDirectory } from '../utils/localStorageUtils';
+import { readUserData } from '../utils/localStorageUtils';
 import { getRecordingPermissions } from '../utils/permissions';
 
 import VideosContext from '../context/VideosContext';
@@ -22,9 +22,9 @@ import VideosContext from '../context/VideosContext';
 import { containers, icons, text, spacings, colors } from '../styles';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = true;
+const TESTING = false;
 
-const Home = ({ navigation }): JSX.Element => {
+const Home = ({ navigation }: any): JSX.Element => {
   // See this component's useEffect for more information about why we extract userData here.
   const { userData, setUserData, videosData, isLoading } = React.useContext(VideosContext);
 

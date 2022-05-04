@@ -4,9 +4,10 @@ import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { colors, text, spacings, dimensions, sizes } from '../styles';
 
 type Props = {
-  text: string,
+  text?: string,
   background: string, 
   onPress: () => void;  // TODO: how to interpret the many different return values of a function passed to a button?
+  children: any
 }
 
 const SignInButton = ({ children, text, background, onPress }: Props): JSX.Element => {
