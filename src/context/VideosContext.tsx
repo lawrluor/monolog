@@ -14,6 +14,7 @@ const VideosContext = React.createContext(undefined!);
 export const VideosProvider:React.FC = ({ children }) => {
   const [query, setQuery] = React.useState<string>("");
   const [videosData, setVideosData] = React.useState(null);
+  const [videosCount, setVideosCount] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [toggleRefresh, setToggleRefresh] = React.useState<boolean>(true);
 
@@ -194,15 +195,25 @@ export const VideosProvider:React.FC = ({ children }) => {
     setToggleRefresh(!toggleRefresh);
   }
 
+  const getVideosCount = (videos: any) => {
+    if (!videos || !videos[0]) return 0;  // new users that have no videos will not have data loaded
+    
+    try {
+      return videos[0]['data'][0]['list'].length;
+    } catch(err) { 
+      console.log("[ERROR] VideosContext.tsx:getVideosCount", err);
+    }
+  }
+
   // This useEffect helps us fetch video data on command, by toggling shouldUpdate state
   // Runs once entering the app stack, fetching video data
   // We use this state when we search using a query, for example: see submitQuery
-
   React.useEffect(() => {    
     const fetchVideosData = async () => {
       console.log("***refreshing videos***");
-      let videosData = await getVideosFromStorage(query);
-      setVideosData(videosData);
+      let videos = await getVideosFromStorage(query);
+      setVideosCount(getVideosCount(videos));
+      setVideosData(videos);
       setIsLoading(false);
     }
 
@@ -221,7 +232,7 @@ export const VideosProvider:React.FC = ({ children }) => {
 
   // TODO: Create separate Mood context and User context.
   return (
-    <VideosContext.Provider value={{ videosData, isLoading, toggleVideosRefresh, submitQuery, moodData, userData, wordChartData, setUserData }}>
+    <VideosContext.Provider value={{ videosData, videosCount, isLoading, toggleVideosRefresh, submitQuery, moodData, userData, wordChartData, setUserData }}>
       {children}
     </VideosContext.Provider>
   )

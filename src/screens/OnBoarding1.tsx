@@ -62,15 +62,6 @@ const OnBoarding1 = ({ route, navigation }): JSX.Element => {
     )
   }
 
-  React.useEffect(() => {
-    const asyncEffect = async () => {
-      // await deleteUserData();  // testing purposes only
-      await createUserDataDirectory();
-    }
-
-    asyncEffect();
-  }, []);
-
   return (
     <>
       <SafeAreaTop />
