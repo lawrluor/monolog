@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Animated, Text, View, Pressable, ScrollView, Alert } from 'react-native';
 
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
@@ -11,15 +11,18 @@ import { VIDEO_DIRECTORY, RATING_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils
 
 import { text, containers, icons, spacings, dimensions } from '../styles';
 
+import PulseAnimation from '../components/PulseAnimation';
 import GoBack from '../components/GoBack';
 import SpeechToText from '../components/SpeechToText';
 import CustomIcon from '../components/CustomIcon';
 
 const MAX_DURATION = 600;  // seconds
 
+// NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording 
 export const Recording = ({ navigation }): JSX.Element => {
   // TODO: experiment with adding loading states (carefully) to improve UX
   const [finalTranscript, setFinalTranscript] = useState<string>('');
+  const [recordingFinished, setRecordingFinished] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const [type, setType] = useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = useState<null | boolean>(null);
@@ -40,6 +43,10 @@ export const Recording = ({ navigation }): JSX.Element => {
     }
 
     asyncWrapper();
+
+    // TODO: Handle cleanup before unmount using navigation.addListener?
+    // See https://reactnavigation.org/docs/navigation-events/#navigationaddlistener
+    return () => {}
   }, []);
 
   // "Callback method" for when the final transcript is ready.
@@ -49,6 +56,7 @@ export const Recording = ({ navigation }): JSX.Element => {
   useEffect(() => {
     if ((finalTranscript.length > 0) &&
         (videoStorePath.length > 0) && 
+        (recordingFinished) && 
         (isRecording === false)) {
 
       // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
@@ -137,8 +145,19 @@ export const Recording = ({ navigation }): JSX.Element => {
   }
 
   const stopRecording = async () => {
-    let endVideo = await cameraRef.stopRecording();
-    setIsRecording(false);
+    try {
+      setIsRecording(false);
+      await cameraRef.stopRecording();  
+    } catch(err: any) {
+      console.log("[ERROR] Recording.tsx: stopRecording", err);
+    }
+  }
+
+  // Distinguishes between user actually pressing the stop button,
+  // while stopRecording is called in any other event that the recording stops.
+  const finishRecording = async () => {
+    setRecordingFinished(true);
+    stopRecording();
   }
 
   // Renders an icon that takes you to Gallery when pressed 
@@ -177,20 +196,31 @@ export const Recording = ({ navigation }): JSX.Element => {
     return (
       isRecording
       ?
-      <Pressable onPress={stopRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.recordIcon]}>
+      <Pressable onPress={finishRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.recordIcon]}>
         <View style={styles.centeredContainer}>
           <View style={styles.recordCircleOutline}></View>
           <View style={styles.recordSquare}></View>
         </View>
       </Pressable>
       :
-      <Pressable onPress={startRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-        <View style={styles.centeredContainer}>
-          <View style={styles.recordCircleOutline}></View>
-          <View style={styles.recordCircle}></View>
-        </View>
-      </Pressable>
+      <PulseAnimation>
+        <Pressable onPress={startRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+          <View style={styles.centeredContainer}>
+            <View style={styles.recordCircleOutline}></View>
+            <View style={styles.recordCircle}></View>
+          </View>
+        </Pressable>
+      </PulseAnimation>
     )
+  }
+
+  const resetNavigator = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }] 
+    });
+
+    navigation.navigate('Home');
   }
 
   const renderCamera = () => {

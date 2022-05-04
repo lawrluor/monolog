@@ -77,6 +77,7 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
 
   // Setup: Links the respective user-defined handler functions to call when specific Voice events occur.
   React.useEffect(() => {
+    console.log(Voice);
     setLoading(true);
     Voice.onSpeechStart = onSpeechStartHandler; 
     Voice.onSpeechRecognized = onSpeechRecognizedHandler;
@@ -95,7 +96,6 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
   // The key is this happens BEFORE the user can press the video record button, so video recording is not interrupted
   // TODO: No method for this that I can find, so just start and stop immediately.
   React.useEffect(() => {
-    startRecording();
     stopRecording();
   }, []);
 

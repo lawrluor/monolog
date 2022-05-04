@@ -22,7 +22,7 @@ import VideosContext from '../context/VideosContext';
 import { containers, icons, text, spacings, colors } from '../styles';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = false;
+const TESTING = true;
 
 const Home = ({ navigation }): JSX.Element => {
   // See this component's useEffect for more information about why we extract userData here.
