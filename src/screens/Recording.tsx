@@ -192,7 +192,7 @@ export const Recording = ({ navigation }): JSX.Element => {
     )
   }
 
-  const renderRecordIcon = (recording: boolean) => {
+  const renderRecordIcon = () => {
     return (
       isRecording
       ?

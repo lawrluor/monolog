@@ -13,7 +13,7 @@ type Props = {
 // Display 10 words by default
 // Is overriden to a custom number by passing prop to WordChart from parent component
 const DEFAULT_NUM_OF_WORDS_TO_DISPLAY = 10;  
-const MAX_NUM_OF_WORDS_TO_DISPLAY = 25;
+const MAX_NUM_OF_WORDS_TO_DISPLAY = 50;
 
 // Renders the chart of words based on their counts
 // Each bar is a series of horizontal containers defined in the styles (barItemContainer, barItem, bar)
@@ -47,7 +47,7 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
     const renderBarWithTextInside = (item: any) => {
       return (
       <View key={item.word} style={styles.barItemContainer}>
-        <View key={item.word} style={[styles.bar, { width: dimensions.width * item.value }]}>
+        <View key={item.word} style={[styles.bar, { width: dimensions.width * (0.5 * item.value) }]}>
           <Text style={[styles.barText, { 'color': colors.BACKGROUND }]}>{item.word}</Text>
         </View>
 

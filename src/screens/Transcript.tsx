@@ -42,23 +42,12 @@ const Transcript = ({ route, navigation }): JSX.Element => {
       queriedVideoData['transcript_content'] = finalResultString;
       setVideoData(queriedVideoData);
       setIsLoading(false);
-      toggleVideosRefresh();  // TODO: move this somewhere better   
       writeFinalTranscript(await generateTranscriptUri(fileBaseName), finalResultString); 
+      toggleVideosRefresh();  // TODO: move this somewhere better   
     }
 
     asyncWrapper();
   }, [])
-
- // Processed data fetched from local storage in VideosContext for reference
-//  let videoData = {
-//   "baseName": filename,
-//   "name": generateVideoUri(filename),
-//   "uri": generateVideoUri(filename),
-//   "thumbnail_uri": generateThumbnailUri(filename),
-//   "transcript_uri": transcriptUri,
-//   "transcript_content": transcriptContent,
-//   "rating": rating
-// }
 
   return (
     isLoading 
