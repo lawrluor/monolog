@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, ScrollView, View, Pressable, Text, TextInput, Platform, Alert } from 'react-native';
 
+import { DeleteVideoLog } from './Delete';
 import TranscriptEditor from './TranscriptEditor';
 import VideoCaption from './VideoCaption';
 import CustomIcon from './CustomIcon';
@@ -8,10 +9,9 @@ import GoBack from './GoBack';
 
 import VideosContext from '../context/VideosContext';
 
-import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
-import { generateTranscriptUri, deleteVideoLog } from '../utils/localStorageUtils';
+import { deleteVideoLog } from '../utils/localStorageUtils';
 import { getCurrentDate } from '../utils/dates';
 
 import { icons, spacings, text, colors } from '../styles';
@@ -28,7 +28,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   const { toggleVideosRefresh } = React.useContext(VideosContext);
   const [modalShown, setModalShown] = React.useState(false);
   
-  const deleteLogOnPressCallback = () => {
+  const deleteLogCallback = () => {
     Alert.alert(
       "Warning",
       "This will delete the current video log and all its data. Are you sure you want to do this?",
@@ -42,7 +42,12 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   const deleteLog = async () => {
     if (await deleteVideoLog(videoData.baseName)) {
       toggleVideosRefresh();
-      navigation.goBack();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }] 
+      });
+
+      navigation.navigate('Home');
 
       Alert.alert(
         "Success",
@@ -67,7 +72,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   const renderShowTranscriptButton = () => {
     return (
       <View style={styles.button}>
-        <Pressable onPress={() => setModalShown(!modalShown)} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+        <Pressable onPress={() => setModalShown(!modalShown)} hitSlop={spacings.hitSlopLarge} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
           <CustomIcon name={'transcript'} style={styles.iconActions} />
         </Pressable>
       </View>
@@ -104,7 +109,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
 
         <View style={styles.button}>
           <View style={styles.iconBackground}>
-            <Pressable onPress={() => navigation.navigate('Gallery')} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+            <Pressable onPress={() => navigation.navigate('Gallery')} hitSlop={spacings.hitSlopLarge} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
               <CustomIcon name='check_circle' style={styles.iconFinished} />
             </Pressable>
           </View>
@@ -112,19 +117,11 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
 
         <View style={styles.button}>
           
-          <Pressable onPress={changeRating} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+          <Pressable onPress={changeRating} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
             <Text style={styles.emojiText}>{videoData.rating.substring(0, 2) || '❔'}</Text>
           </Pressable>
         </View>
       </View>
-    )
-  }
-
-  const renderDeleteIcon = () => {
-    return (
-      <Pressable onPress={deleteLogOnPressCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.deleteIconContainer]}>
-        <AntDesign name={'delete'} style={{...icons.MEDIUM, color: colors.ERROR}} />
-      </Pressable> 
     )
   }
 
@@ -133,7 +130,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   return (
     <>
       {modalShown ? <></> : <GoBack navigation={navigation} /> }
-      {modalShown ? <></> : renderDeleteIcon() }
+      {modalShown ? <></> : <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View> }
       
       <View style={styles.videoContainer}>
 
@@ -212,7 +209,7 @@ const styles = StyleSheet.create({
     ...icons.MEDIUM,
     color: 'white'
   },
-  deleteIconContainer: {
+  deleteLogContainer: {
     position: 'absolute', 
     // Matches spacings in GoBack component
     right: spacings.MASSIVE,

@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 
-import DeleteAll from '../components/DeleteAll';  // IN TESTING ONLY
+import DeleteAll from '../components/Delete';  // IN TESTING ONLY
 import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
@@ -167,7 +167,7 @@ const Home = ({ navigation }): JSX.Element => {
       setVideosCount(count);
       setAlertVisible(count < VIDEOS_THRESHOLD);
     };
-  }, [isLoading])
+  }, [isLoading, videosData])
 
   // TODO: consolidate with Rating.tsx. UNIT TEST THIS.
   // Given emojiValue {int} (mood of video), timestampSeconds {int} of the

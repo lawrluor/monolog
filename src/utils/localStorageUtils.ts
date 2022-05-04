@@ -315,7 +315,6 @@ export const getBaseFileSystemUri = (): string => {
 export const getTranscriptContent = async (transcriptUri: string) => {
   let transcript_content: string = "";
 
-  console.log("tu", transcriptUri);
   transcript_content = await FileSystem.readAsStringAsync(transcriptUri)
     .then((content: string) => {
       return content;
