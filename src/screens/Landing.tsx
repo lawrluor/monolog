@@ -7,7 +7,7 @@ import { containers, dimensions, text, spacings, colors } from '../styles';
 
 import SignInButton from '../components/SignInButton';
 
-const Landing = ({ route, navigation }): JSX.Element => { 
+const Landing = ({ route, navigation }: any): JSX.Element => { 
   const { setShouldOnboard } = route.params;
 
   // Users go directly to the onboarding process.

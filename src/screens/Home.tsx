@@ -123,7 +123,7 @@ const Home = ({ navigation }: any): JSX.Element => {
     if (!isLoading) {
       setAlertVisible(videosCount < VIDEOS_THRESHOLD);
     };
-  }, [videosCount])
+  }, [videosCount, isLoading])
 
   // TODO: consolidate with Rating.tsx. UNIT TEST THIS.
   // Given emojiValue {int} (mood of video), timestampSeconds {int} of the
