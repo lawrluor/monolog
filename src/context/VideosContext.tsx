@@ -6,7 +6,7 @@ import React from 'react';
 
 import * as FileSystem from 'expo-file-system';
 
-import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri } from '../utils/localStorageUtils';
+import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri, writeUserData } from '../utils/localStorageUtils';
 
 // Workaround bug https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/#extended-example
 const VideosContext = React.createContext(undefined!);
@@ -17,18 +17,15 @@ export const VideosProvider:React.FC = ({ children }) => {
   const [videosCount, setVideosCount] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [toggleRefresh, setToggleRefresh] = React.useState<boolean>(true);
+  const [userData, setUser] = React.useState({});
 
-  // Default userData structure for alpha release
-  // This userData state will be populated from local storage
+  // Whenever user is updated in the context state, also write to local database
+  // TODO: Can declare as empty object
   // TODO: make this a separate context
-  const [userData, setUserData] = React.useState({
-    "firstName": "",
-    "lastName": "",
-    "email": "",
-    "gender": "",
-    "pronouns": "",
-    "age": 21
-  });
+  const setUserData = (data: any) => {
+    setUser(data);
+    writeUserData(data);
+  }
 
   // wordChartData is queried from here and passed throughout app 
   // TODO: make this separate context

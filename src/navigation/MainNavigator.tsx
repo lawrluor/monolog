@@ -13,16 +13,13 @@ const MainNavigator = (): JSX.Element =>  {
 
   const checkOnboarding = async () => {
     let userData = await readUserData();
-    console.log("UD", userData);
 
     if (userData && userData.onboarded) {
       // 1. Existing user: take them to AppStack (Home screen)
       setUser(true);
-      setShouldOnboard(false);
-    } else {
-      // 2. First-time user: take them to AuthStack (Landing screen)
-      setShouldOnboard(true);
     }
+    
+    // 2. Implicit Else: First-time user: take them to AuthStack (Landing screen)
 
     // TODO: Handle sending users to Onboarding again if they wish to edit their user data.
   }

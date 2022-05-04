@@ -127,9 +127,9 @@ export const readUserData = async () => {
 
 // Writes to the user data directory
 // TODO: This doesn't work properly or save user, getting error during writing
-export const writeUserData = (path: string, data: any) => {
+export const writeUserData = (data: any) => {
   try {
-    FileSystem.writeAsStringAsync(USER_DATA_DIRECTORY + path, JSON.stringify(data));
+    FileSystem.writeAsStringAsync(`${USER_DATA_DIRECTORY}user`, JSON.stringify(data));
   } catch (err) {
     console.log("[ERROR] localStorageUtils:writeUserData:", err);
   }

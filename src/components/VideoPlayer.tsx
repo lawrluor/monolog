@@ -8,11 +8,12 @@ import { containers, dimensions } from '../styles';
 
 type Props = {
   videoUri: string
-  isPlaying: any,
-  setIsPlaying: any
+  isPlaying: boolean,
+  setIsPlaying: any,
+  navigation: any
 }
 
-const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element => {
+const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, navigation }: Props): JSX.Element => {
   const video = React.useRef(null);
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);  // TODO: set loading handling
@@ -42,11 +43,28 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
 
     setAudioModes();
 
+    const unsubscribe = navigation.addListener('willBlur', ()=>{
+      console.log("blurring");
+      video.current.unloadAsync()
+      .then()
+      .catch((err: any) => {
+        console.log("[ERROR] VideoPlayer: useEffect", err);
+      });
+    });
     // See: https://github.com/expo/expo/issues/3115
     // See: https://docs.expo.dev/versions/latest/sdk/audio/#playing-sounds
+
+    return () => {
+      unsubscribe();
+    }
     return () => {
       console.log("unmounting video player");
-      // video.current.stopAsync();
+      video.current.stopAsync()
+        .then()
+        .catch((err: any) => {
+          console.log("[ERROR] VideoPlayer: useEffect", err);
+        });
+        
       video.current.unloadAsync()
         .then()
         .catch((err: any) => {
@@ -54,7 +72,6 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
         });
     }
   }, []);
-
 
   return (
     isLoading

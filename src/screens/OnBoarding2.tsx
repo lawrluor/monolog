@@ -30,11 +30,12 @@ const OnBoarding1 = ({ route, navigation }): JSX.Element => {
     finalUserData["cameraPermission"] = false;
     finalUserData["micPermission"] = false;
     finalUserData["speechToTextPermission"] = false;
+    finalUserData["tutorialMode"] = true;
     finalUserData["gender"] = gender;
     finalUserData["pronouns"] = pronouns;
     finalUserData["age"] = age.toString();
 
-    writeUserData("user", finalUserData);
+    writeUserData(finalUserData);
     setShouldOnboard(false);
   }
 

@@ -105,7 +105,7 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
     // Essentially, stopRecording() does nothing to immediately stop it and await causes things to break
   // TODO: No method for this that I can find, so just start and stop immediately.
   React.useEffect(() => {
-    if (userData && !userData.speechToTextPermission) {
+    if (!userData || !userData.speechToTextPermission) {
       startRecording()
       stopRecording();  
     }
@@ -123,7 +123,16 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
     } else if (isRecording === false) {
       // user has stopped the record button, or time has ran out: finish recording and navigate next
       finishRecording();
-      setUserData(Object.assign(userData, { 'speechToTextPermission': true }));
+
+      // Correctly set values for user permissions if not already set
+      // TODO: move this code elsewhere, preferably in callback in Recording or Home
+      if (!userData.speechToTextPermission || !userData.cameraPermission || !userData.micPermission) {
+        setUserData(Object.assign(userData, {
+          'speechToTextPermission': true,
+          'cameraPermission': true,
+          'micPermission': true 
+        }));
+      }
     }
   }, [isRecording]);
 
