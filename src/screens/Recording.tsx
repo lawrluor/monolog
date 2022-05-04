@@ -196,21 +196,21 @@ export const Recording = ({ navigation }): JSX.Element => {
     return (
       isRecording
       ?
-      <Pressable onPress={finishRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.recordIcon]}>
-        <View style={styles.centeredContainer}>
-          <View style={styles.recordCircleOutline}></View>
-          <View style={styles.recordSquare}></View>
-        </View>
-      </Pressable>
-      :
       <PulseAnimation>
-        <Pressable onPress={startRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+        <Pressable onPress={finishRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.recordIcon]}>
           <View style={styles.centeredContainer}>
             <View style={styles.recordCircleOutline}></View>
-            <View style={styles.recordCircle}></View>
+            <View style={styles.recordSquare}></View>
           </View>
         </Pressable>
       </PulseAnimation>
+      :
+      <Pressable onPress={startRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+        <View style={styles.centeredContainer}>
+          <View style={styles.recordCircleOutline}></View>
+          <View style={styles.recordCircle}></View>
+        </View>
+      </Pressable>
     )
   }
 
@@ -243,9 +243,9 @@ export const Recording = ({ navigation }): JSX.Element => {
             style={styles.cameraContainer}
             type={type}
             ref={(ref) => {
-                setCameraRef(ref);
-              }}
-            >
+              setCameraRef(ref);
+            }}
+          >
 
             <View style={styles.captionContainer}>
               <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
