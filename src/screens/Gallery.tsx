@@ -1,8 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, Text, Pressable } from 'react-native';
 
-import { AntDesign } from '@expo/vector-icons';
-
 import CustomIcon from '../components/CustomIcon';
 import VideoList from '../components/VideoList';
 import { SearchEntry } from '../components/TextEntry';
@@ -10,11 +8,10 @@ import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import { FullPageSpinner } from '../components/Spinner';
 
 import { comingSoonAlert } from '../utils/customAlerts';
-import { deleteAllData, deleteAllVideos } from '../utils/localStorageUtils';
 
 import VideosContext from '../context/VideosContext';
 
-import { dimensions, text, spacings, icons, colors, sizes, debug } from '../styles';
+import { dimensions, text, spacings, icons, colors, debug } from '../styles';
 
 const Gallery = ({ navigation }):  JSX.Element => {
   const { videosData, isLoading, submitQuery } = React.useContext(VideosContext);
@@ -124,11 +121,6 @@ const Gallery = ({ navigation }):  JSX.Element => {
     <View style={styles.container}>
       <SafeAreaTop />
   
-      {/* FOR TESTING PURPOSES ONLY: Calls method that deletes videos from the database */}
-      <Pressable onPress={() => { deleteAllData() }} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-        <AntDesign name={'delete'} style={[icons.MEDIUM, { zIndex: 100, color: colors.ERROR }]} />
-      </Pressable> 
-
       <SafeAreaBottom transparent>
         {/* TODO: Try to make linear gradient header - will have to be done in SafeAreaTop */}
         <View style={styles.headerContainer}> 

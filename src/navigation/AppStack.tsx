@@ -121,7 +121,15 @@ const TabNavigator = ({ setUser }): JSX.Element => {
     >
       <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
       <Tab.Screen name="Gallery" component={Gallery} options={{ headerShown: false }} />
-      <Tab.Screen name="Recording" component={Recording} options={{ headerShown: false }} />
+
+      {/* For unmount behavior: https://github.com/react-navigation/react-navigation/issues/6915#issuecomment-1038851130 */}
+      <Tab.Screen 
+        name="Recording" 
+        component={Recording} 
+        options={{ headerShown: false, unmountOnBlur: true }} 
+        listeners={({navigation}) => ({blur: () => navigation.setParams({screen: undefined})})} 
+      />
+
       <Tab.Screen name="Vistas" component={Vistas} options={{ headerShown: false }} />
       <Tab.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
     </Tab.Navigator>

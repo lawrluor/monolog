@@ -241,12 +241,13 @@ export const processAllWordsFromTranscripts = async (allWords: string[], numberO
 }
 
 export const deleteAllTranscripts = async () => {
-  await getTranscripts(FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY));
+  // await getTranscripts(FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY));
+  await FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY)
   console.log("Deleted all transcripts");
 }
 
 export const deleteAllRatings = async () => {
-  await getTranscripts(FileSystem.deleteAsync(RATING_DIRECTORY));
+  await FileSystem.deleteAsync(RATING_DIRECTORY);
   console.log("Deleted all ratings");
 }
 
@@ -263,12 +264,45 @@ export const deleteAllVideos = async (numberOfVideosToDelete=0) => {
     .catch((err) => console.log("[ERROR] VideosContext: deleteAllVideos", err));
 }
 
+export const deleteAllThumbnails = async () => {
+  await FileSystem.deleteAsync(THUMBNAIL_DIRECTORY);
+  console.log("Deleted all thumbnails");
+}
+
 export const deleteAllData = async () => {
-  deleteAllRatings();
-  deleteAllTranscripts();
-  deleteAllVideos();
-  deleteUserData();
-  console.log("Deleted all data");
+  try {
+    let promises = [
+      deleteAllRatings(),
+      deleteAllTranscripts(),
+      deleteAllVideos(),
+      deleteAllThumbnails(),
+      deleteUserData()
+    ]
+
+    await Promise.all(promises);
+    console.log("Deleted all data");
+  } catch (err) {
+    console.log("[ERROR] localStorageUtils: deleteAllData", err);
+  }
+}
+
+// Deletes a video log and its associated data, given the pure filename (123123123)
+export const deleteVideoLog = async (filename: string) => {
+  try {
+    let promises = [
+      FileSystem.deleteAsync(`${VIDEO_DIRECTORY}${filename}.mov`), 
+      FileSystem.deleteAsync(`${THUMBNAIL_DIRECTORY}${filename}.jpg`),
+      FileSystem.deleteAsync(`${TRANSCRIPT_DIRECTORY}${filename}.txt`),
+      FileSystem.deleteAsync(`${RATING_DIRECTORY}${filename}.txt`)
+    ]
+
+    await Promise.all(promises);
+    console.log(`Deleted log ${filename}`);
+    return true;
+  } catch(err) {
+    console.log(`[ERROR] localStorageUtils: deleteVideoLog`, err);
+    return false;
+  }
 }
 
 // Helper function to get the base uri of the local file system.
@@ -281,16 +315,14 @@ export const getBaseFileSystemUri = (): string => {
 export const getTranscriptContent = async (transcriptUri: string) => {
   let transcript_content: string = "";
 
-  if (transcriptUri) { 
-    transcript_content = await FileSystem.readAsStringAsync(transcriptUri)
-      .then((content: string) => {
-        return content;
-      })
-      .catch((err: any) => {
-        console.log("[ERROR]: VideosContext.tsx: getTranscriptContent", err);
-        return "Error loading transcript content.";
-      })
-  }
+  transcript_content = await FileSystem.readAsStringAsync(transcriptUri)
+    .then((content: string) => {
+      return content;
+    })
+    .catch((err: any) => {
+      console.log("[ERROR]: VideosContext.tsx: getTranscriptContent", err);
+      return "";
+    })
 
   return transcript_content;
 }
@@ -299,16 +331,14 @@ export const getRating = async (uri: string) => {
   let rating: string = "";
   let ratingFullUri = `${RATING_DIRECTORY}${uri}.txt`;
 
-  if (uri) { 
-    rating = await FileSystem.readAsStringAsync(ratingFullUri)
-      .then((content: string) => {
-        return content;
-      })
-      .catch((err: any) => {
-        console.log("[ERROR]: VideosContext.tsx: getRating", err);
-        return "";
-      })
-  }
+  rating = await FileSystem.readAsStringAsync(ratingFullUri)
+    .then((content: string) => {
+      return content;
+    })
+    .catch((err: any) => {
+      console.log("[ERROR]: VideosContext.tsx: getRating", err);
+      return "";
+    })
 
   return rating;
 }
@@ -340,5 +370,38 @@ export const writeFinalTranscript = async (transcriptUri: string, text: string) 
     });
     
     return result;
+
+}
+export const generateThumbnailUri = (filename: string) => {
+  return `${THUMBNAIL_DIRECTORY}${filename}.jpg`;
 }
 
+export const generateTranscriptUri = (filename: string) => {
+  return `${TRANSCRIPT_DIRECTORY}${filename}.txt`;
+}
+
+export const generateVideoUri = (filename: string) => {
+  return `${FileSystem.documentDirectory}videos/${filename}.mov`;
+}
+
+export const generateRatingUri = (filename: string) => {
+  return `${RATING_DIRECTORY}${filename}.txt`;
+}
+
+export const initVideoDataObject = async (filename: string) => {
+  let transcriptUri = generateTranscriptUri(filename);
+  let transcriptContent = await getTranscriptContent(transcriptUri);
+  let rating = await getRating(filename);
+
+  let videoData = {
+    "baseName": filename,
+    "name": generateVideoUri(filename),
+    "uri": generateVideoUri(filename),
+    "thumbnail_uri": generateThumbnailUri(filename),
+    "transcript_uri": transcriptUri,
+    "transcript_content": transcriptContent,
+    "rating": rating
+  }
+
+  return videoData;
+}

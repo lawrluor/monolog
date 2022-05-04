@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Animated, Text, View, Pressable, ScrollView, Alert } from 'react-native';
 
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
@@ -11,21 +11,25 @@ import { VIDEO_DIRECTORY, RATING_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils
 
 import { text, containers, icons, spacings, dimensions } from '../styles';
 
+import PulseAnimation from '../components/PulseAnimation';
 import GoBack from '../components/GoBack';
 import SpeechToText from '../components/SpeechToText';
 import CustomIcon from '../components/CustomIcon';
 
 const MAX_DURATION = 600;  // seconds
 
+// NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording 
 export const Recording = ({ navigation }): JSX.Element => {
   // TODO: experiment with adding loading states (carefully) to improve UX
   const [finalTranscript, setFinalTranscript] = useState<string>('');
+  const [recordingFinished, setRecordingFinished] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const [type, setType] = useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = useState<null | boolean>(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [videoStorePath, setVideoStorePath] = useState<string>('');
-  const [ratingFile, setRatingFile] = useState<string>('');
+
+  const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
 
   // Setup: Get permissions for camera from user first
   useEffect(() => {
@@ -39,6 +43,10 @@ export const Recording = ({ navigation }): JSX.Element => {
     }
 
     asyncWrapper();
+
+    // TODO: Handle cleanup before unmount using navigation.addListener?
+    // See https://reactnavigation.org/docs/navigation-events/#navigationaddlistener
+    return () => {}
   }, []);
 
   // "Callback method" for when the final transcript is ready.
@@ -48,16 +56,15 @@ export const Recording = ({ navigation }): JSX.Element => {
   useEffect(() => {
     if ((finalTranscript.length > 0) &&
         (videoStorePath.length > 0) && 
-        (ratingFile.length > 0) &&
+        (recordingFinished) && 
         (isRecording === false)) {
-      console.log("Recording.tsx: Final Transcript and videoStorePath received, moving to Rating.tsx")
 
       // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
       // Now we can move to the next page with the final transcript result
       // Clean up and reset state
       navigateToRating();
     }
-  }, [finalTranscript, videoStorePath, ratingFile]);
+  }, [finalTranscript, videoStorePath]);
 
   const flipCameraCallback = () => {
     const flipCamera = () => {
@@ -95,7 +102,6 @@ export const Recording = ({ navigation }): JSX.Element => {
         let timestamp = Math.floor(Date.now() / 1000);
         let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
         setVideoStorePath(videoStorePath);
-        setRatingFile(RATING_DIRECTORY + timestamp.toString() + ".txt");
 
         // Handles the logic for extracting the video from storage and saving thumbnail
         FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
@@ -130,8 +136,7 @@ export const Recording = ({ navigation }): JSX.Element => {
   const navigateToRating = () => {
     navigation.navigate('Rating', {
       finalResult: finalTranscript,
-      videoStorePath: videoStorePath,
-      ratingFile: ratingFile
+      fileBaseName: timestamp.toString(),
     });
   }
 
@@ -140,8 +145,19 @@ export const Recording = ({ navigation }): JSX.Element => {
   }
 
   const stopRecording = async () => {
-    let endVideo = await cameraRef.stopRecording();
-    setIsRecording(false);
+    try {
+      setIsRecording(false);
+      await cameraRef.stopRecording();  
+    } catch(err: any) {
+      console.log("[ERROR] Recording.tsx: stopRecording", err);
+    }
+  }
+
+  // Distinguishes between user actually pressing the stop button,
+  // while stopRecording is called in any other event that the recording stops.
+  const finishRecording = async () => {
+    setRecordingFinished(true);
+    stopRecording();
   }
 
   // Renders an icon that takes you to Gallery when pressed 
@@ -180,12 +196,14 @@ export const Recording = ({ navigation }): JSX.Element => {
     return (
       isRecording
       ?
-      <Pressable onPress={stopRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.recordIcon]}>
-        <View style={styles.centeredContainer}>
-          <View style={styles.recordCircleOutline}></View>
-          <View style={styles.recordSquare}></View>
-        </View>
-      </Pressable>
+      <PulseAnimation>
+        <Pressable onPress={finishRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.recordIcon]}>
+          <View style={styles.centeredContainer}>
+            <View style={styles.recordCircleOutline}></View>
+            <View style={styles.recordSquare}></View>
+          </View>
+        </Pressable>
+      </PulseAnimation>
       :
       <Pressable onPress={startRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
         <View style={styles.centeredContainer}>
@@ -194,6 +212,15 @@ export const Recording = ({ navigation }): JSX.Element => {
         </View>
       </Pressable>
     )
+  }
+
+  const resetNavigator = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }] 
+    });
+
+    navigation.navigate('Home');
   }
 
   const renderCamera = () => {
@@ -216,9 +243,9 @@ export const Recording = ({ navigation }): JSX.Element => {
             style={styles.cameraContainer}
             type={type}
             ref={(ref) => {
-                setCameraRef(ref);
-              }}
-            >
+              setCameraRef(ref);
+            }}
+          >
 
             <View style={styles.captionContainer}>
               <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>

@@ -7,7 +7,7 @@ import CustomIcon from './CustomIcon';
 // A container with clickable text to navigate back
 type Props = {
   navigation: any,
-  text?: string
+  text?: string,
 }
 
 const GoBack = ({ navigation, text }: Props) => {

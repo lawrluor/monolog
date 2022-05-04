@@ -1,17 +1,20 @@
 import React from 'react';
 import { StyleSheet, ScrollView, View, Pressable, Text, TextInput, Platform, Alert } from 'react-native';
 
+import { DeleteVideoLog } from './Delete';
 import TranscriptEditor from './TranscriptEditor';
 import VideoCaption from './VideoCaption';
 import CustomIcon from './CustomIcon';
 import GoBack from './GoBack';
 
+import VideosContext from '../context/VideosContext';
+
 import { Ionicons } from '@expo/vector-icons';
 
-import { getBaseFileSystemUri } from '../utils/localStorageUtils';
-
-import { icons, spacings, text } from '../styles';
+import { deleteVideoLog } from '../utils/localStorageUtils';
 import { getCurrentDate } from '../utils/dates';
+
+import { icons, spacings, text, colors } from '../styles';
 
 type Props = {
   videoData: any,
@@ -22,17 +25,54 @@ type Props = {
 // This component is comprised of the buttons, rating, and show transcript button
 // These are absolute positioned towards the bottom of the screen
 const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element => {
+  const { toggleVideosRefresh } = React.useContext(VideosContext);
   const [modalShown, setModalShown] = React.useState(false);
   
-  let videoUri = videoData.uri;
-  let fileTimestamp = videoUri.substring(videoUri.length - 14, videoUri.length - 4);  
-  let transcriptUri = getBaseFileSystemUri() + `transcripts/${fileTimestamp}.txt`;
+  const deleteLogCallback = () => {
+    Alert.alert(
+      "Warning",
+      "This will delete the current video log and all its data. Are you sure you want to do this?",
+      [
+        { text: "Continue", onPress: deleteLog },
+        { text: "Cancel"}
+      ]
+    )
+  }
+
+  const deleteLog = async () => {
+    if (await deleteVideoLog(videoData.baseName)) {
+      toggleVideosRefresh();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }] 
+      });
+
+      navigation.navigate('Home');
+
+      Alert.alert(
+        "Success",
+        "Your video log was deleted.",
+        [
+          { text: "OK" }
+        ]
+      )
+    } else {
+      Alert.alert(
+        "Error",
+        "Could not delete this video log.",
+        [
+          { text: "OK" }
+        ]
+      )
+    }
+
+  }
 
   // Displays a button that can be clicked to reveal the entire transcript text 
   const renderShowTranscriptButton = () => {
     return (
       <View style={styles.button}>
-        <Pressable onPress={() => setModalShown(!modalShown)} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+        <Pressable onPress={() => setModalShown(!modalShown)} hitSlop={spacings.hitSlopLarge} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
           <CustomIcon name={'transcript'} style={styles.iconActions} />
         </Pressable>
       </View>
@@ -57,9 +97,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
       "Coming Soon",
       "In new versions of Monist, you'll be able to change the rating & emoji that you previously had chosen.",
       [
-        {
-          text: "OK"
-        }
+        { text: "OK" }
       ]
     )
   }
@@ -71,7 +109,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
 
         <View style={styles.button}>
           <View style={styles.iconBackground}>
-            <Pressable onPress={() => navigation.navigate('Gallery')} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+            <Pressable onPress={() => navigation.navigate('Gallery')} hitSlop={spacings.hitSlopLarge} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
               <CustomIcon name='check_circle' style={styles.iconFinished} />
             </Pressable>
           </View>
@@ -79,7 +117,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
 
         <View style={styles.button}>
           
-          <Pressable onPress={changeRating} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+          <Pressable onPress={changeRating} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
             <Text style={styles.emojiText}>{videoData.rating.substring(0, 2) || '❔'}</Text>
           </Pressable>
         </View>
@@ -92,6 +130,8 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   return (
     <>
       {modalShown ? <></> : <GoBack navigation={navigation} /> }
+      {modalShown ? <></> : <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View> }
+      
       <View style={styles.videoContainer}>
 
         {/* TODO: Send full populated videoData object with transcript + rating? */}
@@ -108,8 +148,8 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
       <TranscriptEditor 
         modalShown={modalShown}
         setModalShown={setModalShown}
-        textContent={videoData.transcript_content}
-        transcriptUri={transcriptUri} 
+        textContentFromRecording={videoData.transcript_content}
+        transcriptUri={videoData.transcript_uri} 
         date={videoData.date || getCurrentDate()}
       />
     </>
@@ -168,6 +208,12 @@ const styles = StyleSheet.create({
   iconActions: {
     ...icons.MEDIUM,
     color: 'white'
+  },
+  deleteLogContainer: {
+    position: 'absolute', 
+    // Matches spacings in GoBack component
+    right: spacings.MASSIVE,
+    top: spacings.ABSOLUTE_OFFSET_MEDIUM,
   }
 });
 

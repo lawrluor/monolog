@@ -4,6 +4,8 @@ import { Alert, StyleSheet, View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as FileSystem from 'expo-file-system';
 
+import { generateRatingUri } from '../utils/localStorageUtils'; 
+
 import VideosContext from '../context/VideosContext';
 
 import GoBack from '../components/GoBack';
@@ -12,13 +14,11 @@ import SignInButton from '../components/SignInButton';
 import { containers, text, dimensions, spacings, colors, icons } from '../styles';
 
 const Rating = ({ route, navigation }): JSX.Element => {
-  const { moodData, toggleVideosRefresh } = React.useContext(VideosContext);
+  const { moodData } = React.useContext(VideosContext);
 
   const [emojis, setEmojis] = React.useState(['😥','😐','🙂','😃', '😍']);
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
-  const { videoStorePath } = route.params;
-  const { ratingFile } = route.params;
-  const { finalResult } = route.params;
+  const { fileBaseName, finalResult } = route.params;
 
   const updateMoodMap = async (emojiValue: number) => {
     // Global Data Structure is sorted by date
@@ -48,23 +48,22 @@ const Rating = ({ route, navigation }): JSX.Element => {
 
       // to ratings/filename.txt, we write with format "${emoji}{index} i.e. "😍4"
       // We will parse the rating file later as needed
-      FileSystem.writeAsStringAsync(ratingFile, `${emojis[selectedEmojiIndex]}${selectedEmojiIndex.toString()}`);
+      FileSystem.writeAsStringAsync(generateRatingUri(fileBaseName), `${emojis[selectedEmojiIndex]}${selectedEmojiIndex.toString()}`);
       
-      toggleVideosRefresh();  // TODO: move this somewhere better
       navigateToTranscript(emojis[selectedEmojiIndex]);
     } else {
       Alert.alert(
         "Not so fast...",
         "Please select an emoji to continue.",
         [
-          { text: "OK", onPress: () => {}}
+          { text: "OK" }
         ]
       );
     }
   }
 
   const navigateToTranscript = (selection: string) => {
-    navigation.navigate('Transcript', {selection, videoStorePath, finalResult });
+    navigation.navigate('Transcript', { selection, fileBaseName, finalResult });
   }
 
   const setSelectedEmojiWrapper = (emojiIndex: number) => {
@@ -100,7 +99,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
       </View>
 
       <View style={styles.nextContainer}>
-        <Pressable onPress={() => submitRating()} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+        <Pressable onPress={submitRating} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
           <View>
             <SignInButton text={"Next"} onPress={submitRating} background={colors.BACKGROUND} />
           </View>
