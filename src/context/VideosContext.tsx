@@ -3,11 +3,10 @@
 // TODO: break down into smaller context files later
 
 import React from 'react';
-import { Alert } from 'react-native';
 
 import * as FileSystem from 'expo-file-system';
 
-import { getTranscriptContent, getAllWordsFromTranscripts, getRating } from '../utils/localStorageUtils';
+import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri } from '../utils/localStorageUtils';
 
 // Workaround bug https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/#extended-example
 const VideosContext = React.createContext(undefined!);
@@ -84,38 +83,8 @@ export const VideosProvider:React.FC = ({ children }) => {
     ]}
   });
 
-  const generateThumbnailUri = (filename: string) => {
-    return `${FileSystem.documentDirectory}thumbnails/${filename}.jpg`;
-  }
-
-  const generateTranscriptUri = (filename: string) => {
-    return `${FileSystem.documentDirectory}transcripts/${filename}.txt`;
-  }
-
-  const generateVideoUri = (filename: string) => {
-    return `${FileSystem.documentDirectory}videos/${filename}.mov`;
-  }
-
-  // takes full filepath, adds proper file extensions
-  const initVideoData = async (filename: string) => {
-    let transcriptUri = generateTranscriptUri(filename);
-    let transcriptContent = await getTranscriptContent(transcriptUri);
-    let rating = await getRating(filename);
-
-    let videoData = {
-      "name": generateVideoUri(filename),
-      "uri": generateVideoUri(filename),
-      "thumbnail_uri": generateThumbnailUri(filename),
-      "transcript_uri": transcriptUri,
-      "transcript_content": transcriptContent,
-      "rating": rating
-    }
-
-    return videoData;
-  }
-
   const initSectionData = async (section_key, recorded_sections) => {
-    // let videoData = await initVideoData(filename);
+    // let videoData = await initVideoDataObject(filename);
 
     recorded_sections[section_key] = {
       "title": section_key,
@@ -161,7 +130,7 @@ export const VideosProvider:React.FC = ({ children }) => {
           // `file` is in the format: "${timestamp in seconds}.mov".
           // TODO: consider storing file format differently to allow for faster client-side searching
           let filename: string = file.slice(0, -4); 
-          let transcriptUri: string = generateTranscriptUri(filename);
+          let transcriptUri: string = await generateTranscriptUri(filename);
           let transcript_content: string = await getTranscriptContent(transcriptUri); 
 
           // Filter videos by if the query appears in the transcript
@@ -176,7 +145,7 @@ export const VideosProvider:React.FC = ({ children }) => {
           }
 
           // Now that section header/key for Month & year exists, push video into section array
-          let singleVideoData = await initVideoData(filename);
+          let singleVideoData = await initVideoDataObject(filename);
           recorded_sections[section_key]["data"][0]["list"].push(singleVideoData);
         });
 

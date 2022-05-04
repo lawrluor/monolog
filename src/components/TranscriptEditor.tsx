@@ -13,7 +13,7 @@ import { dimensions, icons, text, spacings } from '../styles';
 type Props = {
   setModalShown: any,
   modalShown: boolean,
-  textContent: string,
+  textContentFromRecording: string,
   transcriptUri: string,
   date: string
 }
@@ -22,7 +22,7 @@ type Props = {
 // Essentially, it is the transcript part itself that has been factored out, and is editable 
 // Its props include modalShown and setModalShown, which come from the parent VideoPlayer component.
 // and can set this to be visible or not visible depending on if the `show transcript` icon is pressed.
-const TranscriptEditor = ({ setModalShown, modalShown, transcriptUri, date }: Props) => {
+const TranscriptEditor = ({ setModalShown, modalShown, textContentFromRecording, transcriptUri, date }: Props) => {
   const textRef = React.useRef();
 
   const { toggleVideosRefresh } = React.useContext(VideosContext);
@@ -34,14 +34,14 @@ const TranscriptEditor = ({ setModalShown, modalShown, transcriptUri, date }: Pr
   const [editMade, setEditMade] = React.useState<boolean>(false);  // Flag
   const [isLoading, setIsLoading] = React.useState<boolean>(true);  // Ensure transcript fetched first
 
-  // Get transcript content from local storage given the URI, and set contents 
+  // Get and set transcript content from local storage OR passed from Recording->Rating
   // If this is a new recording, the transcript file doesn't exist yet, so no contents from file 
   // Therefore, we use the textContent prop, which passes the newly created transcript 
   // text content from the Recording.
   // Else, simply set the transcript content to that which it reads from transcript file
   const setTranscriptContent = async () => {
     setIsLoading(true);
-    let fetchedTranscriptContent = await getTranscriptContent(transcriptUri);
+    let fetchedTranscriptContent = (await getTranscriptContent(transcriptUri)) || textContentFromRecording;
     setChangeText(fetchedTranscriptContent);  // Either the content, or "Error message" string
     setCachedStartingText(fetchedTranscriptContent);
     setIsLoading(false);
@@ -91,7 +91,7 @@ const TranscriptEditor = ({ setModalShown, modalShown, transcriptUri, date }: Pr
         "Success",
         "Transcript saved!",
         [
-          {"title": "OK"}
+          {"text": "OK"}
         ]
       );
       

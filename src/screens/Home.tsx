@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 
+import DeleteAll from '../components/DeleteAll';  // IN TESTING ONLY
 import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
@@ -21,6 +22,7 @@ import VideosContext from '../context/VideosContext';
 import { containers, icons, text, spacings, colors } from '../styles';
 
 const VIDEOS_THRESHOLD = 1;
+const TESTING = false;
 
 const Home = ({ navigation }): JSX.Element => {
   // See this component's useEffect for more information about why we extract userData here.
@@ -287,6 +289,8 @@ const Home = ({ navigation }): JSX.Element => {
           style={styles.container}
         >
           <View style={styles.headerContainer}>
+            { TESTING ? <DeleteAll /> : null }
+            
             <View>
               <Text style={styles.subTitle}>Welcome,</Text>
               <Text style={styles.profileTitle}>{userData.firstName || "Journaler!"}</Text>

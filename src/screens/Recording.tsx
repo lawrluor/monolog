@@ -25,7 +25,8 @@ export const Recording = ({ navigation }): JSX.Element => {
   const [isRecording, setIsRecording] = useState<null | boolean>(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [videoStorePath, setVideoStorePath] = useState<string>('');
-  const [ratingFile, setRatingFile] = useState<string>('');
+
+  const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
 
   // Setup: Get permissions for camera from user first
   useEffect(() => {
@@ -48,16 +49,14 @@ export const Recording = ({ navigation }): JSX.Element => {
   useEffect(() => {
     if ((finalTranscript.length > 0) &&
         (videoStorePath.length > 0) && 
-        (ratingFile.length > 0) &&
         (isRecording === false)) {
-      console.log("Recording.tsx: Final Transcript and videoStorePath received, moving to Rating.tsx")
 
       // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
       // Now we can move to the next page with the final transcript result
       // Clean up and reset state
       navigateToRating();
     }
-  }, [finalTranscript, videoStorePath, ratingFile]);
+  }, [finalTranscript, videoStorePath]);
 
   const flipCameraCallback = () => {
     const flipCamera = () => {
@@ -95,7 +94,6 @@ export const Recording = ({ navigation }): JSX.Element => {
         let timestamp = Math.floor(Date.now() / 1000);
         let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
         setVideoStorePath(videoStorePath);
-        setRatingFile(RATING_DIRECTORY + timestamp.toString() + ".txt");
 
         // Handles the logic for extracting the video from storage and saving thumbnail
         FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
@@ -130,8 +128,7 @@ export const Recording = ({ navigation }): JSX.Element => {
   const navigateToRating = () => {
     navigation.navigate('Rating', {
       finalResult: finalTranscript,
-      videoStorePath: videoStorePath,
-      ratingFile: ratingFile
+      fileBaseName: timestamp.toString(),
     });
   }
 
