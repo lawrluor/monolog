@@ -208,16 +208,25 @@ export const processAllWordsFromTranscripts = async (allWordsByTranscript: strin
     }
   }
 
-  // returns the ratio of a given word against all relevant/non-filtered words.
-  // TODO: in the future, use a tier-system (top X % of words)
-  const calculateRatio = (count: number): number => {
+  // Calculates the simple ratio of a given word against all relevant/non-filtered words.
+  const calculateSimpleRatio = (count: number): number => {
     return count / totalWordCount;
   }
-  
+
+  // Calculates the top X percent (percentile) of this word's count
+  const calculateWeightedRatio = (count: number): number => {
+    let allWordCountsOnly: number[] = Object.keys(wordsByCount).map((key: string) => wordsByCount[key].count );
+    let min = Math.min(...allWordCountsOnly);  // Must destructure array first
+    let max = Math.max(...allWordCountsOnly); 
+    let weightedPercentage = 0.1 + (0.8 * (count - min) / (max - min));  // Keep between 10% and 80% of bar width
+    console.log(weightedPercentage);
+    return weightedPercentage
+  }
+
   wordsByCount = Object.keys(wordsByCount)
                   .sort((a: string, b: string) => wordsByCount[b].count - wordsByCount[a].count)
                   .map((key: string) => { 
-                    wordsByCount[key].value = calculateRatio(wordsByCount[key].count);
+                    wordsByCount[key].value = calculateWeightedRatio(wordsByCount[key].count);
                     return wordsByCount[key];
                   });
 

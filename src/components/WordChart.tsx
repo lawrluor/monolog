@@ -44,10 +44,12 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
   // TODO: Have each bar as a scroll view horizontally to allow for 
   // selecting options on list-items via swipe (iOS style)
   const renderBarWithText = (item: any) => {
+    const fullSizeBar = dimensions.width * 0.75;  // featureContainer is around 85% of screen width
+
     const renderBarWithTextInside = (item: any) => {
       return (
       <View key={item.word} style={styles.barItemContainer}>
-        <View key={item.word} style={[styles.bar, { width: dimensions.width * (0.5 * item.value) }]}>
+        <View key={item.word} style={[styles.bar, { width: fullSizeBar * item.value }]}>
           <Text style={[styles.barText, { 'color': colors.BACKGROUND }]}>{item.word}</Text>
         </View>
 
@@ -61,7 +63,7 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
     const renderBarWithTextOutside = (item: any) => {
       return (
         <View key={item.word} style={styles.barItemContainer}>
-          <View key={item.word} style={[styles.bar, { width: dimensions.width * item.value }]}></View>
+          <View key={item.word} style={[styles.bar, { width: fullSizeBar * item.value }]}></View>
           <Text style={[styles.barText, { 'color': colors.HIGHLIGHT }]}>{item.word}</Text>
           
           <View style={styles.barNumberContainer}>
