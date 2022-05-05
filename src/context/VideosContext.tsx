@@ -1,4 +1,4 @@
-// NOTE: Despite being called VideosContext, this is actually GLOBAL context 
+// NOTE: Despite being called VideosContext, this is actually GLOBAL context
 // "VideosContext" includes data for videos, transcripts, moods, and other data, serving the entire app
 // TODO: break down into smaller context files later
 
@@ -27,21 +27,21 @@ export const VideosProvider:React.FC = ({ children }) => {
     writeUserData(data);
   }
 
-  // wordChartData is queried from here and passed throughout app 
+  // wordChartData is queried from here and passed throughout app
   // TODO: make this separate context
   const [wordChartData, setWordChartData] = React.useState([]);
-  
+
   // Default mood data structure for rendering. Currently mock data.
   // Will remove very soon, not worth putting it into json and then parsing the
   // date obj.
   const [moodData, setMoodData] = React.useState({
   "week": {
-    "last_updated_secs": new Date(2022, 2, 30).getTime() / 1000,
+    "last_updated_secs": new Date(2022, 4, 4).getTime() / 1000,
     "days": [
       {
         "mood_score": 3.2,
         "count": 1,
-        "date": new Date(2022, 2, 30)
+        "date": new Date(2022, 4, 4)
       },
       {
         "mood_score": 4.0,
@@ -127,9 +127,9 @@ export const VideosProvider:React.FC = ({ children }) => {
         let videoDataPromises = files.map(async file => {
           // `file` is in the format: "${timestamp in seconds}.mov".
           // TODO: consider storing file format differently to allow for faster client-side searching
-          let filename: string = file.slice(0, -4); 
+          let filename: string = file.slice(0, -4);
           let transcriptUri: string = await generateTranscriptUri(filename);
-          let transcript_content: string = await getTranscriptContent(transcriptUri); 
+          let transcript_content: string = await getTranscriptContent(transcriptUri);
 
           // Filter videos by if the query appears in the transcript
           if (!transcript_content.toLowerCase().includes(query.toLowerCase())) return;
@@ -147,7 +147,7 @@ export const VideosProvider:React.FC = ({ children }) => {
           recorded_sections[section_key]["data"][0]["list"].push(singleVideoData);
         });
 
-        // TODO: Look into using Promise.allSettled: wait for ALL promises to be resolved OR rejected, 
+        // TODO: Look into using Promise.allSettled: wait for ALL promises to be resolved OR rejected,
         // Promise.allSettled is not supported in React-Native, so we can implement our own allSettled
         // meaning each individual video's data either successfully fetched or failed.
         // Only then will we return final video data, recorded_sections
@@ -194,10 +194,10 @@ export const VideosProvider:React.FC = ({ children }) => {
 
   const getVideosCount = (videos: any) => {
     if (!videos || !videos[0]) return 0;  // new users that have no videos will not have data loaded
-    
+
     try {
       return videos[0]['data'][0]['list'].length;
-    } catch(err) { 
+    } catch(err) {
       console.log("[ERROR] VideosContext.tsx:getVideosCount", err);
     }
   }
@@ -205,7 +205,7 @@ export const VideosProvider:React.FC = ({ children }) => {
   // This useEffect helps us fetch video data on command, by toggling shouldUpdate state
   // Runs once entering the app stack, fetching video data
   // We use this state when we search using a query, for example: see submitQuery
-  React.useEffect(() => {    
+  React.useEffect(() => {
     const fetchVideosData = async () => {
       console.log("***refreshing videos***");
       let videos = await getVideosFromStorage(query);
