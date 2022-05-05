@@ -4,7 +4,7 @@ import { Alert, StyleSheet, View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as FileSystem from 'expo-file-system';
 
-import { generateRatingUri } from '../utils/localStorageUtils'; 
+import { generateRatingUri } from '../utils/localStorageUtils';
 
 import VideosContext from '../context/VideosContext';
 
@@ -23,12 +23,17 @@ const Rating = ({ route, navigation }): JSX.Element => {
   const updateMoodMap = async (emojiValue: number) => {
     // Global Data Structure is sorted by date
     let today = new Date();
-    if (moodData.week.days[0].date.toLocaleDateString() !=
+    let lastWeekSec = today.getTime() / 1000 - 604800;
+    let moodDataList = moodData.week.days;
+
+    // Remove expired dates on video upload.
+    while (moodDataList.length > 0 &&
+        (moodDataList[moodDataList.length - 1].date.getTime() / 1000 <
+        lastWeekSec)) {
+      moodData.week.days.pop();
+    }
+    if (moodData.week.days.length === 0 || moodData.week.days[0].date.toLocaleDateString() !=
         today.toLocaleDateString()) {
-      // Remove the last day if we have over 1 week of data and add current day.
-      if (moodData.week.days.length >= 7 ) {
-        moodData.week.days.pop();
-      }
       moodData.week.days.unshift({
         "mood_score": emojiValue,
         "count": 1,
@@ -49,7 +54,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
       // to ratings/filename.txt, we write with format "${emoji}{index} i.e. "😍4"
       // We will parse the rating file later as needed
       FileSystem.writeAsStringAsync(generateRatingUri(fileBaseName), `${emojis[selectedEmojiIndex]}${selectedEmojiIndex.toString()}`);
-      
+
       navigateToTranscript(emojis[selectedEmojiIndex]);
     } else {
       Alert.alert(
