@@ -65,16 +65,17 @@ const Landing = ({ route, navigation }: any): JSX.Element => {
 
 const styles = StyleSheet.create({
   container: {
-    ...containers.DEFAULT,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.HIGHLIGHT
   },
   formContainer: {
-    width: dimensions.width * 0.75
+    flex: 1,
+    marginHorizontal: spacings.HUGE,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   titleContainer: {
-    
     alignItems: 'center',
     padding: spacings.MEDIUM
   },
