@@ -9,7 +9,7 @@ import MoodChart from '../components/MoodChart';
 
 import VideosContext from '../context/VideosContext';
 
-import { getCurrentWeekFromTodayMMDD } from '../utils/dates';
+import { getLastWeekFromTodayMMDD } from '../utils/dates';
 
 import { dimensions, spacings, icons, colors, text, sizes, debug } from '../styles';
 import NewUserMessage from '../components/NewUserMessage';
@@ -30,7 +30,7 @@ const Vistas = ({ navigation }: any):  JSX.Element => {
         >
           <View style={styles.headerContainer}>
             <Text style={styles.title}>Vistas Summary</Text>
-            <Text style={styles.subtitle}>{getCurrentWeekFromTodayMMDD()}</Text>
+            <Text style={styles.subtitle}>{getLastWeekFromTodayMMDD()}</Text>
           </View>
 
           <ScrollView 

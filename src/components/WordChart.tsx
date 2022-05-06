@@ -3,27 +3,27 @@ import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { Feather } from '@expo/vector-icons';
 
+import Divider from './Divider';
+
 import VideosContext from '../context/VideosContext';
 
 import { text, spacings, colors, dimensions, icons } from '../styles';
 
 type Props = {
-  numOfWords?: number;  
-  showMoreButton?: boolean;
+  defaultNumOfWords?: number;  
+  abridged?: boolean;
 }
 
-// Display 10 words by default
-// Is overriden to a custom number by passing prop to WordChart from parent component
-const DEFAULT_NUM_OF_WORDS_TO_DISPLAY = 10;  
 const MAX_NUM_OF_WORDS_TO_DISPLAY = 50;
+const SUMMARY_TEXT = "The word chart is important for understanding what you typically speak about during your video logs. The number refers to how many times the word appeared."
 
 // Renders the chart of words based on their counts
 // Each bar is a series of horizontal containers defined in the styles (barItemContainer, barItem, bar)
 // I've created a custom chart because the design is complex and it's likely not worth hacking a vanilla library to do this
 // TODO: If the bar value is over 50% of the container width, shift the word text outside of the bar
-const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton }: Props) => {
+const WordChart = ({ defaultNumOfWords=10, abridged }: Props) => {
   const { wordChartData } = React.useContext(VideosContext);
-  const [ numOfWordsCurrentlyDisplayed, setNumOfWordsCurrentlyDisplayed ] = React.useState(numOfWords);
+  const [ numOfWordsCurrentlyDisplayed, setNumOfWordsCurrentlyDisplayed ] = React.useState(defaultNumOfWords);
   const [ moreWordsShown, setMoreWordsShown ] = React.useState(false);
 
   // If press the "Show More/Show Less" pressable, the number of words to display changes
@@ -32,13 +32,17 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
   // TODO: Could analyze the performance of this in the future.
   const toggleShowWords = () => {
     setMoreWordsShown(!moreWordsShown);
-    if (numOfWordsCurrentlyDisplayed > DEFAULT_NUM_OF_WORDS_TO_DISPLAY) {
-      setNumOfWordsCurrentlyDisplayed(DEFAULT_NUM_OF_WORDS_TO_DISPLAY);  // i.e. top 5 words
-    } else {
+  }
+
+  React.useEffect(() => {
+    if (moreWordsShown) {
       // Limit to this number of words instead of showing all words
       setNumOfWordsCurrentlyDisplayed(MAX_NUM_OF_WORDS_TO_DISPLAY);  // i.e. all words (or top 500)
+    } else {
+      setNumOfWordsCurrentlyDisplayed(defaultNumOfWords);  // i.e. top 5 words
     }
-  }
+    console.log(numOfWordsCurrentlyDisplayed)
+  }, [moreWordsShown])
 
   // This renders each horizontal bar & corresponding word of the WordChart
   // If the bar is over 50% ratio, display the word INSIDE the bar
@@ -92,7 +96,7 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
 
   // A Pressable that toggles state, to change number of words displayed
   const renderShowMoreButton = () => {
-    if (showMoreButton) {
+    if (!abridged) {
       return ( 
         <View style={styles.showMoreContainer}>
           {
@@ -122,11 +126,30 @@ const WordChart = ({ numOfWords=DEFAULT_NUM_OF_WORDS_TO_DISPLAY, showMoreButton 
     return null;
   }
 
+  const renderSummaryText = () => {
+    return (
+      <View style={styles.summaryTextContainer}>
+        <View style={{ marginVertical: spacings.MEDIUM }}><Divider color={colors.SECONDARY} /></View>
+        <Text style={styles.summaryText}>{SUMMARY_TEXT}</Text>
+      </View>
+    )
+  }
+
   return (
+    abridged
+    ?
+    <View style={styles.featureContainer}>
+      <Text style={styles.featureTitle}>Top Words</Text>
+      <ScrollView>
+        {renderWordChart()}
+      </ScrollView>
+    </View>
+    :
     <View style={styles.featureContainer}>
       <Text style={styles.featureTitle}>Frequent Words</Text>
       <ScrollView>
         {renderWordChart()}
+        {renderSummaryText()}
       </ScrollView>
 
       {renderShowMoreButton()}
@@ -172,6 +195,14 @@ const styles = StyleSheet.create({
     // borderColor: 'black',
     flexDirection: 'row',
     alignItems: 'center'
+  },
+  summaryTextContainer: {
+    marginVertical: spacings.SMALL
+  },
+  summaryText: {
+    ...text.p, 
+    color: colors.SECONDARY,
+    textAlign: 'center'
   }
 });
 
