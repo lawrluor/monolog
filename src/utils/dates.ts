@@ -15,23 +15,34 @@ export const getCurrentDate = () => {
   return nowFormatted;
 }
 
-export const getCurrentWeekFromToday = () => {
+// daysFromToday can be a negative or positive number. 6 is for a whole week range
+export const getCurrentWeekRange = (daysFromToday: number) => {
   let curr = new Date; // get current date
   let first = curr.getDate();
-  let last = first + 6;
+  let last = first + daysFromToday;
 
   let firstday = new Date(curr.setDate(first))
   let lastday = new Date(curr.setDate(last))
 
   return {firstday, lastday};
 }
-  
+
 export const getCurrentWeekFromTodayMMDD = () => {
-  let {firstday, lastday} = getCurrentWeekFromToday();
+  let {firstday, lastday} = getCurrentWeekRange(6);
 
   // See https://stackoverflow.com/a/63490548
   let firstDayFormatted = firstday.toLocaleDateString('en-US', {month: '2-digit', day: '2-digit'});
   let lastDayFormatted = lastday.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit'});
 
   return `${firstDayFormatted} - ${lastDayFormatted}`;
+}
+
+export const getLastWeekFromTodayMMDD = () => {
+  let {firstday, lastday} = getCurrentWeekRange(-6);
+
+  // See https://stackoverflow.com/a/63490548
+  let firstDayFormatted = firstday.toLocaleDateString('en-US', {month: '2-digit', day: '2-digit'});
+  let lastDayFormatted = lastday.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit'});
+
+  return `${lastDayFormatted} - ${firstDayFormatted}`;
 }
