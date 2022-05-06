@@ -63,7 +63,7 @@ const Home = ({ navigation }: any): JSX.Element => {
     if (videosCount >= VIDEOS_THRESHOLD) {
       return (
         <View style={[styles.featureContainer]}>
-          <WordChart defaultNumOfWords={5} abridged />
+          <WordChart defaultNumOfWords={5} abridged navigation={navigation} />
         </View>
       )
     } else {

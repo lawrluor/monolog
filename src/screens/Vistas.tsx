@@ -45,7 +45,7 @@ const Vistas = ({ navigation }: any):  JSX.Element => {
               :
               <>
                 <View style={styles.featureContainer}>
-                  <WordChart numOfWords={10} showMoreButton={true} />
+                  <WordChart defaultNumOfWords={10} abridged={false} navigation={navigation} />
                 </View>
               
                 <View style={styles.featureContainer}>

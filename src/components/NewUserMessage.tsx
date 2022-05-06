@@ -26,7 +26,7 @@ const NewUserMessage = ({ navigateCallback }: any) => {
           background={colors.HIGHLIGHT}
           onPress={navigateCallback}
         > 
-          <Text style={styles.newUserAlertButtonText}>Record</Text>
+          <Text style={text.h4}>Record</Text>
         </SignInButton>
       </View>
 
@@ -62,9 +62,6 @@ const styles = StyleSheet.create({
   },
   newUserAlertButtonContainer: {
     alignItems: 'center'
-  },
-  newUserAlertButtonText: {
-    ...text.h4,
   },
   closeButtonContainer: {
     position: 'absolute',

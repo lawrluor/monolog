@@ -4,6 +4,7 @@ import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import Divider from './Divider';
+import SignInButton from './SignInButton';
 
 import VideosContext from '../context/VideosContext';
 
@@ -12,6 +13,7 @@ import { text, spacings, colors, dimensions, icons } from '../styles';
 type Props = {
   defaultNumOfWords?: number;  
   abridged?: boolean;
+  navigation: any
 }
 
 const MAX_NUM_OF_WORDS_TO_DISPLAY = 50;
@@ -21,7 +23,7 @@ const SUMMARY_TEXT = "The word chart is important for understanding what you typ
 // Each bar is a series of horizontal containers defined in the styles (barItemContainer, barItem, bar)
 // I've created a custom chart because the design is complex and it's likely not worth hacking a vanilla library to do this
 // TODO: If the bar value is over 50% of the container width, shift the word text outside of the bar
-const WordChart = ({ defaultNumOfWords=10, abridged }: Props) => {
+const WordChart = ({ defaultNumOfWords=10, abridged, navigation }: Props) => {
   const { wordChartData } = React.useContext(VideosContext);
   const [ numOfWordsCurrentlyDisplayed, setNumOfWordsCurrentlyDisplayed ] = React.useState(defaultNumOfWords);
   const [ moreWordsShown, setMoreWordsShown ] = React.useState(false);
@@ -131,6 +133,20 @@ const WordChart = ({ defaultNumOfWords=10, abridged }: Props) => {
       <View style={styles.summaryTextContainer}>
         <View style={{ marginVertical: spacings.MEDIUM }}><Divider color={colors.SECONDARY} /></View>
         <Text style={styles.summaryText}>{SUMMARY_TEXT}</Text>
+        
+      </View>
+    )
+  }
+
+  const renderRecordButton = () => {
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <SignInButton 
+          background={colors.HIGHLIGHT}
+          onPress={() => navigation.navigate('Recording')}
+        > 
+          <Text style={text.h4}>Record</Text>
+        </SignInButton>
       </View>
     )
   }
@@ -150,6 +166,7 @@ const WordChart = ({ defaultNumOfWords=10, abridged }: Props) => {
       <ScrollView>
         {renderWordChart()}
         {renderSummaryText()}
+        {renderRecordButton()}
       </ScrollView>
 
       {renderShowMoreButton()}
