@@ -75,7 +75,6 @@ export const checkUserDataDirectory = async () => {
   let directoryExists = await FileSystem.getInfoAsync(USER_DATA_DIRECTORY).then(
     // TODO: check error handling on making the directory
     ({ exists, _ }) => {
-      readUserData();
       return exists;
     }).catch((error) => {
       console.log("[ERROR] localStorageUtils:checkUserDataDirectory: ", error, "This is probably because it doesn't exist yet.");
@@ -101,7 +100,7 @@ export const deleteUserData = async () => {
 export const readUserData = async () => {
   let data: any = {};
 
-  if (!checkUserDataDirectory()) return data;
+  if (!await checkUserDataDirectory()) return data;
 
   data = await FileSystem.readDirectoryAsync(USER_DATA_DIRECTORY)
     .then(async (files) => {
@@ -127,8 +126,9 @@ export const readUserData = async () => {
 
 // Writes to the user data directory
 // TODO: This doesn't work properly or save user, getting error during writing
-export const writeUserData = (data: any) => {
+export const writeUserData = async (data: any) => {
   try {
+    if (!await checkUserDataDirectory()) throw 'User Data Directory does not exist yet.';
     FileSystem.writeAsStringAsync(`${USER_DATA_DIRECTORY}user`, JSON.stringify(data));
   } catch (err) {
     console.log("[ERROR] localStorageUtils:writeUserData:", err);

@@ -13,6 +13,8 @@ const MainNavigator = (): JSX.Element =>  {
 
   const checkOnboarding = async () => {
     let userData = await readUserData();
+    console.log("ud", userData);
+
 
     if (userData && userData.onboarded) {
       // 1. Existing user: take them to AppStack (Home screen)

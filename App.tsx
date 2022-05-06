@@ -18,6 +18,10 @@ import { colors } from './src/styles';
 
 // No props currently
 const App = (): JSX.Element => {
+  const [inTimeout, setInTimeout] = React.useState<boolean>(true);
+  const inTimeoutRef = React.useRef(inTimeout);
+  inTimeoutRef.current = inTimeoutRef;
+
   let [fontsLoaded] = useFonts({
     'CircularStd-Book': require('./assets/fonts/CircularStd-Book.otf'),
     'CircularStd-Medium': require('./assets/fonts/CircularStd-Medium.otf'),
@@ -40,20 +44,42 @@ const App = (): JSX.Element => {
     // LogBox.ignoreAllLogs(); //Ignore all log notifications
   }
 
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setInTimeout(false);
+    }, 1000);
+
+    return () => { 
+      clearTimeout(timer) 
+    }
+  }, []);
+
+  React.useEffect(() => {
+    console.log("states: inTimeout, fontsLoaded", inTimeout, fontsLoaded);
+  })
+
   // App Setup
   // TODO: should move all directory creating to here?
   React.useEffect(() => {
-    setConsoleLogging();
-    createVideoDirectory();
-    createThumbnailDirectory();
-    createRatingDirectory();
-    createTranscriptDirectory();
-    createUserDataDirectory();
-  }, [])
+    const setup = async () => {
+      setConsoleLogging();
+      let promises = [
+        createVideoDirectory(), 
+        createThumbnailDirectory(), 
+        createRatingDirectory(),
+        createTranscriptDirectory(),
+        createUserDataDirectory()
+      ];
+
+      await Promise.all(promises);
+    }
+
+    setup();
+  })
 
   // if debugging, set debug borders on all elements
   return (
-    !fontsLoaded
+    !fontsLoaded || inTimeout
     ?
     <AppLoading />
     :

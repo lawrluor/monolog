@@ -35,7 +35,6 @@ const OnBoarding1 = ({ route, navigation }): JSX.Element => {
     finalUserData["pronouns"] = pronouns;
     finalUserData["age"] = age.toString();
 
-    console.log(finalUserData);
     writeUserData(finalUserData);
     setShouldOnboard(false);
   }

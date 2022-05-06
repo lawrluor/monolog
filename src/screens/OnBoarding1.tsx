@@ -17,6 +17,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   const { setShouldOnboard, userData } = route.params;
 
   const textRefs = [textRef0, textRef1, textRef2, textRef3, textRef4, textRef5] = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()];
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
@@ -30,6 +31,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
 
   React.useEffect(() => {
     // Listener to detect when move to screen 2
+    // TODO: figure out a way to autofocus without jittering screen
     if (screenNumber===1) {
       selectTextRef(0);  // focus the textRef at index 3
     } else if (screenNumber===2) {
@@ -95,7 +97,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     }
   }
 
-  const finishOnBoarding = () => {
+  const finishOnBoarding = async () => {
     let finalUserData = {...userData}
     finalUserData["onboarded"] = true;
     finalUserData["cameraPermission"] = false;
@@ -109,7 +111,8 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     finalUserData["pronouns"] = pronouns;
     finalUserData["age"] = age.toString();
 
-    writeUserData(finalUserData);
+    console.log("onb", finalUserData);
+    await writeUserData(finalUserData);
     setShouldOnboard(false);
   }
 
@@ -150,15 +153,15 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     if (screenNumber===1) {
       return (
         <View style={styles.textEntriesContainer}>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="First Name" autoCapitalize={'words'} editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)}/></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Last Name" autoCapitalize={'words'} editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)}/></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" keyboardType={'email-address'} editable isTextBox returnKeyType="done" innerRef={textRefs[2]} textState={email} setTextState={setEmail}  onFinish={handleFormSubmit}/></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="First Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)}/></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Last Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)}/></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" keyboardType='email-address' editable isTextBox returnKeyType="done" innerRef={textRefs[2]} textState={email} setTextState={setEmail}  onFinish={handleFormSubmit}/></View>
         </View>
       )
     } else {
       return (
         <View style={styles.textEntriesContainer}>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Gender" autoCapitalize={'words'} editable isTextBox returnKeyType="next" innerRef={textRefs[3]} textState={gender} setTextState={setGender} onFinish={() => handleTextOnFinish(3)}/></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Gender" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[3]} textState={gender} setTextState={setGender} onFinish={() => handleTextOnFinish(3)}/></View>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Pronouns" editable isTextBox returnKeyType="next" innerRef={textRefs[4]} textState={pronouns} setTextState={setPronouns}  onFinish={() => handleTextOnFinish(4)}/></View>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[5]} textState={age} setTextState={setAge}  onFinish={handleFormSubmit}/></View>
         </View>
