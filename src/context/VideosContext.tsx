@@ -36,48 +36,8 @@ export const VideosProvider:React.FC = ({ children }) => {
   // date obj.
   const [moodData, setMoodData] = React.useState({
   "week": {
-    "last_updated_secs": new Date(2022, 4, 4).getTime() / 1000,
+    "last_updated_secs": new Date(2022, 4, 5).getTime() / 1000,
     "days": [
-      {
-        "mood_score": 3.2,
-        "count": 1,
-        "date": new Date(2022, 4, 4)
-      },
-      {
-        "mood_score": 4.0,
-        "count": 2,
-        "date": new Date(2022, 2, 29)
-      },
-      {
-        "mood_score": 3.5,
-        "count": 1,
-        "date": new Date(2022, 2, 28)
-      },
-      {
-        "mood_score": 1.68,
-        "count": 2,
-        "date": new Date(2022, 2, 27)
-      },
-      {
-        "mood_score": 1.0,
-        "count": 2,
-        "date": new Date(2022, 2, 26)
-      },
-      {
-        "mood_score": 2.0,
-        "count": 2,
-        "date": new Date(2022, 2, 25)
-      },
-      {
-        "mood_score": 1.5,
-        "count": 2,
-        "date": new Date(2022, 2, 24)
-      },
-      {
-        "mood_score": 1.0,
-        "count": 2,
-        "date": new Date(2022, 2, 23)
-      },
     ]}
   });
 
