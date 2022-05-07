@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Pressable  } from 'react-native';
 import { Audio, Video } from 'expo-av';
 
-import { FullPageSpinner, Spinner } from './Spinner';
+import { FullPageSpinner } from './Spinner';
 
 import { containers, dimensions } from '../styles';
 

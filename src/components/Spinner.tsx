@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import { text, spacings, colors } from '../styles';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -28,7 +28,7 @@ const FullPageSpinner = ({ size }) => {
     // Run on mount
     const timeout = setTimeout(():void => {
       console.log("[DEBUG] Timeout began")
-      setMessage('Loading Issues? Check your internet connection and make sure you have the latest version of the app.');
+      setMessage('Loading Issues? Please make sure you have the latest version of the app.');
     }, 6000);
 
     // Unmount cleanup, clear timeout if component unmounted
@@ -43,16 +43,16 @@ const FullPageSpinner = ({ size }) => {
 
   return (
     <LinearGradient
-        colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-        style={styles.spinner}
-      >
-        <ActivityIndicator size={size} />
+      colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+      style={styles.spinner}
+    >
+      <ActivityIndicator size={size} />
       <Text style={styles.messageText}>{message}</Text>
     </LinearGradient>
   )
 }
 
-const styles = {
+const styles = StyleSheet.create({
   spinner: {
     flex: 1,
     justifyContent: 'center',
@@ -64,6 +64,6 @@ const styles = {
     marginHorizontal: spacings.LARGE,
     textAlign: 'center'
   }
-}
+});
 
 export { Spinner, FullPageSpinner };

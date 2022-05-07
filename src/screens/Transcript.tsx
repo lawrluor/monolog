@@ -7,7 +7,7 @@ import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from
 import { FullPageSpinner } from '../components/Spinner';
 import VideoContainer from '../components/VideoContainer';
 
-const Transcript = ({ route, navigation }): JSX.Element => {
+const Transcript = ({ route, navigation }: any): JSX.Element => {
   const { finalResult, selection, fileBaseName } = route.params;
   const { toggleVideosRefresh } = React.useContext(VideosContext);
 
