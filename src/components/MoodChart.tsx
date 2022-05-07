@@ -3,6 +3,7 @@ import { StyleSheet, Text } from 'react-native';
 
 import { LineChart, Path, XAxis } from 'react-native-svg-charts';
 import { ClipPath, Circle, Defs, Rect } from 'react-native-svg';
+import * as FileSystem from 'expo-file-system';
 
 import VideosContext from '../context/VideosContext';
 
@@ -12,7 +13,115 @@ const MILLISECONDS_IN_A_WEEK = 604800000;
 const MILLISECONDS_IN_A_DAY = 86400000;
 
 const MoodChart = () => {
-  const { moodData } = React.useContext(VideosContext);
+  const { moodData, toggleVideosRefresh } = React.useContext(VideosContext);
+
+  const updateMoodMap = (emojiValue, timestampSeconds) => {
+    // Initialize date object for the timestamp in question.
+    let dateToUpdate = new Date(0);  // Epoch
+    dateToUpdate.setSeconds(timestampSeconds);
+
+    // find the appropriate insertion index in the data structure.
+    // upon while termination, either:
+    //  a) we found the date bucket to update so we update it, else
+    //  b) we insert at the specified counter value.
+    let counter = 0;
+    while (moodData.week.days.length > 0 && dateToUpdate < moodData.week.days[counter].date &&
+           counter <= moodData.week.days.length - 1) {
+      counter += 1;
+    }
+
+    // If we found the date, update the DataStructure in place.
+    // Comparisons use DateString() to make date equality easier. Avoids complex
+    // timestamp math.
+    if (moodData.week.days.length > 0 && moodData.week.days[counter].date.toLocaleDateString() ===
+        dateToUpdate.toLocaleDateString()) {
+      moodData.week.days[counter]["mood_score"] *= moodData.week.days[counter].count;
+      moodData.week.days[counter].count++;
+      moodData.week.days[counter]["mood_score"] += emojiValue;
+      moodData.week.days[counter]["mood_score"] /= moodData.week.days[counter].count;
+    } else {
+      // We didn't find the date, so we insert date at specified counter.
+      let newMoodDay = {
+        "mood_score": emojiValue,
+        "count": 1,
+        "date": new Date(dateToUpdate.toDateString())
+      }
+      moodData.week.days.splice(counter, 0, newMoodDay);
+    }
+    moodData.week.last_updated_secs = timestampSeconds;
+    toggleVideosRefresh();
+  }
+
+
+  // Runs as an effect in Home view. Reads videos from last week in filesystem,
+  // removes expired video entries from data structure, and updates data
+  // structure.
+  const initializeMoodTracker = () => {
+    videoTimestamps = []
+    FileSystem.readDirectoryAsync(FileSystem.documentDirectory + "videos/")
+      .then((files) => {
+        // Process most recent files first for efficiency.
+        files.sort().reverse();
+
+        ////////////////////////////////////////////////////////////////////////
+        // Find the oldest video within a week from today.
+        // Find today's seconds.
+
+        // Filter out videos that happened before last week.
+        let todaySec = new Date(new Date().toDateString()).getTime() / 1000;
+        let lastWeekSec = todaySec - 604800;
+        for (const file of files) {
+          let timestamp = file.slice(0,-4)
+          if (parseInt(timestamp) >= lastWeekSec) {
+            videoTimestamps.push(timestamp);
+            continue;
+          }
+          // Since files are sorted, once we find a week-old video, all
+          // remaining videos will be even older.
+          break;
+        };
+
+        // We don't need to update if we've already accounted for the most
+        // recent video.
+        if (videoTimestamps === moodData.week.last_updated_secs) {
+          return;
+        }
+
+        // Clear all week-old data in moodData data structure.
+        // Previous filtering is for videos in file system (not yet in DS).
+        const clearExpiredMoodData = () => {
+          let moodDataList = moodData.week.days;
+          while (moodDataList.length > 0 &&
+                 (moodDataList[moodDataList.length - 1].date.getTime() / 1000 <
+                 lastWeekSec)) {
+            moodData.week.days.pop();
+          }
+       }
+       clearExpiredMoodData();
+
+       // Update mood chart from early to late since moodData is sorted.
+       videoTimestamps.reverse()
+       for (const timestamp of videoTimestamps) {
+         // This is both the emoji file name and the timeestamp in seconds.
+         let emojiFile = timestamp + ".txt";
+         FileSystem.readAsStringAsync(FileSystem.documentDirectory +
+            "rating/" + emojiFile)
+         .then((emojiValue) => {
+           updateMoodMap(parseInt(emojiValue[emojiValue.length-1]), emojiFile.slice(0,-4));
+         })
+         .catch(error => {
+           console.log("initializeMoodTracker:readAsStringAsync", error);
+         });  // readAsStringAsync
+        }
+      })  // readDirectoryAsync
+      .catch(error => {
+        console.log("initializeMoodTracker:readDirectoryAsync", error);
+      });
+  }
+  React.useEffect((): void => {
+    console.log("initializing from MoodChart");
+    initializeMoodTracker();
+  }, []);
 
   // reverses an array in place between start & end.
   // [start, end)
@@ -33,7 +142,7 @@ const MoodChart = () => {
     revInPlace(days, rotations, days.length - 1);
     revInPlace(days, 0, days.length - 1)
   }
-  
+
 
   const renderMoodTracker = () => {
     // Datastructure that contains all data to render.
@@ -136,35 +245,37 @@ const MoodChart = () => {
     }
     // Set the end of the final clip.
 
-    // One last time, for skipped days at the tail-end of our window.
-    let dateDiff = parseInt((today.getTime() - moodDays[0].date.getTime()) /
-                                 MILLISECONDS_IN_A_DAY);
-    // We found a skipped day. We need to add a clip and compute mood
-    // differences.
-    if (dateDiff > 0) {
-      // close the previous clip by setting the end index to the start of
-      // the next clip.
-      clipIndex[clipIndex.length - 1][1] = data.length - 1;
+    if (moodDays.length > 0) {
+      // One last time, for skipped days at the tail-end of our window.
+      let dateDiff = parseInt((today.getTime() - moodDays[0].date.getTime()) /
+                                   MILLISECONDS_IN_A_DAY);
+      // We found a skipped day. We need to add a clip and compute mood
+      // differences.
+      if (dateDiff > 0) {
+        // close the previous clip by setting the end index to the start of
+        // the next clip.
+        clipIndex[clipIndex.length - 1][1] = data.length - 1;
 
-      // start the new clip and set the end as start of next actual date.
-      clipIndex.push([data.length - 1, data.length - 1 + dateDiff]);
+        // start the new clip and set the end as start of next actual date.
+        clipIndex.push([data.length - 1, data.length - 1 + dateDiff]);
 
-      // We now need to populate data with points on this clip for each day
-      // skipped.
-      let clipCounter = 0;
-      let moodDiff = 2.0 - moodDays[0].mood_score;  // Assume avg mood in future.
-      let slope = 0;
-      let previousMood = moodDays[0].mood_score;
-      while (clipCounter < dateDiff) {
-        // insert data points in a linear fashion.
-        clipCounter++;
-        let nextMood = previousMood + slope
-        data.push(nextMood);
-        circleData.push(-1);  // Don't display circles for skipped days.
-        previousMood = nextMood;
+        // We now need to populate data with points on this clip for each day
+        // skipped.
+        let clipCounter = 0;
+        let moodDiff = 2.0 - moodDays[0].mood_score;  // Assume avg mood in future.
+        let slope = 0;
+        let previousMood = moodDays[0].mood_score;
+        while (clipCounter < dateDiff) {
+          // insert data points in a linear fashion.
+          clipCounter++;
+          let nextMood = previousMood + slope
+          data.push(nextMood);
+          circleData.push(-1);  // Don't display circles for skipped days.
+          previousMood = nextMood;
+        }
       }
+      clipIndex[clipIndex.length - 1][1] = data.length;
     }
-    clipIndex[clipIndex.length - 1][1] = data.length;
 
     // Construct Clips svg template given clipIndex.
     const Clips = ({ x, width }) => (

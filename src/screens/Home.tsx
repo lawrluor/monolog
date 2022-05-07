@@ -28,7 +28,7 @@ const Home = ({ navigation }: any): JSX.Element => {
   const { userData, setUserData, videosCount, isLoading } = React.useContext(VideosContext);
 
   // Optionally used to allow for closing alert/promo messages in Home
-  const [alertVisible, setAlertVisible] = React.useState<boolean>(false); 
+  const [alertVisible, setAlertVisible] = React.useState<boolean>(false);
 
   const navigateToVistas = () => {
     navigation.navigate('Vistas');
@@ -52,7 +52,7 @@ const Home = ({ navigation }: any): JSX.Element => {
 
           <Pressable onPress={navigateToVistas} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}, { 'flexDirection': 'row', 'alignItems': 'center' }] }>
             <Text style={text.h4}>See all</Text>
-            <Ionicons name='chevron-forward' style={styles.forwardIconWhite} />  
+            <Ionicons name='chevron-forward' style={styles.forwardIconWhite} />
           </Pressable>
         </View>
       )
@@ -68,8 +68,8 @@ const Home = ({ navigation }: any): JSX.Element => {
       )
     } else {
       return (
-        <Pressable 
-          onPress={() => simpleAlert("Feature Locked", "Record more logs to begin tracking your Vistas!", "OK", ()=>{})} 
+        <Pressable
+          onPress={() => simpleAlert("Feature Locked", "Record more logs to begin tracking your Vistas!", "OK", ()=>{})}
           style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }
         >
           <View style={[styles.featureContainer, styles.featureContainerWithIcon]}>
@@ -90,8 +90,8 @@ const Home = ({ navigation }: any): JSX.Element => {
       )
     } else {
       return (
-        <Pressable 
-          onPress={() => simpleAlert("Feature Locked", "Record more logs to begin tracking your Vistas!", "OK", ()=>{})} 
+        <Pressable
+          onPress={() => simpleAlert("Feature Locked", "Record more logs to begin tracking your Vistas!", "OK", ()=>{})}
           style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }
         >
           <View style={[styles.featureContainer, styles.featureContainerWithIcon]}>
@@ -125,116 +125,6 @@ const Home = ({ navigation }: any): JSX.Element => {
     };
   }, [videosCount, isLoading])
 
-  // TODO: consolidate with Rating.tsx. UNIT TEST THIS.
-  // Given emojiValue {int} (mood of video), timestampSeconds {int} of the
-  // video, update the moodData datastructure.
-  const updateMoodMap = (emojiValue, timestampSeconds) => {
-    // Initialize date object for the timestamp in question.
-    let dateToUpdate = new Date(0);  // Epoch
-    dateToUpdate.setSeconds(timestampSeconds);
-
-    // find the appropriate insertion index in the data structure.
-    // upon while termination, either:
-    //  a) we found the date bucket to update so we update it, else
-    //  b) we insert at the specified counter value.
-    let counter = 0;
-    while (dateToUpdate < moodData.week.days[counter].date &&
-           counter <= moodData.week.days.length - 1) {
-      counter += 1;
-    }
-
-    // If we found the date, update the DataStructure in place.
-    // Comparisons use DateString() to make date equality easier. Avoids complex
-    // timestamp math.
-    if (moodData.week.days[counter].date.toLocaleDateString() ===
-        dateToUpdate.toLocaleDateString()) {
-      moodData.week.days[counter]["mood_score"] *= moodData.week.days[counter].count;
-      moodData.week.days[counter].count++;
-      moodData.week.days[counter]["mood_score"] += emojiValue;
-      moodData.week.days[counter]["mood_score"] /= moodData.week.days[counter].count;
-    } else {
-      // We didn't find the date, so we insert date at specified counter.
-      let newMoodDay = {
-        "mood_score": emojiValue,
-        "count": 1,
-        "date": new Date(dateToUpdate.toDateString())
-      }
-      moodData.week.days.splice(counter, 0, newMoodDay);
-    }
-    moodData.week.last_updated_secs = timestampSeconds;
-    toggleVideosRefresh();
-  }
-
-  // Runs as an effect in Home view. Reads videos from last week in filesystem,
-  // removes expired video entries from data structure, and updates data
-  // structure.
-  const initializeMoodTracker = () => {
-    videoTimestamps = []
-    FileSystem.readDirectoryAsync(FileSystem.documentDirectory + "videos/")
-      .then((files) => {
-        // Process most recent files first for efficiency.
-        files.sort().reverse();
-
-        ////////////////////////////////////////////////////////////////////////
-        // Find the oldest video within a week from today.
-        // Find today's seconds.
-
-        // Filter out videos that happened before last week.
-        let todaySec = new Date(new Date().toDateString()).getTime() / 1000;
-        let lastWeekSec = todaySec - 604800;
-        for (const file of files) {
-          let timestamp = file.slice(0,-4)
-          if (parseInt(timestamp) >= lastWeekSec) {
-            videoTimestamps.push(timestamp);
-            continue;
-          }
-          // Since files are sorted, once we find a week-old video, all
-          // remaining videos will be even older.
-          break;
-        };
-
-        // We don't need to update if we've already accounted for the most
-        // recent video.
-        if (videoTimestamps === moodData.week.last_updated_secs) {
-          return;
-        }
-
-        // Clear all week-old data in moodData data structure.
-        // Previous filtering is for videos in file system (not yet in DS).
-        const clearExpiredMoodData = () => {
-          let moodDataList = moodData.week.days;
-          while (moodDataList.length > 0 &&
-                 (moodDataList[moodDataList.length - 1].date.getTime() / 1000 <
-                 lastWeekSec)) {
-            moodData.week.days.pop();
-          }
-       }
-       clearExpiredMoodData();
-
-       // Update mood chart from early to late since moodData is sorted.
-       videoTimestamps.reverse()
-       for (const timestamp of videoTimestamps) {
-         // This is both the emoji file name and the timeestamp in seconds.
-         let emojiFile = timestamp
-         FileSystem.readAsStringAsync(FileSystem.documentDirectory +
-            "rating/" + emojiFile)
-         .then((emojiValue) => {
-           updateMoodMap(parseInt(emojiValue), emojiFile);
-         })
-         .catch(error => {
-           console.log("initializeMoodTracker:readAsStringAsync", error);
-         });  // readAsStringAsync
-        }
-      })  // readDirectoryAsync
-      .catch(error => {
-        console.log("initializeMoodTracker:readDirectoryAsync", error);
-      });
-  }
-
-  React.useEffect((): void => {
-    initializeMoodTracker();
-  }, []);
-  
   return (
     <>
       <SafeAreaTop />
@@ -246,7 +136,7 @@ const Home = ({ navigation }: any): JSX.Element => {
         >
           <View style={styles.headerContainer}>
             { TESTING ? <DeleteAll /> : null }
-            
+
             <View>
               <Text style={styles.subTitle}>Welcome,</Text>
               <Text style={styles.profileTitle}>{userData.firstName || "Journaler!"}</Text>
@@ -255,7 +145,7 @@ const Home = ({ navigation }: any): JSX.Element => {
             <View>
               <Pressable onPress={navigateToProfile} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
                 <CustomIcon name='avatar' style={styles.profileIcon} />
-              </Pressable>  
+              </Pressable>
             </View>
           </View>
 
@@ -263,14 +153,14 @@ const Home = ({ navigation }: any): JSX.Element => {
             <Divider color={colors.BACKGROUND} />
           </View>
 
-          <ScrollView 
+          <ScrollView
             style={styles.bodyContainer}
             contentContainerStyle={styles.scrollContentContainerStyle}
             showsVerticalScrollIndicator={false}
           >
             {renderVistasSummaryHeader(videosCount)}
-            {alertVisible && (videosCount < VIDEOS_THRESHOLD) 
-              ? <NewUserMessage navigateCallback={navigateToRecord} /> 
+            {alertVisible && (videosCount < VIDEOS_THRESHOLD)
+              ? <NewUserMessage navigateCallback={navigateToRecord} />
               : null
             }
             {renderWordChartSummary(videosCount)}
@@ -337,8 +227,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
   },
   featureContainerWithIcon: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between'
   },
   featureTitle: {
