@@ -31,8 +31,6 @@ const MainNavigator = (): JSX.Element =>  {
     if (shouldOnboard) {
       return <OnBoardingStack setShouldOnboard={setShouldOnboard} />
     } else {
-      return <AppStack setUser={setUser}/>
-
       if (user === null) {
         return <AuthStack setUser={setUser} setShouldOnboard={setShouldOnboard} /> 
       } else {
