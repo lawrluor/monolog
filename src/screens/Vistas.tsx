@@ -19,6 +19,10 @@ const VIDEOS_THRESHOLD = 0;
 const Vistas = ({ navigation }: any):  JSX.Element => {
   const { videosCount } = React.useContext(VideosContext);
 
+  const navigateToRecord = () => {
+    navigation.navigate('Recording');
+  }
+
   return (
     <>
       <SafeAreaTop />
@@ -45,11 +49,11 @@ const Vistas = ({ navigation }: any):  JSX.Element => {
               :
               <>
                 <View style={styles.featureContainer}>
-                  <WordChart defaultNumOfWords={10} abridged={false} navigation={navigation} />
+                  <WordChart defaultNumOfWords={10} abridged={false} callback={navigateToRecord} />
                 </View>
               
                 <View style={styles.featureContainer}>
-                  <MoodChart />
+                  <MoodChart callback={navigateToRecord}/>
                 </View>
               </>
             }

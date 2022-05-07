@@ -21,6 +21,17 @@ const SignInButton = ({ children, text, background, onPress }: Props): JSX.Eleme
   )
 }
 
+export const RecordActionButton = ({ callback }: any) => {
+  return (
+    <SignInButton 
+      background={colors.HIGHLIGHT}
+      onPress={callback}
+    > 
+      <Text style={text.h4}>Record</Text>
+    </SignInButton>
+  )
+}
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
