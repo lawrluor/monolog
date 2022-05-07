@@ -140,6 +140,7 @@ const TabNavigator = ({ setUser }): JSX.Element => {
 // See docs for Stack Navigator options: https://reactnavigation.org/docs/native-stack-navigator
 // NOTE: we are using native-stack, which offers better performance but is less customizable.
 // Consider changing to just default Stack for separately animated screens, for example
+// Also see https://github.com/software-mansion/react-native-screens/issues/380 for better navigation UX
 const AppNavigator = ({ setUser }): JSX.Element => {
   return (
     <Stack.Navigator initialRouteName="TabNavigator" screenOptions={{ animation: 'none' }}>

@@ -21,13 +21,13 @@ const SignInButton = ({ children, text, background, onPress }: Props): JSX.Eleme
   )
 }
 
-export const RecordActionButton = ({ callback }: any) => {
+export const ActionButton = ({ callback, text }: any) => {
   return (
     <SignInButton 
       background={colors.HIGHLIGHT}
       onPress={callback}
     > 
-      <Text style={text.h4}>Record</Text>
+      <Text style={text.h4}>{text}</Text>
     </SignInButton>
   )
 }

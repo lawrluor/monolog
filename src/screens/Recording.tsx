@@ -239,7 +239,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     } else {
       return (
         <>
-          <GoBack navigation={navigation} />
+          <GoBack />
 
           <View style={styles.flipCameraContainer}>
             <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
@@ -251,7 +251,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             style={styles.cameraContainer}
             type={type}
             ref={cameraRef}
-            onCameraReady={() => setIsLoading(false) }
+            onCameraReady={() => setIsLoading(true) }
           >
             <View style={styles.captionContainer}>
               <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>

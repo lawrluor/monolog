@@ -137,7 +137,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   // This conditional render is handled by the boolean state modalShown
   return (
     <>
-      {modalShown ? <></> : <GoBack navigation={navigation} callback={resetNavigationToGallery}/> }
+      {modalShown ? <></> : <GoBack callback={resetNavigationToGallery}/> }
       {modalShown ? <></> : <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View> }
       
       <View style={styles.videoContainer}>

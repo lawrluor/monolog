@@ -35,7 +35,7 @@ const OnBoarding3 = ({ route, navigation }): JSX.Element => {
     <>
       <SafeAreaTop />
 
-      <GoBack navigation={navigation} />
+      <GoBack />
 
       <SafeAreaBottom>
 

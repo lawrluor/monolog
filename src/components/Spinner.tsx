@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import { text, spacings, colors, dimensions } from '../styles';
 
+import { ActionButton } from './SignInButton';
+import GoBack from './GoBack';
+
 import { LinearGradient } from 'expo-linear-gradient';
+import { deleteDataAlert } from '../utils/customAlerts';
 
 type Props = {
   size?: string
@@ -28,7 +32,7 @@ const FullPageSpinner = ({ size }) => {
     // Run on mount
     const timeout = setTimeout(():void => {
       console.log("[DEBUG] Timeout began")
-      setMessage('Loading Issues? Please make sure you have the latest version of the app and that you have allowed all permissions that the app requests.');
+      setMessage('Please make sure you have the latest version of the app and that you have allowed all permissions that the app requests. If you\'re having trouble, you can delete your data and reload the app. If that doesn\'t help, please delete and reinstall the app. You will still lose your saved logs, however.');
     }, 5000);
 
     // Unmount cleanup, clear timeout if component unmounted
@@ -47,7 +51,23 @@ const FullPageSpinner = ({ size }) => {
       style={styles.fullSizeContainer}
     >
       <ActivityIndicator size={size} />
-      <Text style={styles.messageText}>{message}</Text>
+      {
+        message 
+        ? 
+        <>
+          <GoBack />
+          
+          <View style={{ marginVertical: spacings.LARGE }}>
+            <Text style={styles.messageText}>{message}</Text> 
+          </View>
+
+          <View style={{ marginVertical: spacings.LARGE }}>
+            <ActionButton callback={deleteDataAlert} text={"Delete Data"}/>
+          </View>
+        </>
+        : 
+        null
+      }
     </LinearGradient>
   )
 }
