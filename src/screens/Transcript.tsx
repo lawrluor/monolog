@@ -2,10 +2,11 @@ import React from 'react';
 
 import VideosContext from '../context/VideosContext';
 
+import { Audio } from 'expo-av';
+
 import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from '../utils/localStorageUtils';
 
 import { FullPageSpinner } from '../components/Spinner';
-import VideoContainer from '../components/VideoContainer';
 
 const Transcript = ({ route, navigation }: any): JSX.Element => {
   const { finalResult, selection, fileBaseName } = route.params;

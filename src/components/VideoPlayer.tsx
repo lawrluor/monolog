@@ -22,13 +22,25 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
     status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
     setIsPlaying(!isPlaying);
   }
+
+  const resetRecordingAudio = async () => {
+    const recording = new Audio.Recording();
+      try {
+        console.log("Resetting recording");
+        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+        await recording.startAsync();
+        await recording.stopAndUnloadAsync()
+      } catch (error) {
+        console.log("err resetting recording", error);
+      }
+  }
     
   // Audio settings for this video
   React.useEffect(() => {
     const setAudioModes = async () => {
       console.log("-----1. setting audio");
       await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
+        allowsRecordingIOS: true,
         staysActiveInBackground: true,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
         playsInSilentModeIOS: true,       // this option is unreliable at the moment
@@ -36,10 +48,12 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
         interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
         playThroughEarpieceAndroid: false,
       });
+
+      await resetRecordingAudio();
       
       if (video && video.current) {
         console.log("-----2. audio loaded, now playing video");
-        await video.current.loadAsync({ uri: videoUri });
+        await video.current.loadAsync({ uri: videoUri, volume: 1.0 });
         await video.current.playAsync();
         setIsLoading(false); 
       }
@@ -104,7 +118,6 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
           useNativeControls={false}
           resizeMode="cover"
           onPlaybackStatusUpdate={(status) => handlePlaybackStatusUpdate(status)}
-          
         />
       </Pressable>
     </View>
