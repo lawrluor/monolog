@@ -100,15 +100,17 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
   // TODO: Try to set permissions through a callback in this component, 
       // but for now, we will set user data after they finish recording
       // This is because they can't have recorded without granting speech-to-text permission
-  // The key is this happens BEFORE the user can press the video record button, so video recording is not interrupted
-  // BUG: This makes it so that the speech to text starts BEFORE pressing the record button 
-    // Essentially, stopRecording() does nothing to immediately stop it and await causes things to break
-  // TODO: No method for this that I can find, so just start and stop immediately.
   React.useEffect(() => {
-    if (!userData || !userData.speechToTextPermission) {
-      startRecording()
-      stopRecording();  
+    const wrapper = async () => {
+      console.log(userData);
+
+      if (!userData || !userData.speechToTextPermission) {
+        let result = await Voice.isAvailable();
+        console.log("IOS speech to text permission status:", result);
+      }
     }
+
+    wrapper();
   }, []);
 
   React.useEffect(() => {
