@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Pressable  } from 'react-native';
 import { Audio, Video } from 'expo-av';
 
-import { Spinner } from './Spinner';
+import { FullPageSpinner } from './Spinner';
 
 import { containers, dimensions } from '../styles';
 
@@ -76,9 +76,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, navigation }: Props): 
   return (
     isLoading
     ?
-    <View style={styles.container}>
-      <Spinner />
-    </View>
+    <FullPageSpinner size="large" />
     :
     <View style={styles.container}>
       <Pressable onPress={togglePlay}>

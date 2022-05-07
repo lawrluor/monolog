@@ -1,16 +1,13 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 
 import VideosContext from '../context/VideosContext';
 
 import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from '../utils/localStorageUtils';
 
-import { Spinner } from '../components/Spinner';
+import { FullPageSpinner } from '../components/Spinner';
 import VideoContainer from '../components/VideoContainer';
 
-import { text, spacings, icons, dimensions } from '../styles';
-
-const Transcript = ({ route, navigation }): JSX.Element => {
+const Transcript = ({ route, navigation }: any): JSX.Element => {
   const { finalResult, selection, fileBaseName } = route.params;
   const { toggleVideosRefresh } = React.useContext(VideosContext);
 
@@ -52,82 +49,10 @@ const Transcript = ({ route, navigation }): JSX.Element => {
   return (
     isLoading 
     ?
-    <Spinner />
+    <FullPageSpinner size="large" />
     :
     <VideoContainer videoData={videoData} navigation={navigation} />
   )
 }
-
-const styles = StyleSheet.create({
-  videoContainer: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: spacings.MEDIUM,
-  },
-  videoOverlayContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    zIndex: 10,
-    alignItems: 'center',
-    // justifyContent: 'center',
-  },
-  textContainer: {
-    padding: spacings.MEDIUM,
-    paddingTop: 150,
-    position: 'absolute',
-    height: dimensions.height * 0.7
-  },
-  text: {
-    zIndex: 100
-  },
-  contentContainer: {
-    position: 'absolute',
-    bottom: spacings.ABSOLUTE_OFFSET_HUGE,
-  },
-  buttonsContainer: {
-    position: 'absolute',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    zIndex: 10,
-    bottom: spacings.ABSOLUTE_OFFSET_LARGE,
-  },
-  emojiContainer: {
-    zIndex: 10,
-    bottom: spacings.LARGE,
-  },
-  subTitle: {
-    ...text.h4,
-    color: 'white',
-    marginBottom: spacings.SMALL
-  },
-  body: {
-    ...text.p,
-    color: 'white',
-    zIndex: 0
-  },
-  emojiText: {
-    fontSize: text.h1.fontSize + 10,
-    // padding: spacings.MEDIUM
-  },
-  modalDown: {
-    alignSelf: 'center',
-  },
-  button: {
-    margin: spacings.MEDIUM
-  },
-  iconFinished: {
-    ...icons.HUGE,
-    color: 'white',
-    marginHorizontal: -1 * spacings.TINY
-  },
-  iconActions: {
-    ...icons.LARGE,
-    color: 'white'
-  }
-});
 
 export default Transcript;

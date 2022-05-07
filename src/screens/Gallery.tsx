@@ -116,7 +116,7 @@ const Gallery = ({ navigation }):  JSX.Element => {
   return (
     isLoading
     ?
-    <><FullPageSpinner size="large"/></>
+    <FullPageSpinner size="large"/>
     :
     <View style={styles.container}>
       <SafeAreaTop />

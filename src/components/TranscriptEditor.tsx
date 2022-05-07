@@ -1,7 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, Pressable, Text, TextInput, Platform, KeyboardAvoidingView, Keyboard, Alert } from 'react-native';
 
-import { Spinner } from './Spinner';
 import CustomIcon from './CustomIcon';
 
 import VideosContext from '../context/VideosContext';
@@ -113,10 +112,7 @@ const TranscriptEditor = ({ setModalShown, modalShown, textContentFromRecording,
   return (
     modalShown
     ?
-      isLoading 
-      ?
-      <Spinner />
-      :
+ 
       <Pressable style={styles.modalOutside} onPress={modalPressCallback}>
         <KeyboardAvoidingView 
           style={styles.textContainer}
