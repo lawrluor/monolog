@@ -17,9 +17,9 @@ const Stack = createNativeStackNavigator<StackNavigatorParams>();
 const MainNavigator = (): JSX.Element =>  {
   const renderNavStack = () => {
     return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName='AuthLoading'>
-          <Stack.Screen name="AuthLoading" component={AuthLoading} options={{ headerShown: false }} />
+      <NavigationContainer >
+        <Stack.Navigator initialRouteName='AuthLoading' screenOptions={{ animation: 'none' }}>
+          <Stack.Screen name="AuthLoading" component={AuthLoading} options={{ headerShown: false, }} />
           <Stack.Screen name="AppStack" component={AppStack} options={{ headerShown: false }} />
           <Stack.Screen name="AuthStack" component={AuthStack} options={{ headerShown: false }} />
           <Stack.Screen name="OnBoardingStack" component={OnBoardingStack} options={{ headerShown: false }} />

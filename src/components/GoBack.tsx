@@ -8,11 +8,12 @@ import CustomIcon from './CustomIcon';
 type Props = {
   navigation: any,
   text?: string,
+  callback?: any
 }
 
-const GoBack = ({ navigation, text }: Props) => {
+const GoBack = ({ navigation, text, callback }: Props) => {
   return (
-    <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()} hitSlop={spacings.hitSlopLarge}>
+    <TouchableOpacity style={styles.goBackContainer} onPress={callback ? callback : () => navigation.goBack()} hitSlop={spacings.hitSlopLarge}>
       <CustomIcon style={styles.backIcon} name='back_arrow' />
     </TouchableOpacity>
   )

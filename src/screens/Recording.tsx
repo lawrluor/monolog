@@ -164,7 +164,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const stopRecording = async () => {
     try {
       setIsRecording(false);
-      cameraRef.current.pausePreview();
       await cameraRef.current.stopRecording();  
     } catch(err: any) {
       console.log("[ERROR] Recording.tsx: stopRecording", err);
@@ -232,15 +231,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     )
   }
 
-  const resetNavigator = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Home' }] 
-    });
-
-    navigation.navigate('Home');
-  }
-
   const renderCamera = () => {
     if (hasPermission === null) {
       return <View />;
@@ -302,10 +292,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    ...containers.DEFAULT,
-    flex: 1
-  },
   container: {
     ...containers.DEFAULT
   },

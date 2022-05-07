@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
-import { text, spacings, colors } from '../styles';
+import { text, spacings, colors, dimensions } from '../styles';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -44,7 +44,7 @@ const FullPageSpinner = ({ size }) => {
   return (
     <LinearGradient
       colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-      style={styles.spinner}
+      style={styles.fullSizeContainer}
     >
       <ActivityIndicator size={size} />
       <Text style={styles.messageText}>{message}</Text>
@@ -56,7 +56,15 @@ const styles = StyleSheet.create({
   spinner: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+  },
+  fullSizeContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: dimensions.width,
+    height: dimensions.height, 
+    position: 'absolute'
   },
   messageText: {
     ...text.p,

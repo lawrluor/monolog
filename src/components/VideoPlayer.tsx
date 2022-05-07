@@ -23,12 +23,12 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
     setIsPlaying(!isPlaying);
   }
 
+  // Clears previous recordings, does NOT record anything.
   const resetRecordingAudio = async () => {
     const recording = new Audio.Recording();
       try {
         console.log("Resetting recording");
         await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-        await recording.startAsync();
         await recording.stopAndUnloadAsync()
       } catch (error) {
         console.log("err resetting recording", error);
@@ -52,10 +52,12 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
       await resetRecordingAudio();
       
       if (video && video.current) {
+        let status = await video.current.getStatusAsync();
+        console.log("status", status);
         console.log("-----2. audio loaded, now playing video");
-        await video.current.loadAsync({ uri: videoUri, volume: 1.0 });
-        await video.current.playAsync();
-        setIsLoading(false); 
+        // await video.current.loadAsync({ uri: videoUri, volume: 1.0 });
+        // await video.current.playAsync();
+        
       }
     }
 
@@ -105,22 +107,30 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
   }
 
   return (
-    isLoading
-    ?
-    <FullPageSpinner size="large" />
-    :
-    <View style={styles.container}>
-      <Pressable onPress={togglePlay}>
-        <Video
-          ref={video}
-          style={styles.video}
-          isMuted={false}
-          useNativeControls={false}
-          resizeMode="cover"
-          onPlaybackStatusUpdate={(status) => handlePlaybackStatusUpdate(status)}
-        />
-      </Pressable>
-    </View>
+    <>
+      <View style={[styles.container, { display: isLoading || !status.isLoaded ? 'none' : 'flex'}]}>
+        <Pressable onPress={togglePlay}>
+          <Video
+            ref={video}
+            shouldPlay
+            source={{ uri: videoUri }}
+            style={styles.video}
+            isMuted={false}
+            useNativeControls={false}
+            resizeMode="cover"
+            onPlaybackStatusUpdate={(status) => handlePlaybackStatusUpdate(status)}
+          />
+        </Pressable>
+      </View>
+
+      {
+        isLoading || !status.isLoaded
+        ?
+          <FullPageSpinner size="large" />
+        :
+        null 
+      }
+    </>
   );
 }
 
@@ -128,6 +138,7 @@ const styles = StyleSheet.create({
   container: {
     ...containers.DEFAULT,
     // paddingTop: Constants.statusBarHeight,
+
   },
   video: {
     width: dimensions.width,
