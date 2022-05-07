@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Animated, Text, View, Pressable, ScrollView, Alert } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, Pressable, ScrollView, Alert } from 'react-native';
 
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+import { LinearGradient } from 'react-native-svg';
+
 import VideosContext from '../context/VideosContext';
 
 import { checkRecordingPermissions } from '../utils/permissions';
 import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
 
-import { text, containers, icons, spacings, dimensions } from '../styles';
+import { text, containers, colors, icons, spacings, dimensions } from '../styles';
 
 import PulseAnimation from '../components/PulseAnimation';
 import GoBack from '../components/GoBack';
@@ -25,24 +27,26 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const { userData, setUserData } = React.useContext(VideosContext);
 
   // TODO: experiment with adding loading states (carefully) to improve UX
-  const [finalTranscript, setFinalTranscript] = useState<string>('');
-  const [recordingFinished, setRecordingFinished] = useState<boolean>(false);
-  const [hasPermission, setHasPermission] = useState<null | boolean>(null);
-  const [type, setType] = useState(Camera.Constants.Type.front);
-  const [isRecording, setIsRecording] = useState<null | boolean>(null);
-  const [cameraRef, setCameraRef] = useState(null);
-  const [videoStorePath, setVideoStorePath] = useState<string>('');
+  const cameraRef = React.useRef(null);
+  const [finalTranscript, setFinalTranscript] = React.useState<string>('');
+  const [recordingFinished, setRecordingFinished] = React.useState<boolean>(false);
+  const [hasPermission, setHasPermission] = React.useState<null | boolean>(true);
+  const [type, setType] = React.useState(Camera.Constants.Type.front);
+  const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
+  const [videoStorePath, setVideoStorePath] = React.useState<string>('');
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
 
   // Setup: Get permissions for camera from user first
-  useEffect(() => {
+  React.useEffect(() => {
     const asyncWrapper = async () => {
       // At this point, user should already have permissions from Home unless it was denied earlier
       // TODO: if they still don't have permissions, two options
       // Request recording permissions here: recording tends to fail in this case
       // OR send them back to home and request permissions again there
       // NOTE: Expo seems to ask one more permission for some reason
+
       await setHasPermission(await checkRecordingPermissions()); 
     }
 
@@ -53,11 +57,34 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     return () => {}
   }, []);
 
+  // Doesn't work sadly but this would be ideal 
+  // Therefore, we use a hacky timeout to simulate camera loading to avoid the black screen
+  React.useEffect(() => {
+    if (cameraRef) {
+      console.log("cameraRef loaded");
+      // setIsLoading(false);
+    }
+  }, [cameraRef])
+
+  // React.useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 500);
+
+  //   return () => clearTimeout(timer);
+  // });
+
+  
+
+  // React.useEffect(() => {
+  //   if (!isLoading) cameraRef.resumePreview();
+  // }, [isLoading])
+
   // "Callback method" for when the final transcript is ready.
   // Note: isRecording must be false, meaning stopRecording() was explicitly called.
   // Otherwise, if isRecording is just null, means that we have not begun recording,
     // or we have simply switched the camera type between front or back.
-  useEffect(() => {
+  React.useEffect(() => {
     if ((finalTranscript.length > 0) &&
         (videoStorePath.length > 0) && 
         (recordingFinished) && 
@@ -109,7 +136,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     try {
       if (cameraRef){
         setIsRecording(true);
-        let video = await cameraRef.recordAsync({ maxDuration: MAX_DURATION });
+        let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
 
         // Create video and thumbnail files.
         let timestamp = Math.floor(Date.now() / 1000);
@@ -160,7 +187,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const stopRecording = async () => {
     try {
       setIsRecording(false);
-      await cameraRef.stopRecording();  
+      await cameraRef.current.stopRecording();  
     } catch(err: any) {
       console.log("[ERROR] Recording.tsx: stopRecording", err);
     }
@@ -255,11 +282,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           <Camera
             style={styles.cameraContainer}
             type={type}
-            ref={(ref) => {
-              setCameraRef(ref);
-            }}
+            ref={cameraRef}
           >
-
             <View style={styles.captionContainer}>
               <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
             </View>
@@ -276,14 +300,41 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     }
   }
 
+  // The camera itself takes a while to load
+  // Waiting for cameraRef to not be null doesn't seem to work
+  // It seems that the <Camera /> component and useRef needs to be loaded first 
+  // Therefore, we still load the Camera component, but hide the display until loaded
+  // We have no good way of detecting when the Camera is actually loaded (TODO: find callback?)
+  // Therefore, we have to use a hacky timeout useEffect
   return (
-    <View style={styles.container}>
+    <>
+    {/* {isLoading 
+      ? 
+      <LinearGradient
+        colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+        style={styles.container}
+      >
+        <View>
+          <Text>Vistas Summary</Text>
+        </View>
+      </LinearGradient>
+      : 
+      null
+    } */}
+
+    <View style={[styles.container, {
+      display: !cameraRef ? 'none' : 'flex',
+    }]}>
       {renderCamera()}
     </View>
+    </>
   )
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    zIndex: 100
+  },
   container: {
     ...containers.DEFAULT
   },

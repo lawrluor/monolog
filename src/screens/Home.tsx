@@ -3,7 +3,6 @@ import { StyleSheet, View, ScrollView, Text, Pressable } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import * as FileSystem from 'expo-file-system';
 
 import DeleteAll from '../components/Delete';  // IN TESTING ONLY
 import CustomIcon from '../components/CustomIcon';
@@ -18,11 +17,12 @@ import { readUserData } from '../utils/localStorageUtils';
 import { getRecordingPermissions } from '../utils/permissions';
 
 import VideosContext from '../context/VideosContext';
+import CameraContext from '../context/CameraContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = false;
+const TESTING = true;
 
 const Home = ({ navigation }: any): JSX.Element => {
   const { userData, setUserData, videosCount, isLoading } = React.useContext(VideosContext);
