@@ -3,8 +3,9 @@ import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { Feather } from '@expo/vector-icons';
 
-import Divider from './Divider';
 import SignInButton from './SignInButton';
+import VistaSummaryText from './VistaSummaryText';
+import Divider from './Divider';
 
 import VideosContext from '../context/VideosContext';
 
@@ -13,17 +14,18 @@ import { text, spacings, colors, dimensions, icons } from '../styles';
 type Props = {
   defaultNumOfWords?: number;  
   abridged?: boolean;
-  navigation: any
+  navigation: any,
+  callback: any
 }
 
 const MAX_NUM_OF_WORDS_TO_DISPLAY = 50;
-const SUMMARY_TEXT = "The word chart is important for understanding what you typically speak about during your video logs. The number refers to how many times the word appeared."
+const WORD_CHART_SUMMARY = "Welcome to your Frequent Words Vista. This widget will display common words that you’ve mentioned across entries, including how many times these word has been repeated.";
 
 // Renders the chart of words based on their counts
 // Each bar is a series of horizontal containers defined in the styles (barItemContainer, barItem, bar)
 // I've created a custom chart because the design is complex and it's likely not worth hacking a vanilla library to do this
 // TODO: If the bar value is over 50% of the container width, shift the word text outside of the bar
-const WordChart = ({ defaultNumOfWords=10, abridged, navigation }: Props) => {
+const WordChart = ({ defaultNumOfWords=10, abridged, callback }: Props) => {
   const { wordChartData } = React.useContext(VideosContext);
   const [ numOfWordsCurrentlyDisplayed, setNumOfWordsCurrentlyDisplayed ] = React.useState(defaultNumOfWords);
   const [ moreWordsShown, setMoreWordsShown ] = React.useState(false);
@@ -128,29 +130,6 @@ const WordChart = ({ defaultNumOfWords=10, abridged, navigation }: Props) => {
     return null;
   }
 
-  const renderSummaryText = () => {
-    return (
-      <View style={styles.summaryTextContainer}>
-        <View style={{ marginVertical: spacings.MEDIUM }}><Divider color={colors.SECONDARY} /></View>
-        <Text style={styles.summaryText}>{SUMMARY_TEXT}</Text>
-        
-      </View>
-    )
-  }
-
-  const renderRecordButton = () => {
-    return (
-      <View style={{ alignItems: 'center' }}>
-        <SignInButton 
-          background={colors.HIGHLIGHT}
-          onPress={() => navigation.navigate('Recording')}
-        > 
-          <Text style={text.h4}>Record</Text>
-        </SignInButton>
-      </View>
-    )
-  }
-
   return (
     abridged
     ?
@@ -165,8 +144,8 @@ const WordChart = ({ defaultNumOfWords=10, abridged, navigation }: Props) => {
       <Text style={styles.featureTitle}>Frequent Words</Text>
       <ScrollView>
         {renderWordChart()}
-        {renderSummaryText()}
-        {renderRecordButton()}
+        <View style={{ marginTop: spacings.HUGE }}><Divider color={colors.SECONDARY} /></View>
+        <View style={{ marginVertical: spacings.MEDIUM }}><VistaSummaryText summaryText={WORD_CHART_SUMMARY} callback={callback}/></View>
       </ScrollView>
 
       {renderShowMoreButton()}
@@ -212,14 +191,6 @@ const styles = StyleSheet.create({
     // borderColor: 'black',
     flexDirection: 'row',
     alignItems: 'center'
-  },
-  summaryTextContainer: {
-    marginVertical: spacings.SMALL
-  },
-  summaryText: {
-    ...text.p, 
-    color: colors.SECONDARY,
-    textAlign: 'center'
   }
 });
 

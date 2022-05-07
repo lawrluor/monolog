@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
-import { text, spacings } from '../styles';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { text, spacings, colors, dimensions } from '../styles';
+
+import { ActionButton } from './SignInButton';
+import GoBack from './GoBack';
+
+import { LinearGradient } from 'expo-linear-gradient';
+import { deleteDataAlert } from '../utils/customAlerts';
 
 type Props = {
   size?: string
@@ -26,8 +32,8 @@ const FullPageSpinner = ({ size }) => {
     // Run on mount
     const timeout = setTimeout(():void => {
       console.log("[DEBUG] Timeout began")
-      setMessage('Loading Issues? Check your internet connection and make sure you have the latest version of the app.');
-    }, 6000);
+      setMessage('Please make sure you have the latest version of the app and that you have allowed all permissions that the app requests. If you\'re having trouble, you can delete your data and reload the app. If that doesn\'t help, please delete and reinstall the app. You will still lose your saved logs, however.');
+    }, 5000);
 
     // Unmount cleanup, clear timeout if component unmounted
     return ():void => {
@@ -40,18 +46,45 @@ const FullPageSpinner = ({ size }) => {
   }, []);
 
   return (
-    <View style={styles.spinner}>
+    <LinearGradient
+      colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+      style={styles.fullSizeContainer}
+    >
       <ActivityIndicator size={size} />
-      <Text style={styles.messageText}>{message}</Text>
-    </View>
+      {
+        message 
+        ? 
+        <>
+          <GoBack />
+          
+          <View style={{ marginVertical: spacings.LARGE }}>
+            <Text style={styles.messageText}>{message}</Text> 
+          </View>
+
+          <View style={{ marginVertical: spacings.LARGE }}>
+            <ActionButton callback={deleteDataAlert} text={"Delete Data"}/>
+          </View>
+        </>
+        : 
+        null
+      }
+    </LinearGradient>
   )
 }
 
-const styles = {
+const styles = StyleSheet.create({
   spinner: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+  },
+  fullSizeContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: dimensions.width,
+    height: dimensions.height, 
+    position: 'absolute'
   },
   messageText: {
     ...text.p,
@@ -59,6 +92,6 @@ const styles = {
     marginHorizontal: spacings.LARGE,
     textAlign: 'center'
   }
-}
+});
 
 export { Spinner, FullPageSpinner };

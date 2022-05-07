@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Pressable  } from 'react-native';
 import { Audio, Video } from 'expo-av';
 
-import { Spinner } from './Spinner';
+import { FullPageSpinner } from './Spinner';
 
 import { containers, dimensions } from '../styles';
 
@@ -10,10 +10,9 @@ type Props = {
   videoUri: string
   isPlaying: boolean,
   setIsPlaying: any,
-  navigation: any
 }
 
-const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, navigation }: Props): JSX.Element => {
+const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element => {
   const video = React.useRef(null);
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);  // TODO: set loading handling
@@ -23,77 +22,115 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, navigation }: Props): 
     status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
     setIsPlaying(!isPlaying);
   }
+
+  // Clears previous recordings, does NOT record anything.
+  const resetRecordingAudio = async () => {
+    const recording = new Audio.Recording();
+      try {
+        console.log("Resetting recording");
+        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+        await recording.stopAndUnloadAsync()
+      } catch (error) {
+        console.log("err resetting recording", error);
+      }
+  }
     
   // Audio settings for this video
   React.useEffect(() => {
     const setAudioModes = async () => {
+      console.log("-----1. setting audio");
       await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
+        allowsRecordingIOS: true,
         staysActiveInBackground: true,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
         playsInSilentModeIOS: true,       // this option is unreliable at the moment
-        shouldDuckAndroid: true,
+        shouldDuckAndroid: false,
         interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
         playThroughEarpieceAndroid: false,
       });
 
-      setIsLoading(false);  
-      setStatus({'isPlaying': true});
+      await resetRecordingAudio();
+      
+      if (video && video.current) {
+        let status = await video.current.getStatusAsync();
+        console.log("status", status);
+        console.log("-----2. audio loaded, now playing video");
+        // await video.current.loadAsync({ uri: videoUri, volume: 1.0 });
+        // await video.current.playAsync();
+        
+      }
     }
 
     setAudioModes();
 
-    const unsubscribe = navigation.addListener('willBlur', ()=>{
-      console.log("blurring");
-      video.current.unloadAsync()
-      .then()
-      .catch((err: any) => {
-        console.log("[ERROR] VideoPlayer: useEffect", err);
-      });
-    });
-    // See: https://github.com/expo/expo/issues/3115
-    // See: https://docs.expo.dev/versions/latest/sdk/audio/#playing-sounds
+    // return () => {
+    //   console.log("unmounting video player");
+    //   video.current.stopAsync()
+    //     .then()
+    //     .catch((err: any) => {
+    //       console.log("[ERROR] VideoPlayer: useEffect", err);
+    //     });
+        
+    //   video.current.unloadAsync()
+    //     .then()
+    //     .catch((err: any) => {
+    //       console.log("[ERROR] VideoPlayer: useEffect", err);
+    //     });
+    // }
 
     return () => {
-      unsubscribe();
-    }
-    return () => {
-      console.log("unmounting video player");
-      video.current.stopAsync()
-        .then()
-        .catch((err: any) => {
-          console.log("[ERROR] VideoPlayer: useEffect", err);
-        });
-        
-      video.current.unloadAsync()
-        .then()
-        .catch((err: any) => {
-          console.log("[ERROR] VideoPlayer: useEffect", err);
-        });
+      console.log("unmounting VideoPlayer");
+      const unmount = async () => {
+        try {
+          await video.current.stopAsync();
+          await video.current.unloadAsync();
+        } catch(err: any) {
+          console.log("[ERROR] VideoPlayer.tsx:useEffect", err)
+        }
+      }
+
+      unmount();
     }
   }, []);
 
+  const handlePlaybackStatusUpdate = (status: any) => {
+    // Manual looping set: this is because setting prop isLooping in Video component directly causes freezing.
+    // Reference: https://github.com/expo/expo/issues/3488
+    if (status.didJustFinish && !status.isLooping) {
+      if (video && video.current) {
+        video.current.replayAsync();
+        video.current.setIsLoopingAsync(true);
+      }
+    } else {
+      setStatus(status);
+    }
+  }
+
   return (
-    isLoading
-    ?
-    <View style={styles.container}>
-      <Spinner />
-    </View>
-    :
-    <View style={styles.container}>
-      <Pressable onPress={togglePlay}>
-        <Video
-          ref={video}
-          style={styles.video}
-          source={{ uri: videoUri }}
-          useNativeControls={false}
-          resizeMode="cover"
-          isLooping
-          shouldPlay
-          onPlaybackStatusUpdate={status => setStatus(status)}
-        />
-      </Pressable>
-    </View>
+    <>
+      <View style={[styles.container, { display: isLoading || !status.isLoaded ? 'none' : 'flex'}]}>
+        <Pressable onPress={togglePlay}>
+          <Video
+            ref={video}
+            shouldPlay
+            source={{ uri: videoUri }}
+            style={styles.video}
+            isMuted={false}
+            useNativeControls={false}
+            resizeMode="cover"
+            onPlaybackStatusUpdate={(status) => handlePlaybackStatusUpdate(status)}
+          />
+        </Pressable>
+      </View>
+
+      {
+        isLoading || !status.isLoaded
+        ?
+          <FullPageSpinner size="large" />
+        :
+        null 
+      }
+    </>
   );
 }
 
@@ -101,6 +138,7 @@ const styles = StyleSheet.create({
   container: {
     ...containers.DEFAULT,
     // paddingTop: Constants.statusBarHeight,
+
   },
   video: {
     width: dimensions.width,

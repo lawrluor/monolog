@@ -1,18 +1,22 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { LineChart, Path, XAxis } from 'react-native-svg-charts';
 import { ClipPath, Circle, Defs, Rect } from 'react-native-svg';
 import * as FileSystem from 'expo-file-system';
 
+import Divider from './Divider';
+import VistaSummaryText from './VistaSummaryText';
+
 import VideosContext from '../context/VideosContext';
 
 import { text, spacings, colors } from '../styles';
 
+const MOOD_CHART_SUMMARY =  "Welcome to your Mood Tracker Vista. This widget will display your average mood each day over the past week, based on the emojis you select after recording an entry."
 const MILLISECONDS_IN_A_WEEK = 604800000;
 const MILLISECONDS_IN_A_DAY = 86400000;
 
-const MoodChart = () => {
+const MoodChart = ({ abridged, callback }: any) => {
   const { moodData, toggleVideosRefresh } = React.useContext(VideosContext);
 
   const updateMoodMap = (emojiValue, timestampSeconds) => {
@@ -357,7 +361,11 @@ const MoodChart = () => {
           <Decorator/>
           <DashedLines/>
           <SolidLines/>
-        </LineChart>
+        </LineChart> 
+
+        <View style={{ marginVertical: spacings.LARGE }}>
+          <Divider color={colors.SECONDARY} widthPercentage={95} />
+        </View>
 
         <XAxis
           style={{ marginHorizontal: -10 }}
@@ -374,6 +382,7 @@ const MoodChart = () => {
     <>
       <Text style={styles.featureTitle}>Mood Chart</Text>
       {renderMoodTracker()}
+      {abridged ? null : <View style={{ marginVertical: spacings.MEDIUM }}><VistaSummaryText summaryText={MOOD_CHART_SUMMARY} callback={callback}/></View>}
     </>
   )
 }

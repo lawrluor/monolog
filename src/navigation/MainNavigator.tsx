@@ -1,52 +1,42 @@
 import React, { useEffect } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { AppStack, OnBoardingStack, AuthStack } from './index';
+import { AppStack, OnBoardingStack, AuthStack, AuthLoading } from './index';
 
-import { readUserData } from '../utils/localStorageUtils';
+type StackNavigatorParams = {
+  "AuthLoading": undefined,
+  "AppStack": undefined,
+  "AuthStack": undefined,
+  "OnBoardingStack": undefined
+}
+
+const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 const MainNavigator = (): JSX.Element =>  {
-  // TODO: set user interface type
-  const [user, setUser] = React.useState<null | boolean>(null);
-  const [shouldOnboard, setShouldOnboard] = React.useState<boolean>(false);
-
-  const checkOnboarding = async () => {
-    let userData = await readUserData();
-
-    if (userData && userData.onboarded) {
-      // 1. Existing user: take them to AppStack (Home screen)
-      setUser(true);
-    }
-    
-    // 2. Implicit Else: First-time user: take them to AuthStack (Landing screen)
-
-    // TODO: Handle sending users to Onboarding again if they wish to edit their user data.
+  const renderNavStack = () => {
+    return (
+      <NavigationContainer >
+        <Stack.Navigator initialRouteName='AuthLoading' screenOptions={{ animation: 'none' }}>
+          <Stack.Screen name="AuthLoading" component={AuthLoading} options={{ headerShown: false, }} />
+          <Stack.Screen name="AppStack" component={AppStack} options={{ headerShown: false }} />
+          <Stack.Screen name="AuthStack" component={AuthStack} options={{ headerShown: false }} />
+          <Stack.Screen name="OnBoardingStack" component={OnBoardingStack} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    )
   }
 
-  // Helper function to decide which stack to render based on user state
-  const renderNavigationStack = () => {
-    // TODO: add local storage tracking for onBoard variables, including name, etc
-    // NOTE: No need to review, just temporary for testing
-    if (shouldOnboard) {
-      return <OnBoardingStack setShouldOnboard={setShouldOnboard} />
-    } else {
-      if (user === null) {
-        return <AuthStack setUser={setUser} setShouldOnboard={setShouldOnboard} /> 
-      } else {
-        return <AppStack setUser={setUser}  />
-      }
-    }
-  }
-
-  useEffect(() => {
-    checkOnboarding();
-  }, [shouldOnboard])
+        // 1. Existing user: take them to AppStack (Home screen)
+        // if (userData && userData.onboarded) {
+        //   return <AuthStack /> 
+        // } else {
+        //   return <AppStack />
+        // }
 
   return (
-    <NavigationContainer>
-      {renderNavigationStack()}
-    </NavigationContainer>
+    renderNavStack()
   )
 }
 

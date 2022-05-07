@@ -2,7 +2,6 @@ import React from 'react';
 
 import VideoPlayer from './VideoPlayer';
 import VideoOverlay from './VideoOverlay';
-import GoBack from '../components/GoBack';
 
 type Props = {
   navigation: any,
@@ -22,8 +21,8 @@ const VideoContainer = ({ videoData, navigation }: Props): JSX.Element => {
     
   return (
     <>
-      <VideoPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} videoUri={videoData.uri} navigation={navigation} />
-      <VideoOverlay videoData={videoData} isPlaying={isPlaying} navigation={navigation} />
+      <VideoPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} videoUri={videoData.uri}/>
+      <VideoOverlay videoData={videoData} isPlaying={isPlaying} navigation={navigation}/>
     </>
   );
 }

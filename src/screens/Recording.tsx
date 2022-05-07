@@ -1,48 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Animated, Text, View, Pressable, ScrollView, Alert } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, Pressable, ScrollView, Alert } from 'react-native';
 
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import VideosContext from '../context/VideosContext';
+import UserContext from '../context/UserContext';
 
 import { checkRecordingPermissions } from '../utils/permissions';
 import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
 
-import { text, containers, icons, spacings, dimensions } from '../styles';
+import { text, containers, colors, icons, spacings, dimensions } from '../styles';
 
 import PulseAnimation from '../components/PulseAnimation';
 import GoBack from '../components/GoBack';
 import SpeechToText from '../components/SpeechToText';
 import CustomIcon from '../components/CustomIcon';
+import { FullPageSpinner } from '../components/Spinner';
 
 const MAX_DURATION = 600;  // seconds
 
 // NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording 
 export const Recording = ({ navigation }: any): JSX.Element => {
-  const { userData, setUserData } = React.useContext(VideosContext);
+  const { user, setUser } = React.useContext(UserContext);
 
   // TODO: experiment with adding loading states (carefully) to improve UX
-  const [finalTranscript, setFinalTranscript] = useState<string>('');
-  const [recordingFinished, setRecordingFinished] = useState<boolean>(false);
-  const [hasPermission, setHasPermission] = useState<null | boolean>(null);
-  const [type, setType] = useState(Camera.Constants.Type.front);
-  const [isRecording, setIsRecording] = useState<null | boolean>(null);
-  const [cameraRef, setCameraRef] = useState(null);
-  const [videoStorePath, setVideoStorePath] = useState<string>('');
+  const cameraRef = React.useRef(null);
+  const [finalTranscript, setFinalTranscript] = React.useState<string>('');
+  const [recordingFinished, setRecordingFinished] = React.useState<boolean>(false);
+  const [hasPermission, setHasPermission] = React.useState<null | boolean>(true);
+  const [type, setType] = React.useState(Camera.Constants.Type.front);
+  const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
+  const [videoStorePath, setVideoStorePath] = React.useState<string>('');
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
 
   // Setup: Get permissions for camera from user first
-  useEffect(() => {
+  React.useEffect(() => {
     const asyncWrapper = async () => {
       // At this point, user should already have permissions from Home unless it was denied earlier
       // TODO: if they still don't have permissions, two options
       // Request recording permissions here: recording tends to fail in this case
       // OR send them back to home and request permissions again there
       // NOTE: Expo seems to ask one more permission for some reason
+
       await setHasPermission(await checkRecordingPermissions()); 
     }
 
@@ -57,7 +60,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Note: isRecording must be false, meaning stopRecording() was explicitly called.
   // Otherwise, if isRecording is just null, means that we have not begun recording,
     // or we have simply switched the camera type between front or back.
-  useEffect(() => {
+  React.useEffect(() => {
     if ((finalTranscript.length > 0) &&
         (videoStorePath.length > 0) && 
         (recordingFinished) && 
@@ -81,7 +84,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       );
     }
     
-    if (!userData || userData.tutorialMode) {
+    if (!user || user.tutorialMode) {
       // First time user does this, notify them
       Alert.alert(
         "Please Note",
@@ -98,7 +101,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       );
 
       // TODO: can make a specific state for this, like flipCameraNotified
-      setUserData(Object.assign(userData, { tutorialMode: false }))
+      let updatedUser = {...user, ...{ tutorialMode: false }};  // Merge old user object with new fields
+      setUser(updatedUser);
     } else {
       // User already knows this, let them flip the camera at will
       flipCamera();
@@ -109,7 +113,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     try {
       if (cameraRef){
         setIsRecording(true);
-        let video = await cameraRef.recordAsync({ maxDuration: MAX_DURATION });
+        let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
 
         // Create video and thumbnail files.
         let timestamp = Math.floor(Date.now() / 1000);
@@ -160,7 +164,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const stopRecording = async () => {
     try {
       setIsRecording(false);
-      await cameraRef.stopRecording();  
+      await cameraRef.current.stopRecording();  
     } catch(err: any) {
       console.log("[ERROR] Recording.tsx: stopRecording", err);
     }
@@ -169,8 +173,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Distinguishes between user actually pressing the stop button,
   // while stopRecording is called in any other event that the recording stops.
   const finishRecording = async () => {
+    await stopRecording();
     setRecordingFinished(true);
-    stopRecording();
   }
 
   // Renders an icon that takes you to Gallery when pressed 
@@ -227,15 +231,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     )
   }
 
-  const resetNavigator = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Home' }] 
-    });
-
-    navigation.navigate('Home');
-  }
-
   const renderCamera = () => {
     if (hasPermission === null) {
       return <View />;
@@ -244,7 +239,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     } else {
       return (
         <>
-          <GoBack navigation={navigation} />
+          <GoBack />
 
           <View style={styles.flipCameraContainer}>
             <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
@@ -255,11 +250,9 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           <Camera
             style={styles.cameraContainer}
             type={type}
-            ref={(ref) => {
-              setCameraRef(ref);
-            }}
+            ref={cameraRef}
+            onCameraReady={() => setIsLoading(false) }
           >
-
             <View style={styles.captionContainer}>
               <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
             </View>
@@ -276,10 +269,25 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     }
   }
 
+  // The camera itself takes a while to load
+  // Waiting for cameraRef to not be null doesn't seem to work
+  // It seems that the <Camera /> component and useRef needs to be loaded first 
+  // Therefore, we still load the Camera component, but hide the display until loaded
+  // The callback onCameraReady on Camera component sets our loading state
   return (
-    <View style={styles.container}>
-      {renderCamera()}
-    </View>
+    <>
+      <View style={[styles.container, {display: isLoading ? 'none' : 'flex'}]}>
+        {renderCamera()}
+      </View>
+      
+      {
+        isLoading 
+        ? 
+        <FullPageSpinner size="large" />
+        : 
+        null
+      }
+    </>
   )
 }
 

@@ -6,8 +6,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Settings, Feedback } from '../screens';
 
-import { VideosProvider } from '../context/VideosContext';
-
 import CustomIcon from '../components/CustomIcon';
 
 import { colors, icons, spacings } from '../styles';
@@ -72,6 +70,7 @@ const TabNavigator = ({ setUser }): JSX.Element => {
     <Tab.Navigator
       initialRouteName={INITIAL_TAB_ROUTE}
       screenOptions={({ route }) => ({
+        animation: 'none',
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: colors.BACKGROUND,
@@ -138,16 +137,20 @@ const TabNavigator = ({ setUser }): JSX.Element => {
 
 // This StackNavigator is the navigator for the App stack (core functionality and features)
 // It has TabNavigator nested inside of it: the syntax is identical to including an individual screen component
+// See docs for Stack Navigator options: https://reactnavigation.org/docs/native-stack-navigator
+// NOTE: we are using native-stack, which offers better performance but is less customizable.
+// Consider changing to just default Stack for separately animated screens, for example
+// Also see https://github.com/software-mansion/react-native-screens/issues/380 for better navigation UX
 const AppNavigator = ({ setUser }): JSX.Element => {
   return (
-    <VideosProvider>
-      <Stack.Navigator initialRouteName="TabNavigator">
-        <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="Player" component={Player} options={{ headerShown: false }} />
-        <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
-        <Stack.Screen name="Transcript" component={Transcript} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    </VideosProvider>
+    <Stack.Navigator initialRouteName="TabNavigator" screenOptions={{ animation: 'none' }}>
+      <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
+      <Stack.Group screenOptions={{ animation: 'fade' }}>
+        <Stack.Screen name="Player" component={Player} options={{ headerShown: false }}/>
+      </Stack.Group>
+      <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
+      <Stack.Screen name="Transcript" component={Transcript} options={{ headerShown: false }} />
+    </Stack.Navigator>
   )
 }
 

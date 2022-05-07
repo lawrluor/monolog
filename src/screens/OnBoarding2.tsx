@@ -63,7 +63,7 @@ const OnBoarding1 = ({ route, navigation }): JSX.Element => {
   const renderTextEntries = () => {
     return (
       <View style={styles.textEntriesContainer}>
-        <View style={styles.textEntryContainer}><TextEntry placeholderValue="Gender" editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={gender} setTextState={setGender} onFinish={() => handleTextOnFinish(0)}/></View>
+        <View style={styles.textEntryContainer}><TextEntry placeholderValue="Gender" autoCapitalize={'sentences'} editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={gender} setTextState={setGender} onFinish={() => handleTextOnFinish(0)}/></View>
         <View style={styles.textEntryContainer}><TextEntry placeholderValue="Pronouns" editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={pronouns} setTextState={setPronouns}  onFinish={() => handleTextOnFinish(1)}/></View>
         <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[2]} textState={age} setTextState={setAge}  onFinish={() => handleTextOnFinish(2)} /></View>
       </View>
@@ -126,7 +126,8 @@ export const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginHorizontal: spacings.HUGE,
   },
   titleContainer: {
     alignItems: 'center',

@@ -12,9 +12,10 @@ type Props = {
   returnKeyType?: string,
   isTextBox?: boolean,
   onFinish?: Function,
+  autoCapitalize?: string
 }
 
-const TextEntry = ({ children, textState, setTextState, id, innerRef, label, editable, keyboardType, secureTextEntry, placeholderValue, returnKeyType, isTextBox, onChangeText, onFinish }: Props): JSX.Element => {
+const TextEntry = ({ children, textState, setTextState, id, innerRef, label, autoCapitalize, editable, keyboardType, secureTextEntry, placeholderValue, returnKeyType, isTextBox, onChangeText, onFinish }: Props): JSX.Element => {
     return (
     <>
       {label
@@ -29,7 +30,7 @@ const TextEntry = ({ children, textState, setTextState, id, innerRef, label, edi
         value={textState}
         onChangeText={setTextState}
         editable={editable}
-        autoCapitalize="none"
+        autoCapitalize={autoCapitalize}
         autoCorrect={false}
         underlineColorAndroid={'transparent'}
         secureTextEntry={secureTextEntry || false}

@@ -3,7 +3,6 @@ import { StyleSheet, View, ScrollView, Text, Pressable } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import * as FileSystem from 'expo-file-system';
 
 import DeleteAll from '../components/Delete';  // IN TESTING ONLY
 import CustomIcon from '../components/CustomIcon';
@@ -14,18 +13,20 @@ import NewUserMessage from '../components/NewUserMessage';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
 import { comingSoonAlert, simpleAlert } from '../utils/customAlerts';
-import { readUserData } from '../utils/localStorageUtils';
 import { getRecordingPermissions } from '../utils/permissions';
 
 import VideosContext from '../context/VideosContext';
+import UserContext from '../context/UserContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
+import { readUserData } from '../utils/localStorageUtils';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = false;
+const TESTING = true;
 
 const Home = ({ navigation }: any): JSX.Element => {
-  const { userData, setUserData, videosCount, isLoading } = React.useContext(VideosContext);
+  const { user } = React.useContext(UserContext);
+  const { videosCount, isLoading } = React.useContext(VideosContext);
 
   // Optionally used to allow for closing alert/promo messages in Home
   const [alertVisible, setAlertVisible] = React.useState<boolean>(false);
@@ -38,7 +39,8 @@ const Home = ({ navigation }: any): JSX.Element => {
     navigation.navigate('Recording');
   }
 
-  const navigateToProfile = () => {
+  const navigateToProfile = async () => {
+    console.log(await readUserData());
     comingSoonAlert(() => {
       console.log("uploading picture...");
     });
@@ -85,7 +87,7 @@ const Home = ({ navigation }: any): JSX.Element => {
     if (videosCount >= VIDEOS_THRESHOLD) {
       return (
         <View style={[styles.featureContainer]}>
-          <MoodChart />
+          <MoodChart abridged />
         </View>
       )
     } else {
@@ -103,19 +105,8 @@ const Home = ({ navigation }: any): JSX.Element => {
     }
   }
 
-  // Async wrapper for getting user data
-  // Because Home is the initial landing screen on AppStack, we get userData here
-  // We cannot get userData any earlier than this Home component as currently,
-  // the VideosContext Provider only exists on AppStack, not around the entire navigator.
-  // TODO: refactor out User context to have larger scope (around entire navigator/app)
+  // Async wrapper for getting permissions
   React.useEffect(() => {
-    const getUserData = async () => {
-      let data = await readUserData();
-      setUserData(data);
-    }
-
-    // Set up app
-    getUserData();
     getRecordingPermissions();
   }, []);
 
@@ -139,7 +130,7 @@ const Home = ({ navigation }: any): JSX.Element => {
 
             <View>
               <Text style={styles.subTitle}>Welcome,</Text>
-              <Text style={styles.profileTitle}>{userData.firstName || "Journaler!"}</Text>
+              <Text style={styles.profileTitle}>{user.firstName || "Journaler!"}</Text>
             </View>
 
             <View>

@@ -3,13 +3,13 @@ import { View, StyleSheet } from 'react-native';
 
 import Voice from '@react-native-voice/voice';
 
-import VideosContext from '../context/VideosContext';
-
 import VideoCaption from './VideoCaption';
+
+import UserContext from '../context/UserContext';
 
 // TODO: Inherit stop/start state from parent (Recording) which toggles these states too.
 const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element => {
-  const { userData, setUserData } = React.useContext(VideosContext);
+  const { user, setUser } = React.useContext(UserContext);
 
   const [result, setResult] = React.useState('');
   const [textWithTimestamps, setTextWithTimestamps] = React.useState({});  // Not currently used
@@ -38,7 +38,7 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
     setRecordingStartTime(Date.now());
     setLoading(true);
     try {
-      await Voice.start('en-US');
+      await Voice.start('en-US', {EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 3000});
     } catch (error) {
       console.log("SpeechToText.tsx: error while starting", error);
     }
@@ -100,15 +100,19 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
   // TODO: Try to set permissions through a callback in this component, 
       // but for now, we will set user data after they finish recording
       // This is because they can't have recorded without granting speech-to-text permission
-  // The key is this happens BEFORE the user can press the video record button, so video recording is not interrupted
-  // BUG: This makes it so that the speech to text starts BEFORE pressing the record button 
-    // Essentially, stopRecording() does nothing to immediately stop it and await causes things to break
-  // TODO: No method for this that I can find, so just start and stop immediately.
   React.useEffect(() => {
-    if (!userData || !userData.speechToTextPermission) {
-      startRecording()
-      stopRecording();  
+    const wrapper = async () => {
+      if (!user || !user.speechToTextPermission) {
+        // returns 1 if available and permission granted, 0 if not
+        let result = await Voice.isAvailable(); 
+
+        // Merge old user object with new fields
+        let updatedUser = {...user, ...{ 'speechToTextPermission': result===1 ? true : false }}; 
+        setUser(updatedUser);
+      }
     }
+
+    wrapper();
   }, []);
 
   React.useEffect(() => {
@@ -123,16 +127,6 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
     } else if (isRecording === false) {
       // user has stopped the record button, or time has ran out: finish recording and navigate next
       finishRecording();
-
-      // Correctly set values for user permissions if not already set
-      // TODO: move this code elsewhere, preferably in callback in Recording or Home
-      if (!userData.speechToTextPermission || !userData.cameraPermission || !userData.micPermission) {
-        setUserData(Object.assign(userData, {
-          'speechToTextPermission': true,
-          'cameraPermission': true,
-          'micPermission': true 
-        }));
-      }
     }
   }, [isRecording]);
 

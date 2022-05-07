@@ -81,7 +81,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
         colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
         style={styles.container}
     >
-      <GoBack navigation={navigation}/>
+      <GoBack />
 
       <View>
         <View style={styles.titleContainer}>

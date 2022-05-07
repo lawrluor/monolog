@@ -21,6 +21,17 @@ const SignInButton = ({ children, text, background, onPress }: Props): JSX.Eleme
   )
 }
 
+export const ActionButton = ({ callback, text }: any) => {
+  return (
+    <SignInButton 
+      background={colors.HIGHLIGHT}
+      onPress={callback}
+    > 
+      <Text style={[styles.text, { color: colors.BACKGROUND }]}>{text}</Text>
+    </SignInButton>
+  )
+}
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
