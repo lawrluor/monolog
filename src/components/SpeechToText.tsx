@@ -3,13 +3,13 @@ import { View, StyleSheet } from 'react-native';
 
 import Voice from '@react-native-voice/voice';
 
-import VideosContext from '../context/VideosContext';
-
 import VideoCaption from './VideoCaption';
+
+import UserContext from '../context/UserContext';
 
 // TODO: Inherit stop/start state from parent (Recording) which toggles these states too.
 const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element => {
-  const { userData, setUserData } = React.useContext(VideosContext);
+  const { user, setUser } = React.useContext(UserContext);
 
   const [result, setResult] = React.useState('');
   const [textWithTimestamps, setTextWithTimestamps] = React.useState({});  // Not currently used
@@ -102,16 +102,13 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
       // This is because they can't have recorded without granting speech-to-text permission
   React.useEffect(() => {
     const wrapper = async () => {
-      console.log(userData);
+      if (!user || !user.speechToTextPermission) {
+        // returns 1 if available and permission granted, 0 if not
+        let result = await Voice.isAvailable(); 
 
-      if (!userData || !userData.speechToTextPermission) {
-        let result = await Voice.isAvailable();
-
-        setUserData(Object.assign(userData, {
-          'speechToTextPermission': result===1 ? true : false
-        }));
-
-        console.log("IOS speech to text permission status:", result);
+        // Merge old user object with new fields
+        let updatedUser = {...user, ...{ 'speechToTextPermission': result===1 ? true : false }}; 
+        setUser(updatedUser);
       }
     }
 
