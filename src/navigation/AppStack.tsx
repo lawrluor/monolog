@@ -144,7 +144,7 @@ const AppNavigator = ({ setUser }): JSX.Element => {
   return (
     <Stack.Navigator initialRouteName="TabNavigator" screenOptions={{ animation: 'none' }}>
       <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
+      <Stack.Group screenOptions={{ animation: 'fade' }}>
         <Stack.Screen name="Player" component={Player} options={{ headerShown: false }}/>
       </Stack.Group>
       <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false }} />

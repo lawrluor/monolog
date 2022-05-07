@@ -28,8 +28,8 @@ const FullPageSpinner = ({ size }) => {
     // Run on mount
     const timeout = setTimeout(():void => {
       console.log("[DEBUG] Timeout began")
-      setMessage('Loading Issues? Please make sure you have the latest version of the app.');
-    }, 6000);
+      setMessage('Loading Issues? Please make sure you have the latest version of the app and that you have allowed all permissions that the app requests.');
+    }, 5000);
 
     // Unmount cleanup, clear timeout if component unmounted
     return ():void => {
