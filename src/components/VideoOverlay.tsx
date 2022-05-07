@@ -19,7 +19,7 @@ import { icons, spacings, text, colors } from '../styles';
 type Props = {
   videoData: any,
   isPlaying: boolean,
-  navigation: any
+  navigation: any,
 }
 
 // This component is comprised of the buttons, rating, and show transcript button

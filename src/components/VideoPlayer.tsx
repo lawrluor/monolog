@@ -10,10 +10,9 @@ type Props = {
   videoUri: string
   isPlaying: boolean,
   setIsPlaying: any,
-  navigation: any
 }
 
-const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, navigation }: Props): JSX.Element => {
+const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element => {
   const video = React.useRef(null);
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);  // TODO: set loading handling
@@ -43,33 +42,29 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, navigation }: Props): 
 
     setAudioModes();
 
-    const unsubscribe = navigation.addListener('willBlur', ()=>{
-      console.log("blurring");
-      video.current.unloadAsync()
-      .then()
-      .catch((err: any) => {
-        console.log("[ERROR] VideoPlayer: useEffect", err);
-      });
-    });
-    // See: https://github.com/expo/expo/issues/3115
-    // See: https://docs.expo.dev/versions/latest/sdk/audio/#playing-sounds
+    // return () => {
+    //   console.log("unmounting video player");
+    //   video.current.stopAsync()
+    //     .then()
+    //     .catch((err: any) => {
+    //       console.log("[ERROR] VideoPlayer: useEffect", err);
+    //     });
+        
+    //   video.current.unloadAsync()
+    //     .then()
+    //     .catch((err: any) => {
+    //       console.log("[ERROR] VideoPlayer: useEffect", err);
+    //     });
+    // }
 
     return () => {
-      unsubscribe();
-    }
-    return () => {
-      console.log("unmounting video player");
-      video.current.stopAsync()
-        .then()
-        .catch((err: any) => {
-          console.log("[ERROR] VideoPlayer: useEffect", err);
-        });
-        
-      video.current.unloadAsync()
-        .then()
-        .catch((err: any) => {
-          console.log("[ERROR] VideoPlayer: useEffect", err);
-        });
+      console.log("unmounting VideoPlayer");
+      try {
+        video.current.pauseAsync();
+        video.current.unloadAsync();
+      } catch(err: any) {
+        console.log("[ERROR] VideoPlayer.tsx:useEffect", err)
+      }
     }
   }, []);
 
