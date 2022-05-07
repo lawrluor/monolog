@@ -85,7 +85,7 @@ const Home = ({ navigation }: any): JSX.Element => {
     if (videosCount >= VIDEOS_THRESHOLD) {
       return (
         <View style={[styles.featureContainer]}>
-          <MoodChart />
+          <MoodChart abridged />
         </View>
       )
     } else {
