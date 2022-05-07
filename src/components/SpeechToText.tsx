@@ -106,6 +106,11 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
 
       if (!userData || !userData.speechToTextPermission) {
         let result = await Voice.isAvailable();
+
+        setUserData(Object.assign(userData, {
+          'speechToTextPermission': result===1 ? true : false
+        }));
+
         console.log("IOS speech to text permission status:", result);
       }
     }
@@ -125,16 +130,6 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
     } else if (isRecording === false) {
       // user has stopped the record button, or time has ran out: finish recording and navigate next
       finishRecording();
-
-      // Correctly set values for user permissions if not already set
-      // TODO: move this code elsewhere, preferably in callback in Recording or Home
-      if (!userData.speechToTextPermission || !userData.cameraPermission || !userData.micPermission) {
-        setUserData(Object.assign(userData, {
-          'speechToTextPermission': true,
-          'cameraPermission': true,
-          'micPermission': true 
-        }));
-      }
     }
   }, [isRecording]);
 
