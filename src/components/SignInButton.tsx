@@ -27,7 +27,7 @@ export const ActionButton = ({ callback, text }: any) => {
       background={colors.HIGHLIGHT}
       onPress={callback}
     > 
-      <Text style={text.h4}>{text}</Text>
+      <Text style={[styles.text, { color: colors.BACKGROUND }]}>{text}</Text>
     </SignInButton>
   )
 }

@@ -251,7 +251,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             style={styles.cameraContainer}
             type={type}
             ref={cameraRef}
-            onCameraReady={() => setIsLoading(true) }
+            onCameraReady={() => setIsLoading(false) }
           >
             <View style={styles.captionContainer}>
               <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
