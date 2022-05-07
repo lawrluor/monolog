@@ -6,7 +6,7 @@ import React from 'react';
 
 import * as FileSystem from 'expo-file-system';
 
-import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri, writeUserData } from '../utils/localStorageUtils';
+import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri } from '../utils/localStorageUtils';
 
 // Workaround bug https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/#extended-example
 const VideosContext = React.createContext(undefined!);
@@ -17,15 +17,6 @@ export const VideosProvider:React.FC = ({ children }) => {
   const [videosCount, setVideosCount] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [toggleRefresh, setToggleRefresh] = React.useState<boolean>(true);
-  const [userData, setUser] = React.useState({});
-
-  // Whenever user is updated in the context state, also write to local database
-  // TODO: Can declare as empty object
-  // TODO: make this a separate context
-  const setUserData = (data: any) => {
-    setUser(data);
-    writeUserData(data);
-  }
 
   // wordChartData is queried from here and passed throughout app
   // TODO: make this separate context
@@ -167,6 +158,7 @@ export const VideosProvider:React.FC = ({ children }) => {
   // We use this state when we search using a query, for example: see submitQuery
   React.useEffect(() => {
     const fetchVideosData = async () => {
+      setIsLoading(true);
       console.log("***refreshing videos***");
       let videos = await getVideosFromStorage(query);
       setVideosCount(getVideosCount(videos));
@@ -189,7 +181,7 @@ export const VideosProvider:React.FC = ({ children }) => {
 
   // TODO: Create separate Mood context and User context.
   return (
-    <VideosContext.Provider value={{ videosData, videosCount, isLoading, toggleVideosRefresh, submitQuery, moodData, userData, wordChartData, setUserData }}>
+    <VideosContext.Provider value={{ videosData, videosCount, isLoading, toggleVideosRefresh, submitQuery, moodData, wordChartData }}>
       {children}
     </VideosContext.Provider>
   )

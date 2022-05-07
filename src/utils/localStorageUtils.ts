@@ -101,13 +101,23 @@ export const readUserData = async () => {
   let data: any = {};
 
   if (!await checkUserDataDirectory()) return data;
+  
+  const readDataFromFile = async () => {
+    let fileContent = await FileSystem.readAsStringAsync(`${USER_DATA_DIRECTORY}user`);
+    fileContent = JSON.parse(fileContent);
 
-  data = await FileSystem.readDirectoryAsync(USER_DATA_DIRECTORY)
+    // if fileContent is empty, will simply be the string "user". We want to treat this as empty
+    return fileContent==="user" ? {} : fileContent;
+  }
+
+  const readDataFromDirectory = async () => {
+    data = await FileSystem.readDirectoryAsync(USER_DATA_DIRECTORY)
     .then(async (files) => {
       // Use for loop as .forEach() cannot return any value
       // NOTE: There will only be one matching file (userData), so technically we don't need to loop
       for (const i in files) {
         let file = files[i];
+        // `${USER_DATA_DIRECTORY}user}`
         let fileContent = await FileSystem.readAsStringAsync(USER_DATA_DIRECTORY + file);
         fileContent = JSON.parse(fileContent);
         return fileContent;
@@ -116,23 +126,31 @@ export const readUserData = async () => {
     .catch((err) => {
       console.log("[ERROR] in localStorageUtils: readUserData", err);
     })
+  }
 
   // This function will return either a full userData object,
   // or empty object if it doesn't find one
   // This prevents error 'undefined is not an object' such as `undefined.firstName`
   // TODO: Note how often this happens? Unless empty object is ok upon initialization?
-  return data;  
+  return await readDataFromFile();  
 }
 
 // Writes to the user data directory
 // TODO: This doesn't work properly or save user, getting error during writing
 export const writeUserData = async (data: any) => {
-  try {
-    if (!await checkUserDataDirectory()) throw 'User Data Directory does not exist yet.';
-    FileSystem.writeAsStringAsync(`${USER_DATA_DIRECTORY}user`, JSON.stringify(data));
-  } catch (err) {
-    console.log("[ERROR] localStorageUtils:writeUserData:", err);
-  }
+  let success = false;
+  if (!await checkUserDataDirectory()) return false;
+  
+  success = await FileSystem.writeAsStringAsync(`${USER_DATA_DIRECTORY}user`, JSON.stringify(data))
+    .then(() => { return true })
+    .catch((err) => {
+      console.log("[ERROR] localStorageUtils:writeUserData:", err);
+      return false;
+    });
+  
+  success = true;
+  return success;
+
 }
 
 // Get all transcripts from local storage, then print out file names.

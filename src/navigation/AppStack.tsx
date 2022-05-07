@@ -6,9 +6,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Settings, Feedback } from '../screens';
 
-import { CameraProvider } from '../context/CameraContext';
-import { VideosProvider } from '../context/VideosContext';
-
 import CustomIcon from '../components/CustomIcon';
 
 import { colors, icons, spacings } from '../styles';
@@ -141,16 +138,12 @@ const TabNavigator = ({ setUser }): JSX.Element => {
 // It has TabNavigator nested inside of it: the syntax is identical to including an individual screen component
 const AppNavigator = ({ setUser }): JSX.Element => {
   return (
-    <VideosProvider>
-      <CameraProvider>
-      <Stack.Navigator initialRouteName="TabNavigator">
-        <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="Player" component={Player} options={{ headerShown: false }} />
-        <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
-        <Stack.Screen name="Transcript" component={Transcript} options={{ headerShown: false }} />
-      </Stack.Navigator>
-      </CameraProvider>
-    </VideosProvider>
+    <Stack.Navigator initialRouteName="TabNavigator">
+      <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Player" component={Player} options={{ headerShown: false }} />
+      <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
+      <Stack.Screen name="Transcript" component={Transcript} options={{ headerShown: false }} />
+    </Stack.Navigator>
   )
 }
 

@@ -8,13 +8,13 @@ import { text, spacings, colors, icons } from '../styles';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import TextEntry from '../components/TextEntry';
 
-import { writeUserData } from '../utils/localStorageUtils';
 import { validateEmail } from '../utils/textProcessing';
+import UserContext from '../context/UserContext';
 
 const LAST_SCREEN = 2;  // 2 screens in total for onboarding process
 
 const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
-  const { setShouldOnboard, userData } = route.params;
+  const { setUser } = React.useContext(UserContext);
 
   const textRefs = [textRef0, textRef1, textRef2, textRef3, textRef4, textRef5] = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()];
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
@@ -48,12 +48,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   const validateData = (): boolean => {
     const defaultMessage = "Please try again.";
     let isValid = true;
-    // for future valiation of firstName, as in must be caps
-    // setValidationError("First name must be longer than 3 characters.")
-    // return firstName.length > 3;
-    
-    // if (firstName)
-    // if (lastName)
+
     if (email) {
       setValidationError("Email is not formatted properly. " + defaultMessage);
       isValid = validateEmail(email);
@@ -98,22 +93,22 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   }
 
   const finishOnBoarding = async () => {
-    let finalUserData = {...userData}
-    finalUserData["onboarded"] = true;
-    finalUserData["cameraPermission"] = false;
-    finalUserData["micPermission"] = false;
-    finalUserData["speechToTextPermission"] = false;
-    finalUserData["tutorialMode"] = true;
-    finalUserData["firstName"] = firstName;
-    finalUserData["lastName"] = lastName;
-    finalUserData["email"] = email;
-    finalUserData["gender"] = gender;
-    finalUserData["pronouns"] = pronouns;
-    finalUserData["age"] = age.toString();
+    let finalUserData = {
+      'onboarded': true,
+      'cameraPermission': false,
+      'micPermission': false,
+      'speechToTextPermission': false,
+      'tutorialMode': true,
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'gender': gender,
+      'pronouns': pronouns,
+      'age': age.toString()
+    };
 
     console.log("onb", finalUserData);
-    await writeUserData(finalUserData);
-    setShouldOnboard(false);
+    setUser(finalUserData);  // Set in Context, which also then saves to local storage
   }
 
   // renders validation error if any exists
@@ -138,7 +133,6 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
 
     // Alternatively: Skip to end of onboarding. 
     // Discuss: The UX of having a profile pic page that doesn't work doesn't seem to make sense.
-    // (nextIndex >= 3) ? setShouldOnboard(false); : selectTextRef(nextIndex);  
   }
 
   // Callback to be passed down to each child TextEntry.

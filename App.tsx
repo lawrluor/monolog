@@ -11,16 +11,17 @@ import {
   createRatingDirectory,
   createThumbnailDirectory,
   createTranscriptDirectory,
-  createUserDataDirectory
+  createUserDataDirectory,
+  readUserData
 } from './src/utils/localStorageUtils';
 
 import { colors } from './src/styles';
+import { VideosProvider } from './src/context/VideosContext';
+import { UserProvider } from './src/context/UserContext';
 
-// No props currently
 const App = (): JSX.Element => {
+  const [isLoaded, setIsLoaded] = React.useState<boolean>(false);
   const [inTimeout, setInTimeout] = React.useState<boolean>(true);
-  const inTimeoutRef = React.useRef(inTimeout);
-  inTimeoutRef.current = inTimeoutRef;
 
   let [fontsLoaded] = useFonts({
     'CircularStd-Book': require('./assets/fonts/CircularStd-Book.otf'),
@@ -47,43 +48,51 @@ const App = (): JSX.Element => {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setInTimeout(false);
-    }, 1000);
+    }, 500);
 
     return () => { 
       clearTimeout(timer) 
     }
   }, []);
 
-  React.useEffect(() => {
-    console.log("states: inTimeout, fontsLoaded", inTimeout, fontsLoaded);
-  })
+  // React.useEffect(() => {
+  //   console.log("states: inTimeout, isLoaded, fontsLoaded", inTimeout, isLoaded, fontsLoaded);
+  // })
 
   // App Setup
   // TODO: should move all directory creating to here?
   React.useEffect(() => {
     const setup = async () => {
       setConsoleLogging();
+
       let promises = [
+        createUserDataDirectory(),
         createVideoDirectory(), 
         createThumbnailDirectory(), 
         createRatingDirectory(),
         createTranscriptDirectory(),
-        createUserDataDirectory()
       ];
 
       await Promise.all(promises);
+      setIsLoaded(true);
     }
 
     setup();
-  })
+  }, [])
 
   // if debugging, set debug borders on all elements
   return (
-    !fontsLoaded || inTimeout
-    ?
-    <AppLoading />
-    :
-    <MainNavigator></MainNavigator>
+    <UserProvider>
+    <VideosProvider>
+      {
+        !fontsLoaded || !isLoaded || inTimeout
+        ?
+        <AppLoading />
+        :
+        <MainNavigator></MainNavigator>
+      }
+    </VideosProvider>
+    </UserProvider>
   )
 }
 

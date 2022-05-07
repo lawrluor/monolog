@@ -7,23 +7,9 @@ import { containers, dimensions, text, spacings, colors } from '../styles';
 
 import SignInButton from '../components/SignInButton';
 
-const Landing = ({ route, navigation }: any): JSX.Element => { 
-  const { setShouldOnboard } = route.params;
-
-  // Users go directly to the onboarding process.
-  // However, they should only see this landing screen if they haven't onboarded before.
-  const beginOnboarding = async () => {
-    setShouldOnboard(true);  // takes us to OnBoardingStack
-  }
-
-  // Not used in alpha release, as no user accounts.
-  const navigateToSignup = () => {
-    navigation.navigate('Signup');
-  }
-
-  // Not used in alpha release, as no user accounts.
-  const navigateToLogin = () => {
-    navigation.navigate('Login');
+const Landing = ({ navigation }: any): JSX.Element => { 
+  const beginOnboarding = () => {
+    navigation.navigate('OnBoarding1');
   }
 
   return (

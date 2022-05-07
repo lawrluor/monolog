@@ -6,7 +6,7 @@ import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import VideosContext from '../context/VideosContext';
+import UserContext from '../context/UserContext';
 
 import { checkRecordingPermissions } from '../utils/permissions';
 import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
@@ -23,7 +23,7 @@ const MAX_DURATION = 600;  // seconds
 
 // NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording 
 export const Recording = ({ navigation }: any): JSX.Element => {
-  const { userData, setUserData } = React.useContext(VideosContext);
+  const { user, setUser } = React.useContext(UserContext);
 
   // TODO: experiment with adding loading states (carefully) to improve UX
   const cameraRef = React.useRef(null);
@@ -84,7 +84,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       );
     }
     
-    if (!userData || userData.tutorialMode) {
+    if (!user || user.tutorialMode) {
       // First time user does this, notify them
       Alert.alert(
         "Please Note",
@@ -101,7 +101,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       );
 
       // TODO: can make a specific state for this, like flipCameraNotified
-      setUserData(Object.assign(userData, { tutorialMode: false }))
+      setUser(Object.assign(user, { tutorialMode: false }))
     } else {
       // User already knows this, let them flip the camera at will
       flipCamera();
