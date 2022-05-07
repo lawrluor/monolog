@@ -124,11 +124,20 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
     )
   }
 
+  const resetNavigationToGallery = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }] 
+    });
+  
+    navigation.navigate('Home');
+  }
+
   // Do not show video overlay controls when TranscriptEditor modal is visible
   // This conditional render is handled by the boolean state modalShown
   return (
     <>
-      {modalShown ? <></> : <GoBack navigation={navigation} /> }
+      {modalShown ? <></> : <GoBack callback={resetNavigationToGallery}/> }
       {modalShown ? <></> : <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View> }
       
       <View style={styles.videoContainer}>

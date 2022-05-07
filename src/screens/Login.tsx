@@ -32,7 +32,7 @@ const Login = ({ route, navigation }): JSX.Element => {
         colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
         style={styles.container}
     > 
-      <GoBack navigation={navigation} />
+      <GoBack />
       <View style={styles.formContainer}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Hello.</Text>

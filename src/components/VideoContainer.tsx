@@ -2,7 +2,6 @@ import React from 'react';
 
 import VideoPlayer from './VideoPlayer';
 import VideoOverlay from './VideoOverlay';
-import GoBack from '../components/GoBack';
 
 type Props = {
   navigation: any,

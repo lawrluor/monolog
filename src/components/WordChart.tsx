@@ -14,7 +14,8 @@ import { text, spacings, colors, dimensions, icons } from '../styles';
 type Props = {
   defaultNumOfWords?: number;  
   abridged?: boolean;
-  navigation: any
+  navigation: any,
+  callback: any
 }
 
 const MAX_NUM_OF_WORDS_TO_DISPLAY = 50;

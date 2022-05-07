@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import { deleteAllData } from './localStorageUtils';
 
 // type SimpleAlertProps = {
 //   title: string,
@@ -14,6 +15,17 @@ export const simpleAlert = (title, message, buttonText, callback) => {
     message,
     [
       { text: buttonText, onPress: callback }
+    ]
+  )
+}
+
+export const deleteDataAlert = () => {
+  return Alert.alert(
+    "Warning",
+    "Continuing will result in all your data on Monist being deleted.",
+    [
+      { text: "Continue", onPress: deleteAllData},
+      { text: "Cancel"}
     ]
   )
 }
