@@ -11,8 +11,14 @@ export const UserProvider: React.FC = ({children}) => {
   // 1. First, fetch user from local db, just do this once
   React.useEffect(() => {
     const fetchUserData = async () => {
-      let u = await readUserData();
-      setUser(u);
+      try {
+        let u = await readUserData();
+        setUser(u);
+      } catch (err) {
+        console.log("[ERROR] UserContext.tsx:fetchUserData", err);
+      }
+
+      setIsLoading(false);
     }
 
     fetchUserData();
@@ -21,8 +27,7 @@ export const UserProvider: React.FC = ({children}) => {
   // 2. Whenever user is updated, write it to local database
   React.useEffect(() => {
     const wrapper = async () => {
-      console.log("current user", user);
-      if (Object.keys(user).length > 0) {
+      if (user && Object.keys(user).length > 0) {
         console.log("Writing updated non-empty user to db: ", user);
         writeUserData(user);
         setIsLoading(false);

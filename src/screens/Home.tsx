@@ -16,11 +16,7 @@ import { comingSoonAlert, simpleAlert } from '../utils/customAlerts';
 import { getRecordingPermissions } from '../utils/permissions';
 
 import VideosContext from '../context/VideosContext';
-<<<<<<< HEAD
-import CameraContext from '../context/CameraContext';
-=======
 import UserContext from '../context/UserContext';
->>>>>>> 94fd327 (refactored navigation and user context)
 
 import { containers, icons, text, spacings, colors } from '../styles';
 import { readUserData } from '../utils/localStorageUtils';

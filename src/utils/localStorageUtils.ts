@@ -102,6 +102,7 @@ export const readUserData = async () => {
 
   if (!await checkUserDataDirectory()) return data;
   
+  // Can be used for convenience, but fails when user data directory not yet created
   const readDataFromFile = async () => {
     let fileContent = await FileSystem.readAsStringAsync(`${USER_DATA_DIRECTORY}user`);
     fileContent = JSON.parse(fileContent);
@@ -110,6 +111,7 @@ export const readUserData = async () => {
     return fileContent==="user" ? {} : fileContent;
   }
 
+  // Works regardless if user directory is created or not
   const readDataFromDirectory = async () => {
     data = await FileSystem.readDirectoryAsync(USER_DATA_DIRECTORY)
     .then(async (files) => {

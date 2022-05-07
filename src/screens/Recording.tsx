@@ -101,7 +101,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       );
 
       // TODO: can make a specific state for this, like flipCameraNotified
-      setUser(Object.assign(user, { tutorialMode: false }))
+      let updatedUser = {...user, ...{ tutorialMode: false }};  // Merge old user object with new fields
+      setUser(updatedUser);
     } else {
       // User already knows this, let them flip the camera at will
       flipCamera();

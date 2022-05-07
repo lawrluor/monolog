@@ -10,8 +10,8 @@ const AuthLoading = ({ navigation }: any) => {
   const { user, setUser } = React.useContext(UserContext);
 
   const authenticate = async () => {
-    let queriedUser = await readUserData();
-    console.log("AuthLoading Queried User: ", queriedUser)
+    // let queriedUser = await readUserData();
+    // console.log("AuthLoading Queried User: ", queriedUser)
     console.log("AuthLoading Context User: ", user);
 
     if (user && user.onboarded) {
