@@ -38,7 +38,7 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
     setRecordingStartTime(Date.now());
     setLoading(true);
     try {
-      await Voice.start('en-US');
+      await Voice.start('en-US', {EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 3000});
     } catch (error) {
       console.log("SpeechToText.tsx: error while starting", error);
     }

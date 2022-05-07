@@ -26,6 +26,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
   // Audio settings for this video
   React.useEffect(() => {
     const setAudioModes = async () => {
+      console.log("-----1. setting audio");
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         staysActiveInBackground: true,
@@ -35,8 +36,13 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
         interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
         playThroughEarpieceAndroid: false,
       });
-
-      setIsLoading(false);  
+      
+      if (video && video.current) {
+        console.log("-----2. audio loaded, now playing video");
+        await video.current.loadAsync({ uri: videoUri });
+        await video.current.playAsync();
+        setIsLoading(false); 
+      }
     }
 
     setAudioModes();
@@ -58,12 +64,16 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
 
     return () => {
       console.log("unmounting VideoPlayer");
-      try {
-        video.current.stopAsync();
-        // video.current.unloadAsync();
-      } catch(err: any) {
-        console.log("[ERROR] VideoPlayer.tsx:useEffect", err)
+      const unmount = async () => {
+        try {
+          await video.current.stopAsync();
+          await video.current.unloadAsync();
+        } catch(err: any) {
+          console.log("[ERROR] VideoPlayer.tsx:useEffect", err)
+        }
       }
+
+      unmount();
     }
   }, []);
 
@@ -90,11 +100,9 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
         <Video
           ref={video}
           style={styles.video}
-          source={{ uri: videoUri }}
           isMuted={false}
           useNativeControls={false}
           resizeMode="cover"
-          shouldPlay
           onPlaybackStatusUpdate={(status) => handlePlaybackStatusUpdate(status)}
           
         />

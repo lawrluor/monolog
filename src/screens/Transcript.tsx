@@ -46,12 +46,22 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
     asyncWrapper();
   }, [])
 
+  const navigateToPlayer = () => {
+    navigation.navigate('Player', {
+      video: videoData,
+      navigation: navigation
+    });
+  }
+
+  // Once loaded successfully, immediately navigate to Player with params for the loaded videoData
+  React.useEffect(() => {
+    if (!isLoading) {
+      navigateToPlayer();
+    }
+  }, [isLoading])
+
   return (
-    isLoading 
-    ?
     <FullPageSpinner size="large" />
-    :
-    <VideoContainer videoData={videoData} navigation={navigation} />
   )
 }
 
