@@ -31,13 +31,12 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
         staysActiveInBackground: true,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
         playsInSilentModeIOS: true,       // this option is unreliable at the moment
-        shouldDuckAndroid: true,
+        shouldDuckAndroid: false,
         interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
         playThroughEarpieceAndroid: false,
       });
 
       setIsLoading(false);  
-      setStatus({'isPlaying': true});
     }
 
     setAudioModes();
@@ -60,13 +59,26 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
     return () => {
       console.log("unmounting VideoPlayer");
       try {
-        video.current.pauseAsync();
-        video.current.unloadAsync();
+        video.current.stopAsync();
+        // video.current.unloadAsync();
       } catch(err: any) {
         console.log("[ERROR] VideoPlayer.tsx:useEffect", err)
       }
     }
   }, []);
+
+  const handlePlaybackStatusUpdate = (status: any) => {
+    // Manual looping set: this is because setting prop isLooping in Video component directly causes freezing.
+    // Reference: https://github.com/expo/expo/issues/3488
+    if (status.didJustFinish && !status.isLooping) {
+      if (video && video.current) {
+        video.current.replayAsync();
+        video.current.setIsLoopingAsync(true);
+      }
+    } else {
+      setStatus(status);
+    }
+  }
 
   return (
     isLoading
@@ -79,11 +91,12 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
           ref={video}
           style={styles.video}
           source={{ uri: videoUri }}
+          isMuted={false}
           useNativeControls={false}
           resizeMode="cover"
-          isLooping
           shouldPlay
-          onPlaybackStatusUpdate={status => setStatus(status)}
+          onPlaybackStatusUpdate={(status) => handlePlaybackStatusUpdate(status)}
+          
         />
       </Pressable>
     </View>
