@@ -6,8 +6,6 @@ import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { LinearGradient } from 'react-native-svg';
-
 import VideosContext from '../context/VideosContext';
 
 import { checkRecordingPermissions } from '../utils/permissions';
@@ -19,6 +17,7 @@ import PulseAnimation from '../components/PulseAnimation';
 import GoBack from '../components/GoBack';
 import SpeechToText from '../components/SpeechToText';
 import CustomIcon from '../components/CustomIcon';
+import { FullPageSpinner } from '../components/Spinner';
 
 const MAX_DURATION = 600;  // seconds
 
@@ -56,29 +55,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     // See https://reactnavigation.org/docs/navigation-events/#navigationaddlistener
     return () => {}
   }, []);
-
-  // Doesn't work sadly but this would be ideal 
-  // Therefore, we use a hacky timeout to simulate camera loading to avoid the black screen
-  React.useEffect(() => {
-    if (cameraRef) {
-      console.log("cameraRef loaded");
-      // setIsLoading(false);
-    }
-  }, [cameraRef])
-
-  // React.useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setIsLoading(false);
-  //   }, 500);
-
-  //   return () => clearTimeout(timer);
-  // });
-
-  
-
-  // React.useEffect(() => {
-  //   if (!isLoading) cameraRef.resumePreview();
-  // }, [isLoading])
 
   // "Callback method" for when the final transcript is ready.
   // Note: isRecording must be false, meaning stopRecording() was explicitly called.
@@ -187,6 +163,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const stopRecording = async () => {
     try {
       setIsRecording(false);
+      cameraRef.current.pausePreview();
       await cameraRef.current.stopRecording();  
     } catch(err: any) {
       console.log("[ERROR] Recording.tsx: stopRecording", err);
@@ -283,6 +260,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             style={styles.cameraContainer}
             type={type}
             ref={cameraRef}
+            onCameraReady={() => setIsLoading(false) }
           >
             <View style={styles.captionContainer}>
               <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
@@ -304,36 +282,28 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Waiting for cameraRef to not be null doesn't seem to work
   // It seems that the <Camera /> component and useRef needs to be loaded first 
   // Therefore, we still load the Camera component, but hide the display until loaded
-  // We have no good way of detecting when the Camera is actually loaded (TODO: find callback?)
-  // Therefore, we have to use a hacky timeout useEffect
+  // The callback onCameraReady on Camera component sets our loading state
   return (
     <>
-    {/* {isLoading 
-      ? 
-      <LinearGradient
-        colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-        style={styles.container}
-      >
-        <View>
-          <Text>Vistas Summary</Text>
-        </View>
-      </LinearGradient>
-      : 
-      null
-    } */}
-
-    <View style={[styles.container, {
-      display: !cameraRef ? 'none' : 'flex',
-    }]}>
-      {renderCamera()}
-    </View>
+      <View style={[styles.container, {display: isLoading ? 'none' : 'flex'}]}>
+        {renderCamera()}
+      </View>
+      
+      {
+        isLoading 
+        ? 
+        <FullPageSpinner size="large" />
+        : 
+        null
+      }
     </>
   )
 }
 
 const styles = StyleSheet.create({
   loadingContainer: {
-    zIndex: 100
+    ...containers.DEFAULT,
+    flex: 1
   },
   container: {
     ...containers.DEFAULT

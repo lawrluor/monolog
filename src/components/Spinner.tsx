@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { text, spacings } from '../styles';
+import { text, spacings, colors } from '../styles';
+
+import { LinearGradient } from 'expo-linear-gradient';
 
 type Props = {
   size?: string
@@ -40,10 +42,13 @@ const FullPageSpinner = ({ size }) => {
   }, []);
 
   return (
-    <View style={styles.spinner}>
-      <ActivityIndicator size={size} />
+    <LinearGradient
+        colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+        style={styles.spinner}
+      >
+        <ActivityIndicator size={size} />
       <Text style={styles.messageText}>{message}</Text>
-    </View>
+    </LinearGradient>
   )
 }
 
