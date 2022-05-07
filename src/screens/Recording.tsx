@@ -173,8 +173,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Distinguishes between user actually pressing the stop button,
   // while stopRecording is called in any other event that the recording stops.
   const finishRecording = async () => {
+    await stopRecording();
     setRecordingFinished(true);
-    stopRecording();
   }
 
   // Renders an icon that takes you to Gallery when pressed 

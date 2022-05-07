@@ -34,7 +34,7 @@ export const getRecordingPermissions = async () => {
   }
 
   newUserData = Object.assign(currentUserData, newUserData);
-  await writeUserData("user", newUserData);
+  await writeUserData(newUserData);
   return newUserData;
 }
 
