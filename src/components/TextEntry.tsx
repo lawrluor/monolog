@@ -55,7 +55,7 @@ export const SearchEntry = ({ children, editable, keyboardType, secureTextEntry,
   const textRef = React.createRef();
 
   // Sample keywords that will signal to users that they can search videos by keyword
-  const defaultQueryPlaceholder: string = "Search: 'happy', 'balance' ";
+  const defaultQueryPlaceholder: string = "Search: 'improve', 'balance' ";
 
   console.log(`modalShown: ${modalShown}`);
 
@@ -100,7 +100,7 @@ export const SearchEntry = ({ children, editable, keyboardType, secureTextEntry,
         placeholder={placeholderValue || defaultQueryPlaceholder}
         placeholderTextColor={colors.TERTIARY}
         returnKeyType={returnKeyType || 'done'}
-        onSubmitEditing={() => onFinish()}  // id+1 will focus on next TextEntry
+        onSubmitEditing={() => onFinish(text)}  // id+1 will focus on next TextEntry
         onFocus={focus}
         onBlur={blur}
         onChangeText={setText}

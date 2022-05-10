@@ -138,6 +138,7 @@ export const VideosProvider:React.FC = ({ children }) => {
   // When query state is changed (from another component),
   // useEffect will fetch video data again and execute search
   const submitQuery = (query: string) => {
+    console.log("q", query);
     setQuery(query);
     setToggleRefresh(!toggleRefresh);
   }
@@ -165,7 +166,7 @@ export const VideosProvider:React.FC = ({ children }) => {
   React.useEffect(() => {
     const fetchVideosData = async () => {
       setIsLoading(true);
-      console.log("***refreshing videos***");
+      console.log("***refreshing videos***, query: ", query);
       let videos = await getVideosFromStorage(query);
       setVideosCount(getVideosCount(videos));
       setVideosData(videos);
