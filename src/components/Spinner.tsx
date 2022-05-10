@@ -32,7 +32,7 @@ const FullPageSpinner = ({ size }) => {
     // Run on mount
     const timeout = setTimeout(():void => {
       console.log("[DEBUG] Timeout began")
-      setMessage('Please make sure you have the latest version of the app and that you have allowed all permissions that the app requests. If you\'re having trouble, you can delete your data and reload the app. If that doesn\'t help, please delete and reinstall the app. You will still lose your saved logs, however.');
+      setMessage('Please make sure you have the latest version of the app and that you have allowed all permissions that the app requests. If you\'re having trouble, please try reloading the app. If that doesn\'t help, feel free to reach out to monist@monist.me with a bug report. You can also opt to delete your data using the button below and reload the app. If that still doesn\'t resolve your issues, please delete and reinstall the app. You will lose your saved logs, however.');
     }, 5000);
 
     // Unmount cleanup, clear timeout if component unmounted
@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
   },
   messageText: {
     ...text.p,
+    color: colors.PRIMARY,
     top: spacings.HUGE,
     marginHorizontal: spacings.LARGE,
     textAlign: 'center'

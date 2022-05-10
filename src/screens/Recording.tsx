@@ -11,7 +11,7 @@ import UserContext from '../context/UserContext';
 import { checkRecordingPermissions } from '../utils/permissions';
 import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
 
-import { text, containers, colors, icons, spacings, dimensions } from '../styles';
+import { text, containers, icons, spacings, dimensions } from '../styles';
 
 import PulseAnimation from '../components/PulseAnimation';
 import GoBack from '../components/GoBack';
@@ -29,11 +29,16 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const cameraRef = React.useRef(null);
   const [finalTranscript, setFinalTranscript] = React.useState<string>('');
   const [recordingFinished, setRecordingFinished] = React.useState<boolean>(false);
-  const [hasPermission, setHasPermission] = React.useState<null | boolean>(true);
+  const [hasPermission, setHasPermission] = React.useState<null | boolean>(false);
   const [type, setType] = React.useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
   const [videoStorePath, setVideoStorePath] = React.useState<string>('');
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+
+  // TODO: camera always set to loaded already, so we will see the black camera loading screen
+  // We need to debug this because when the state is set to true (production behavior).
+  // Sometimes the state just never changes. Happens for a new user recording their first video, 
+  // then recording another one right after in the same session.
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);  
 
   const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
 
@@ -55,6 +60,11 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     // See https://reactnavigation.org/docs/navigation-events/#navigationaddlistener
     return () => {}
   }, []);
+
+  // Listener on Camera state
+  React.useEffect(() => {
+    console.log("camera not ready:", isLoading);
+  }, [isLoading]);
 
   // "Callback method" for when the final transcript is ready.
   // Note: isRecording must be false, meaning stopRecording() was explicitly called.
@@ -113,7 +123,20 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     try {
       if (cameraRef){
         setIsRecording(true);
+      
         let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
+
+        // If able to start the recording, user must have permissions.
+        // We set this now rather than when recording is finished, because otherwise
+        // if user quits in the middle of recording they will have inaccurate permission states
+        let updates = {
+          cameraPermission: true,
+          micPermission: true,
+          speechToTextPermission: true
+        }
+    
+        let updatedUser = {...user, ...updates};  // Merge old user object with new fields
+        setUser(updatedUser);
 
         // Create video and thumbnail files.
         let timestamp = Math.floor(Date.now() / 1000);
@@ -232,10 +255,16 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   }
 
   const renderCamera = () => {
-    if (hasPermission === null) {
-      return <View />;
-    } else if (hasPermission === false) {
-      return (<View style={styles.centeredContainer}><Text>No access to camera or microphone.</Text></View>);
+    if (!hasPermission) {
+      return (
+        <>
+          <GoBack />
+
+          <View style={[styles.centeredContainer]}>
+            <Text style={{ textAlign: 'center' }}>No access to camera or microphone. You must grant the app permission in order to continue. If you cannot change the permissions, please delete and reinstall the app.</Text>
+          </View>
+       </>
+      )
     } else {
       return (
         <>

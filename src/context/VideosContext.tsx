@@ -6,7 +6,7 @@ import React from 'react';
 
 import * as FileSystem from 'expo-file-system';
 
-import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri } from '../utils/localStorageUtils';
+import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri, VIDEO_DIRECTORY, createDirectory } from '../utils/localStorageUtils';
 
 // Workaround bug https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/#extended-example
 const VideosContext = React.createContext(undefined!);
@@ -65,7 +65,13 @@ export const VideosProvider:React.FC = ({ children }) => {
   // Optional string parameter `query`, which first filters the full list of videos before returning them
   // [ { title, key, data [ { list [ { name, uri } ] }] } ]
   const getVideosFromStorage = async (query: string="") => {
-    let recorded_sections = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory + "videos/")
+    // NOTE: because VideosContext is triggered BEFORE App.tsx completes, 
+    // we must first create the Video directory on initial load instead of waiting 
+    // for App.tsx to create it first.
+    // TODO: consider moving context for Videos around MainNavigator only, so it WILL wait for App.tsx
+    await createDirectory(VIDEO_DIRECTORY);
+
+    let recorded_sections = await FileSystem.readDirectoryAsync(VIDEO_DIRECTORY)
       .then(async (files) => {
         // Process files in reverse order of when they were created.
         // This ensures that within each month, videos are sorted properly.
