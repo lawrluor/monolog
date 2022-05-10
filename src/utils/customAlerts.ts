@@ -30,6 +30,30 @@ export const deleteDataAlert = () => {
   )
 }
 
+export const feedbackConfirmationSuccess = () => {
+  Alert.alert(
+    "Feedback Sent",
+    "Thank you for sending the Monist team your feedback!",
+    [
+      { 
+        text: "OK"
+      }
+    ]
+  );
+}
+
+export const feedbackConfirmationFailure = () => {
+  Alert.alert(
+    "Note",
+    `Your feedback was not submitted.`,
+    [
+      { 
+        text: "OK"
+      },
+    ]
+  );    
+}
+
 export const comingSoonAlert = (callback) => {
   return simpleAlert(
     title="Hold up!",
