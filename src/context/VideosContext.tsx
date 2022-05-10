@@ -6,7 +6,7 @@ import React from 'react';
 
 import * as FileSystem from 'expo-file-system';
 
-import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri } from '../utils/localStorageUtils';
+import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri, VIDEO_DIRECTORY } from '../utils/localStorageUtils';
 
 // Workaround bug https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/#extended-example
 const VideosContext = React.createContext(undefined!);
@@ -65,7 +65,7 @@ export const VideosProvider:React.FC = ({ children }) => {
   // Optional string parameter `query`, which first filters the full list of videos before returning them
   // [ { title, key, data [ { list [ { name, uri } ] }] } ]
   const getVideosFromStorage = async (query: string="") => {
-    let recorded_sections = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory + "videos/")
+    let recorded_sections = await FileSystem.readDirectoryAsync(VIDEO_DIRECTORY)
       .then(async (files) => {
         // Process files in reverse order of when they were created.
         // This ensures that within each month, videos are sorted properly.

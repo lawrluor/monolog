@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, LogBox, YellowBox } from 'react-native';
+import { StyleSheet } from 'react-native';
 import AppLoading from 'expo-app-loading';
 
 import { useFonts } from 'expo-font';
@@ -7,12 +7,7 @@ import { useFonts } from 'expo-font';
 import MainNavigator from './src/navigation/MainNavigator';
 
 import { 
-  createVideoDirectory,  
-  createRatingDirectory,
-  createThumbnailDirectory,
-  createTranscriptDirectory,
-  createUserDataDirectory,
-  readUserData
+  createAllDirectories,
 } from './src/utils/localStorageUtils';
 
 import { colors } from './src/styles';
@@ -65,15 +60,8 @@ const App = (): JSX.Element => {
     const setup = async () => {
       setConsoleLogging();
 
-      let promises = [
-        createUserDataDirectory(),
-        createVideoDirectory(), 
-        createThumbnailDirectory(), 
-        createRatingDirectory(),
-        createTranscriptDirectory(),
-      ];
-
-      await Promise.all(promises);
+      let setupFinished = await createAllDirectories();  
+      console.log("setupFinished", setupFinished);
       setIsLoaded(true);
     }
 
