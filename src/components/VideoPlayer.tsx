@@ -38,9 +38,9 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
   // Audio settings for this video
   React.useEffect(() => {
     const setAudioModes = async () => {
-      console.log("-----1. setting audio");
+      // console.log("-----1. VideoPlayer: setting audio modes");
       await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
+        allowsRecordingIOS: false,
         staysActiveInBackground: true,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
         playsInSilentModeIOS: true,       // this option is unreliable at the moment
@@ -49,12 +49,14 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
         playThroughEarpieceAndroid: false,
       });
 
-      await resetRecordingAudio();
+      Audio.setIsEnabledAsync(true);
+
+      // resetRecordingAudio();
       
       if (video && video.current) {
         let status = await video.current.getStatusAsync();
         console.log("status", status);
-        console.log("-----2. audio loaded, now playing video");
+        console.log("-----2. VideoPlayer: audio loaded, now playing video");
         // await video.current.loadAsync({ uri: videoUri, volume: 1.0 });
         // await video.current.playAsync();
         
@@ -80,6 +82,9 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
 
     return () => {
       console.log("unmounting VideoPlayer");
+      // crucial line: allows us to unmount audio for bug-free recording
+      Audio.setIsEnabledAsync(false);  
+      
       const unmount = async () => {
         try {
           await video.current.stopAsync();

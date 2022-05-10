@@ -17,11 +17,11 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
   const [isLoading, setLoading] = React.useState(false);
 
   const onSpeechRecognizedHandler = (e: any) => {
-    console.log("SpeechToText.tsx: speech recognized", e);
+    // console.log("SpeechToText.tsx: speech recognized", e);
   }
 
   const onSpeechStartHandler = (e: any) => {
-    console.log("SpeechToText.tsx: speech start handler", e);
+    // console.log("SpeechToText.tsx: speech start handler", e);
   }
   const onSpeechEndHandler = (e: any) => {
     setLoading(false);
@@ -31,7 +31,7 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
   const onSpeechResultsHandler = (e: any) => {
     let text = e.value[0];
     updateText(text);
-    console.log("SpeechToText.tsx: speech result handler", e);
+    // console.log("SpeechToText.tsx: speech result handler", e);
   }
 
   const startRecording = async () => {

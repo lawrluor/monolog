@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable, ScrollView, Alert } from 'react-native';
 
 import { Camera } from 'expo-camera';
+import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -61,7 +62,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     return () => {}
   }, []);
 
-  // Listener on Camera state
+  // Listener on Camera state, simply debug for now
   React.useEffect(() => {
     console.log("camera not ready:", isLoading);
   }, [isLoading]);
@@ -126,6 +127,9 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       
         let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
 
+        // TODO: SHOULD NOT NEED THIS AT ALL, 
+        // speechToTextPermission handled in SpeechToText.tsx 
+        // camera and mic permissions handled in Home.tsx (calling getPermissions)
         // If able to start the recording, user must have permissions.
         // We set this now rather than when recording is finished, because otherwise
         // if user quits in the middle of recording they will have inaccurate permission states
@@ -196,8 +200,43 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Distinguishes between user actually pressing the stop button,
   // while stopRecording is called in any other event that the recording stops.
   const finishRecording = async () => {
-    await stopRecording();
-    setRecordingFinished(true);
+    try {
+      await setAudioModes();
+      await resetRecordingAudio();
+  
+      await stopRecording();
+      setRecordingFinished(true);
+  
+    } catch (err: any) {
+      console.log(`[ERROR] Recording.tsx:finishRecording`, err);
+    }
+  }
+
+  // Clears previous recordings, does NOT record anything.
+  const resetRecordingAudio = async () => {
+    console.log(">>>2. Recording: resetting audio");
+    const recording = new Audio.Recording();
+      try {
+        console.log(">>>Resetting recording");
+        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+        await recording.stopAndUnloadAsync()
+      } catch (error) {
+        console.log("err resetting recording", error);
+      }
+  }
+    
+  // Audio settings for this video
+  const setAudioModes = async () => {
+    console.log(">>>1. Recording: setting audio mode");
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: true,
+      staysActiveInBackground: true,
+      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+      playsInSilentModeIOS: true,       // this option is unreliable at the moment
+      shouldDuckAndroid: false,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+      playThroughEarpieceAndroid: false,
+    });
   }
 
   // Renders an icon that takes you to Gallery when pressed 
