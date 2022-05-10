@@ -26,19 +26,33 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
   // Clears previous recordings, does NOT record anything.
   const resetRecordingAudio = async () => {
     const recording = new Audio.Recording();
-      try {
-        console.log("Resetting recording");
-        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-        await recording.stopAndUnloadAsync()
-      } catch (error) {
-        console.log("err resetting recording", error);
-      }
+    try {
+      console.log("Resetting recording");
+      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      await recording.stopAndUnloadAsync()
+    } catch (error) {
+      console.log("err resetting recording", error);
+    }
   }
     
   // Audio settings for this video
   React.useEffect(() => {
     const setAudioModes = async () => {
       // console.log("-----1. VideoPlayer: setting audio modes");
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        staysActiveInBackground: true,
+        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+        playsInSilentModeIOS: true,       // this option is unreliable at the moment
+        shouldDuckAndroid: false,
+        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+        playThroughEarpieceAndroid: false,
+      });
+
+      await resetRecordingAudio();
+
+      await Audio.setIsEnabledAsync(false);
+
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         staysActiveInBackground: true,
@@ -49,16 +63,15 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
         playThroughEarpieceAndroid: false,
       });
 
-      Audio.setIsEnabledAsync(true);
+      await Audio.setIsEnabledAsync(true);
 
-      // resetRecordingAudio();
       
       if (video && video.current) {
         let status = await video.current.getStatusAsync();
         console.log("status", status);
         console.log("-----2. VideoPlayer: audio loaded, now playing video");
-        // await video.current.loadAsync({ uri: videoUri, volume: 1.0 });
-        // await video.current.playAsync();
+        await video.current.loadAsync({ uri: videoUri, volume: 1.0 });
+        await video.current.playAsync();
         
       }
     }
@@ -84,7 +97,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
       console.log("unmounting VideoPlayer");
       // crucial line: allows us to unmount audio for bug-free recording
       Audio.setIsEnabledAsync(false);  
-      
+
       const unmount = async () => {
         try {
           await video.current.stopAsync();

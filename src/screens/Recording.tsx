@@ -59,7 +59,16 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
     // TODO: Handle cleanup before unmount using navigation.addListener?
     // See https://reactnavigation.org/docs/navigation-events/#navigationaddlistener
-    return () => {}
+    return () => {
+      console.log("unmounting Recording, setting Audio.setIsEnabledAsync(false)")
+
+      const unmount = async () => {
+        await resetRecordingAudio();
+        await Audio.setIsEnabledAsync(false);  
+      }
+  
+      unmount();
+    }
   }, []);
 
   // Listener on Camera state, simply debug for now
@@ -200,10 +209,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Distinguishes between user actually pressing the stop button,
   // while stopRecording is called in any other event that the recording stops.
   const finishRecording = async () => {
-    try {
-      await setAudioModes();
-      await resetRecordingAudio();
-  
+    try {  
       await stopRecording();
       setRecordingFinished(true);
   
@@ -214,19 +220,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   // Clears previous recordings, does NOT record anything.
   const resetRecordingAudio = async () => {
-    console.log(">>>2. Recording: resetting audio");
     const recording = new Audio.Recording();
-      try {
-        console.log(">>>Resetting recording");
-        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-        await recording.stopAndUnloadAsync()
-      } catch (error) {
-        console.log("err resetting recording", error);
-      }
-  }
-    
-  // Audio settings for this video
-  const setAudioModes = async () => {
+
     console.log(">>>1. Recording: setting audio mode");
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: true,
@@ -237,6 +232,18 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
       playThroughEarpieceAndroid: false,
     });
+
+    Audio.setIsEnabledAsync(true); 
+     
+    console.log(">>>2. Recording: resetting audio");
+    try {
+      console.log(">>>Resetting recording");
+      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      await recording.stopAndUnloadAsync()
+      await Audio.setIsEnabledAsync(true); 
+    } catch (error) {
+      console.log("err resetting recording", error);
+    }
   }
 
   // Renders an icon that takes you to Gallery when pressed 
