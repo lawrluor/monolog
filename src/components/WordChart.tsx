@@ -3,7 +3,6 @@ import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { Feather } from '@expo/vector-icons';
 
-import SignInButton from './SignInButton';
 import VistaSummaryText from './VistaSummaryText';
 import Divider from './Divider';
 
@@ -19,7 +18,7 @@ type Props = {
 }
 
 const MAX_NUM_OF_WORDS_TO_DISPLAY = 50;
-const WORD_CHART_SUMMARY = "Welcome to your Frequent Words Vista. This widget will display common words that you’ve mentioned across entries, including how many times these word has been repeated.";
+const WORD_CHART_SUMMARY = "Welcome to your Frequent Words Vista. This widget will display common words that you've mentioned across all your log entries, including how many times these word has been repeated.";
 
 // Renders the chart of words based on their counts
 // Each bar is a series of horizontal containers defined in the styles (barItemContainer, barItem, bar)
@@ -45,7 +44,6 @@ const WordChart = ({ defaultNumOfWords=10, abridged, callback }: Props) => {
     } else {
       setNumOfWordsCurrentlyDisplayed(defaultNumOfWords);  // i.e. top 5 words
     }
-    console.log(numOfWordsCurrentlyDisplayed)
   }, [moreWordsShown])
 
   // This renders each horizontal bar & corresponding word of the WordChart
@@ -54,12 +52,15 @@ const WordChart = ({ defaultNumOfWords=10, abridged, callback }: Props) => {
   // TODO: Have each bar as a scroll view horizontally to allow for 
   // selecting options on list-items via swipe (iOS style)
   const renderBarWithText = (item: any) => {
-    const fullSizeBar = dimensions.width * 0.75;  // featureContainer is around 85% of screen width
+    const maximumBarWidth = 0.5;  // Modifier for the container width. TODO: look closely at this
+    let barRatio = maximumBarWidth * item.value;
+    barRatio = barRatio > 0.90 ? 0.90 : barRatio;  // cap to 90% of the parent container
+    let finalBarWidth = `${barRatio * 100}%`;  // convert to string for CSS % of parent width
 
     const renderBarWithTextInside = (item: any) => {
       return (
       <View key={item.word} style={styles.barItemContainer}>
-        <View key={item.word} style={[styles.bar, { width: fullSizeBar * item.value }]}>
+        <View key={item.word} style={[styles.bar, { width: finalBarWidth }]}>
           <Text style={[styles.barText, { 'color': colors.BACKGROUND }]}>{item.word}</Text>
         </View>
 
@@ -73,7 +74,7 @@ const WordChart = ({ defaultNumOfWords=10, abridged, callback }: Props) => {
     const renderBarWithTextOutside = (item: any) => {
       return (
         <View key={item.word} style={styles.barItemContainer}>
-          <View key={item.word} style={[styles.bar, { width: fullSizeBar * item.value }]}></View>
+          <View key={item.word} style={[styles.bar, { width: finalBarWidth }]}></View>
           <Text style={[styles.barText, { 'color': colors.HIGHLIGHT }]}>{item.word}</Text>
           
           <View style={styles.barNumberContainer}>
@@ -84,6 +85,7 @@ const WordChart = ({ defaultNumOfWords=10, abridged, callback }: Props) => {
     }
 
     return ( 
+      // Item is above the 50th percentile of words across all logs
       item.value > 0.5 
       ?
       renderBarWithTextInside(item)
@@ -100,55 +102,49 @@ const WordChart = ({ defaultNumOfWords=10, abridged, callback }: Props) => {
 
   // A Pressable that toggles state, to change number of words displayed
   const renderShowMoreButton = () => {
-    if (!abridged) {
-      return ( 
-        <View style={styles.showMoreContainer}>
-          {
-            moreWordsShown
-            ?
-            <Pressable onPress={toggleShowWords}>
-              <View style={styles.iconTextContainer}>
-                <Feather name={"chevron-up"} style={[icons.TINY, {position: 'relative', color: colors.PRIMARY}]}/>
-                <Text>Show Less</Text>
-              </View>
-            </Pressable>
-            :
-            <Pressable onPress={toggleShowWords}>
-              <View style={styles.iconTextContainer}>
-                <Feather name={"chevron-down"} style={[icons.TINY, {position: 'relative', color: colors.PRIMARY}]}/>
-                <Text>Show More</Text>
-              </View>
-            </Pressable>
-          }
-        </View>
-      )
-    }
+    // Don't display option to show more words if not enough words to make a difference
+    if (wordChartData && (wordChartData.length < defaultNumOfWords)) return null;
 
-    // Returns null, i.e. doens't render button, if showMoreButton shouldn't exist
-    // This happens in Home, for example, where the WordChart is just a summary,
-    // and doesn't contain full WordChart functionality
-    return null;
+    return ( 
+      moreWordsShown
+      ?
+      <Pressable onPress={toggleShowWords}>
+        <View style={styles.iconTextContainer}>
+          <Feather name={"chevron-up"} style={[icons.TINY, {position: 'relative', color: colors.PRIMARY}]}/>
+          <Text>Show Less</Text>
+        </View>
+      </Pressable>
+      :
+      <Pressable onPress={toggleShowWords}>
+        <View style={styles.iconTextContainer}>
+          <Feather name={"chevron-down"} style={[icons.TINY, {position: 'relative', color: colors.PRIMARY}]}/>
+          <Text>Show More</Text>
+        </View>
+      </Pressable>
+    )
   }
 
   return (
     abridged
     ?
-    <View style={styles.featureContainer}>
+    <View>
       <Text style={styles.featureTitle}>Top Words</Text>
       <ScrollView>
         {renderWordChart()}
       </ScrollView>
     </View>
     :
-    <View style={styles.featureContainer}>
-      <Text style={styles.featureTitle}>Frequent Words</Text>
+    <View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={styles.featureTitle}>Frequent Words</Text>
+        {renderShowMoreButton()}
+      </View>
+
       <ScrollView>
         {renderWordChart()}
         <View style={{ marginTop: spacings.HUGE }}><Divider color={colors.SECONDARY} /></View>
         <View style={{ marginVertical: spacings.MEDIUM }}><VistaSummaryText summaryText={WORD_CHART_SUMMARY} callback={callback}/></View>
       </ScrollView>
-
-      {renderShowMoreButton()}
     </View>
   )
 }
@@ -181,10 +177,6 @@ const styles = StyleSheet.create({
     ...text.h4,
     marginBottom: spacings.SMALL,
     color: colors.PRIMARY
-  },
-  showMoreContainer: {
-    marginTop: spacings.MEDIUM,
-    alignItems: 'flex-end',
   },
   iconTextContainer: {
     // borderWidth: 1,

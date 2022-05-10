@@ -56,6 +56,11 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     return () => {}
   }, []);
 
+  // Listener on Camera state
+  React.useEffect(() => {
+    console.log("camera not ready:", isLoading);
+  }, [isLoading]);
+
   // "Callback method" for when the final transcript is ready.
   // Note: isRecording must be false, meaning stopRecording() was explicitly called.
   // Otherwise, if isRecording is just null, means that we have not begun recording,
@@ -233,9 +238,9 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   const renderCamera = () => {
     if (hasPermission === null) {
-      return <View />;
+      return <View style={styles.centeredContainer}><Text>No access to camera or microphone. You must grant the app permission in order to continue. If you cannot change the permissions, please delete and reinstall the app.</Text></View>;
     } else if (hasPermission === false) {
-      return (<View style={styles.centeredContainer}><Text>No access to camera or microphone.</Text></View>);
+      return <View style={styles.centeredContainer}><Text>No access to camera or microphone. You must grant the app permission in order to continue. If you cannot change the permissions, please delete and reinstall the app.</Text></View>;
     } else {
       return (
         <>
