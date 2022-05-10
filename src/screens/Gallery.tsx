@@ -113,11 +113,12 @@ const Gallery = ({ navigation }):  JSX.Element => {
   }
 
   // TODO: Debug on Android
+  // Used to be the Loading spinner, but too flashy/jittery for search function
   return (
-    isLoading
-    ?
-    <FullPageSpinner size="large"/>
-    :
+    isLoading 
+    ? 
+    <></> 
+    : 
     <View style={styles.container}>
       <SafeAreaTop />
   
