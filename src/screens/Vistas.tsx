@@ -53,7 +53,7 @@ const Vistas = ({ navigation }: any):  JSX.Element => {
                 </View>
               
                 <View style={styles.featureContainer}>
-                  <MoodChart callback={navigateToRecord}/>
+                  <MoodChart abridged={false} callback={navigateToRecord}/>
                 </View>
               </>
             }

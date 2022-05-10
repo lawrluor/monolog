@@ -5,10 +5,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { TextArea } from '../components/TextEntry';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
+import SignInButton from '../components/SignInButton';
+
+import { feedbackConfirmationSuccess, feedbackConfirmationFailure } from '../utils/customAlerts';
 
 import { containers, text, spacings, colors } from '../styles';
 
-import SignInButton from '../components/SignInButton';
+const FEEDBACK_EMAIL_ADDRESS = "monist@monist.me";
 
 // See https://blog.codemagic.io/how-to-make-your-react-native-app-send-emails/
 const sendEmail = async (to: string, subject: string, body: string) => {
@@ -48,7 +51,7 @@ const Settings = ({ navigation }): JSX.Element => {
   }
 
   const sendEmailButtonCallback = () => {
-    sendEmail("monist@monist.me", "Monist App Feedback", feedbackText);
+    sendEmail(FEEDBACK_EMAIL_ADDRESS, "Monist App Feedback", feedbackText);
 
      // Hacky way to have a "callback" for when sending feedback through outside email app
      // Have a delay so that there is no "whiplash" from navigating screen immediately 
@@ -56,24 +59,27 @@ const Settings = ({ navigation }): JSX.Element => {
       // they will have been navigated to the moe page with this confirmation alert.
     // NOTE: we could clear the Feedback textarea, but better to leave it there
     // in case users would like to edit their text later or accidentally leave the screen.
-    setTimeout(submitFeedbackConfirmation, 3000); 
+    setTimeout(submitFeedbackConfirmation, 2000); 
   }
 
   const submitFeedbackConfirmation = () => {
-    // Navigate first, then display alert. 
-    // TODO: better to stay on Feedback page, then navigate after onPress of the alert?
-    navigation.navigate('Home');  
-
     Alert.alert(
-      "Feedback Sent",
-      "Thank you for sending the Monist team your feedback!",
+      "Please Note:",
+      `In order for the Monist team to receive your feedback, you must have sent it via email to ${FEEDBACK_EMAIL_ADDRESS} when prompted.`,
       [
         { 
-          text: "OK"
+          text: "No Thanks", onPress: feedbackConfirmationFailure
+        },
+        { 
+          text: "Done",
+          onPress: () => {   
+            navigation.navigate('Home');  
+            feedbackConfirmationSuccess();
+          }
         }
       ]
-    );
-  }
+    );    
+  } 
 
   const openEmailAppAlert = () => {
     Alert.alert(
@@ -82,9 +88,11 @@ const Settings = ({ navigation }): JSX.Element => {
       [
         {
           text: "Cancel",
-          style: "cancel"
+          style: "cancel",
+          onPress: feedbackConfirmationFailure
         },
-        { text: "OK",
+        { 
+          text: "OK",
           onPress: sendEmailButtonCallback
         }
       ]

@@ -12,7 +12,7 @@ import VideosContext from '../context/VideosContext';
 
 import { text, spacings, colors } from '../styles';
 
-const MOOD_CHART_SUMMARY =  "Welcome to your Mood Tracker Vista. This widget will display your average mood each day over the past week, based on the emojis you select after recording an entry."
+const MOOD_CHART_SUMMARY =  "Welcome to your Mood Tracker Vista. This widget will display your average mood across all your logs for a given day, over the past week, based on the emojis that you select after recording an entry."
 const MILLISECONDS_IN_A_WEEK = 604800000;
 const MILLISECONDS_IN_A_DAY = 86400000;
 

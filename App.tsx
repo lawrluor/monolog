@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, LogBox, YellowBox } from 'react-native';
+import { StyleSheet } from 'react-native';
 import AppLoading from 'expo-app-loading';
 
 import { useFonts } from 'expo-font';
@@ -7,12 +7,7 @@ import { useFonts } from 'expo-font';
 import MainNavigator from './src/navigation/MainNavigator';
 
 import { 
-  createVideoDirectory,  
-  createRatingDirectory,
-  createThumbnailDirectory,
-  createTranscriptDirectory,
-  createUserDataDirectory,
-  readUserData
+  createAllDirectories,
 } from './src/utils/localStorageUtils';
 
 import { colors } from './src/styles';
@@ -35,9 +30,9 @@ const App = (): JSX.Element => {
     // Disable all console.log statements if not in Dev mode
     // See https://stackoverflow.com/questions/38939917/removing-console-log-from-react-native-app
   
-    // if (!__DEV__) {
+    if (!__DEV__) {
       console.log = () => {};
-    // }
+    }
 
     // TODO: Disabling warning logs should be straightforward but does not work
     // Using Yellowbox or other deprecated methods does not work either
@@ -65,15 +60,8 @@ const App = (): JSX.Element => {
     const setup = async () => {
       setConsoleLogging();
 
-      let promises = [
-        createUserDataDirectory(),
-        createVideoDirectory(), 
-        createThumbnailDirectory(), 
-        createRatingDirectory(),
-        createTranscriptDirectory(),
-      ];
-
-      await Promise.all(promises);
+      let setupFinished = await createAllDirectories();  
+      console.log("setupFinished", setupFinished);
       setIsLoaded(true);
     }
 
@@ -83,15 +71,16 @@ const App = (): JSX.Element => {
   // if debugging, set debug borders on all elements
   return (
     <UserProvider>
-    <VideosProvider>
-      {
-        !fontsLoaded || !isLoaded || inTimeout
-        ?
-        <AppLoading />
-        :
-        <MainNavigator></MainNavigator>
-      }
-    </VideosProvider>
+        {
+          !fontsLoaded || !isLoaded || inTimeout
+          ?
+          <AppLoading />
+          :
+          <VideosProvider>
+            <MainNavigator></MainNavigator>
+          </VideosProvider>
+
+        }
     </UserProvider>
   )
 }
