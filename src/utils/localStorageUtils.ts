@@ -68,6 +68,10 @@ export const createTranscriptDirectory = async () => {
 
     return await FileSystem.makeDirectoryAsync(TRANSCRIPT_DIRECTORY)
       .then(() => { return Promise.resolve(true) })
+      .catch((err: any) => {
+        console.log("[ERROR] localStorageUtils: createTranscriptDirectory", err);
+        return Promise.reject(false);
+      });
   } catch (err: any) {
     console.log("[ERROR] localStorageUtils: createTranscriptDirectory", err);
     return Promise.reject(false);
@@ -261,6 +265,13 @@ export const getTranscripts = async (func: any=() => {}) => {
 // At this point, there is no ordering nor sorting of words
 // Optional parameter `numberOfTopWordsOnly` to cutoff return numberOfTopWordsOnly words
 export const getAllWordsFromTranscripts = async (numberOfTopWordsOnly: number=50) => {
+  // NOTE: because this function is called in VideosContext
+  // and VideosContext is triggered BEFORE App.tsx, 
+  // we must first create the Video directory on initial load instead of waiting 
+  // for App.tsx to create it first.
+  // TODO: Double check this
+  // await createDirectory(TRANSCRIPT_DIRECTORY);
+
   let result = await getTranscripts(getTranscriptContent);
   return processAllWordsFromTranscripts(result, numberOfTopWordsOnly);  // array of transcriptContents (unsplit strings)
 }

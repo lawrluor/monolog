@@ -71,15 +71,16 @@ const App = (): JSX.Element => {
   // if debugging, set debug borders on all elements
   return (
     <UserProvider>
-    <VideosProvider>
-      {
-        !fontsLoaded || !isLoaded || inTimeout
-        ?
-        <AppLoading />
-        :
-        <MainNavigator></MainNavigator>
-      }
-    </VideosProvider>
+        {
+          !fontsLoaded || !isLoaded || inTimeout
+          ?
+          <AppLoading />
+          :
+          <VideosProvider>
+            <MainNavigator></MainNavigator>
+          </VideosProvider>
+
+        }
     </UserProvider>
   )
 }
