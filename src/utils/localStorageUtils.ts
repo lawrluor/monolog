@@ -6,6 +6,7 @@
 // TODO: consider refactoring/moving code handling local storage from other files to here.
 
 import * as FileSystem from 'expo-file-system';
+import { resolvePath } from 'react-native-reanimated/lib/types/lib/reanimated2/animation/styleAnimation';
 import { filteredWords, removePunctuation } from './textProcessing';
 
 export const USER_DATA_DIRECTORY = FileSystem.documentDirectory + 'userData/';
@@ -14,61 +15,133 @@ export const THUMBNAIL_DIRECTORY = FileSystem.documentDirectory + 'thumbnails/';
 export const RATING_DIRECTORY = FileSystem.documentDirectory + 'rating/';
 export const VIDEO_DIRECTORY = FileSystem.documentDirectory + 'videos/';
 
-export const createVideoDirectory = async () => {
-  await FileSystem.getInfoAsync(VIDEO_DIRECTORY).then(
-    // TODO: check error handling on making the directory
+export const checkVideoDirectory = async () => {
+  let result = await FileSystem.getInfoAsync(VIDEO_DIRECTORY).then(
     ({ exists, _ }) => {
-      if (!exists) {
-        FileSystem.makeDirectoryAsync(VIDEO_DIRECTORY);
-      }
+      return exists ? true : false;
     }).catch(
     error => {
       console.log("[ERROR] VideosContext:FileSystem.getInfoAsync:", error);
+      return false;
     });
+
+  return result;
+}
+
+export const createVideoDirectory = async () => {
+  try {
+    let directoryAlreadyExists = await checkVideoDirectory();
+    // No need to create directory, already exists, so return early
+    if (directoryAlreadyExists) return Promise.resolve(true); 
+
+    FileSystem.makeDirectoryAsync(VIDEO_DIRECTORY)
+      .then(() => { return Promise.resolve(true) })
+      .catch((err: any) => {
+        console.log("[ERROR] localStorageUtils:createVideoDirectory", err);
+        return Promise.reject(false);
+      })
+  } catch(err: any) {
+    console.log("[ERROR] localStorageUtils:createVideoDirectory", err);
+    return Promise.reject(false);
+  }
+}
+
+export const checkTranscriptDirectory = async () => {
+  try {
+    return await FileSystem.getInfoAsync(VIDEO_DIRECTORY)
+      .then(({ exists, _ }) => {
+        return Promise.resolve(exists);
+      }).catch((err: any) => {
+        console.log("[ERROR] VideosContext:FileSystem.getInfoAsync:", err);
+        return Promise.reject(false);
+      });
+  } catch (err: any) {
+    console.log("[ERROR] VideosContext:FileSystem.getInfoAsync:", err);
+    return Promise.reject(false);
+  }
 }
 
 export const createTranscriptDirectory = async () => {
-  let transcriptDirectory = FileSystem.documentDirectory + "transcripts/";
-  await FileSystem.getInfoAsync(transcriptDirectory).then(
-    // TODO: check error handling on making the directory
-    ({ exists, _ }) => {
-      if (!exists) {
-        FileSystem.makeDirectoryAsync(transcriptDirectory);
-      }
-    }).catch(
-    error => {
-      console.log("[ERROR] Transcript:FileSystem.getInfoAsync:", error);
-    });
+  try {
+    let directoryExists = await checkTranscriptDirectory(); 
+    if (directoryExists) return Promise.resolve(true);  // return early
+
+    return await FileSystem.makeDirectoryAsync(TRANSCRIPT_DIRECTORY)
+      .then(() => { return Promise.resolve(true) })
+      .catch((err: any) => {
+        console.log("[ERROR] localStorageUtils: createTranscriptDirectory", err);
+        return Promise.reject(false);
+      });
+  } catch (err: any) {
+    console.log("[ERROR] localStorageUtils: createTranscriptDirectory", err);
+    return Promise.reject(false);
+  }
 }
 
+// TODO: refactor into Check and Create functions
 export const createThumbnailDirectory = async () => {
-  // Set up Thumbnail Directory if necessary.
-  FileSystem.getInfoAsync(THUMBNAIL_DIRECTORY).then(
-    ({ exists, _ }) => {
-      if (!exists) {
-        FileSystem.makeDirectoryAsync(THUMBNAIL_DIRECTORY);
+  try {
+    return await FileSystem.getInfoAsync(THUMBNAIL_DIRECTORY).then(
+      async ({ exists, _ }) => {
+        if (!exists) {
+          return await FileSystem.makeDirectoryAsync(THUMBNAIL_DIRECTORY)
+            .then(() => { return Promise.resolve(true) })
+            .catch((err: any) => {
+              console.log("[ERROR] localStorageUtils: createThumbnailDirectory", err);
+              return Promise.reject(false);
+            });
+        }
+
+        // Exists already
+        return Promise.resolve(true);
       }
-    }
-  ).catch(
-    error => {
-      console.log("[ERROR] Recording:Thumbnail:getInfoAsync:", error);
-    }
-  );
+    ).catch((err: any) => {
+        console.log("[ERROR] Recording:Thumbnail:getInfoAsync:", err);
+      }
+    );
+  } catch (err: any) {
+    console.log("[ERROR] localStorageUtils: createThumbnailDirectory", err);
+    return Promise.reject(false);
+  }
 }
 
-export const createRatingDirectory = async () => {
-  // Set up Emoji Rating Directory if necessary.
-  FileSystem.getInfoAsync(RATING_DIRECTORY).then(
-    ({ exists, _ }) => {
-      if (!exists) {
-        FileSystem.makeDirectoryAsync(RATING_DIRECTORY);
-      }
-    }
-  ).catch(
-    error => {
-      console.log("[ERROR] Recording:Rating:getInfoAsync:", error);
-    }
-  );
+export const checkDirectoryExists = async (directory: string) => {
+  try {
+    return await FileSystem.getInfoAsync(directory)
+      .then(({ exists, _ }) => {
+        return Promise.resolve(exists);
+      }).catch((err: any) => {
+        console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${directory}):`, err);
+        return Promise.reject(false);
+      });
+  } catch (err: any) {
+    console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${directory}):`, err);
+    return Promise.reject(false);
+  }
+}
+
+export const createDirectory = async (directory: string) => {
+  try {
+    let directoryExists = await checkDirectoryExists(directory);
+    if (directoryExists) return Promise.resolve(true);
+
+    return await FileSystem.makeDirectoryAsync(directory)
+      .then(() => { return Promise.resolve(true) })
+      .catch((err: any) => {
+        console.log(`[ERROR] localStorageUtils:createDirectory: ${directory}`, err);
+        return Promise.reject(false);
+      });
+  } catch (err: any) {
+    console.log(`[ERROR] localStorageUtils:createDirectory: ${directory}`, err);
+    return Promise.reject(false);
+  }
+}
+
+// TODO: If a promise fails, should we be allowed to continue?
+export const createAllDirectories = async() => {
+  let directories: string[] = [USER_DATA_DIRECTORY, TRANSCRIPT_DIRECTORY, THUMBNAIL_DIRECTORY, RATING_DIRECTORY, VIDEO_DIRECTORY];
+  let promises = directories.map((d: string) => createDirectory(d));
+  return await Promise.all(promises);
 }
 
 export const checkUserDataDirectory = async () => {
@@ -81,14 +154,19 @@ export const checkUserDataDirectory = async () => {
       return false;
     });
   
-  return directoryExists;
+  // TODO: can also use resolve/reject instead of back-passing a variable up and returning at end
+  return directoryExists; 
 }
 
 // Create User data directory if not already existing.
 export const createUserDataDirectory = async () => {
-  let directoryExists = await checkUserDataDirectory();
-  if (!directoryExists) {
-    FileSystem.makeDirectoryAsync(USER_DATA_DIRECTORY);
+  try {
+    let directoryExists = await checkUserDataDirectory();
+    if (!directoryExists) {
+      FileSystem.makeDirectoryAsync(USER_DATA_DIRECTORY);
+    }
+  } catch (err: any) {
+    console.log("[ERROR] localStorageUtils:createUserDataDirectory: ", err);
   }
 }
 
@@ -187,6 +265,13 @@ export const getTranscripts = async (func: any=() => {}) => {
 // At this point, there is no ordering nor sorting of words
 // Optional parameter `numberOfTopWordsOnly` to cutoff return numberOfTopWordsOnly words
 export const getAllWordsFromTranscripts = async (numberOfTopWordsOnly: number=50) => {
+  // NOTE: because this function is called in VideosContext
+  // and VideosContext is triggered BEFORE App.tsx, 
+  // we must first create the Video directory on initial load instead of waiting 
+  // for App.tsx to create it first.
+  // TODO: Double check this
+  // await createDirectory(TRANSCRIPT_DIRECTORY);
+
   let result = await getTranscripts(getTranscriptContent);
   return processAllWordsFromTranscripts(result, numberOfTopWordsOnly);  // array of transcriptContents (unsplit strings)
 }
