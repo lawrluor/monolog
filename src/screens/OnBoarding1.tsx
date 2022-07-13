@@ -93,6 +93,8 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   }
 
   const finishOnBoarding = async () => {
+    // TODO: add validation on fields before adding to user object/writing to DB
+
     let finalUserData = {
       'onboarded': true,
       'cameraPermission': false,
@@ -107,8 +109,8 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
       'age': age.toString()
     };
 
-    console.log("onb", finalUserData);
-    setUser(finalUserData);  // Set in Context, which also then saves to local storage
+    console.log("finalUserData", finalUserData);    
+    // setUser(finalUserData);  // Set in Context, which also then saves to local storage
   }
 
   // renders validation error if any exists
