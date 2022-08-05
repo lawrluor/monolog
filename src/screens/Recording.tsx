@@ -1,47 +1,60 @@
-import React from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView, Alert } from 'react-native';
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  ScrollView,
+  Alert,
+} from "react-native";
 
-import { Camera } from 'expo-camera';
-import { Audio } from 'expo-av';
-import * as FileSystem from 'expo-file-system';
-import * as VideoThumbnails from 'expo-video-thumbnails';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Camera } from "expo-camera";
+import { Audio } from "expo-av";
+import * as FileSystem from "expo-file-system";
+import * as VideoThumbnails from "expo-video-thumbnails";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import UserContext from '../context/UserContext';
+import UserContext from "../context/UserContext";
 
-import { checkRecordingPermissions } from '../utils/permissions';
-import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
+import { checkRecordingPermissions } from "../utils/permissions";
+import {
+  VIDEO_DIRECTORY,
+  THUMBNAIL_DIRECTORY,
+} from "../utils/localStorageUtils";
 
-import { text, containers, icons, spacings, dimensions } from '../styles';
+import { text, containers, icons, spacings, dimensions } from "../styles";
 
-import PulseAnimation from '../components/PulseAnimation';
-import GoBack from '../components/GoBack';
-import SpeechToText from '../components/SpeechToText';
-import CustomIcon from '../components/CustomIcon';
-import { FullPageSpinner } from '../components/Spinner';
+import PulseAnimation from "../components/PulseAnimation";
+import GoBack from "../components/GoBack";
+import SpeechToText from "../components/SpeechToText";
+import CustomIcon from "../components/CustomIcon";
+import { FullPageSpinner } from "../components/Spinner";
 
-const MAX_DURATION = 600;  // seconds
+const MAX_DURATION = 600; // seconds
 
-// NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording 
+// NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording
 export const Recording = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
 
   // TODO: experiment with adding loading states (carefully) to improve UX
   const cameraRef = React.useRef(null);
-  const [finalTranscript, setFinalTranscript] = React.useState<string>('');
-  const [recordingFinished, setRecordingFinished] = React.useState<boolean>(false);
-  const [hasPermission, setHasPermission] = React.useState<null | boolean>(false);
+  const [finalTranscript, setFinalTranscript] = React.useState<string>("");
+  const [recordingFinished, setRecordingFinished] =
+    React.useState<boolean>(false);
+  const [hasPermission, setHasPermission] = React.useState<null | boolean>(
+    false
+  );
   const [type, setType] = React.useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
-  const [videoStorePath, setVideoStorePath] = React.useState<string>('');
+  const [videoStorePath, setVideoStorePath] = React.useState<string>("");
 
   // TODO: camera always set to loaded already, so we will see the black camera loading screen
   // We need to debug this because when the state is set to true (production behavior).
-  // Sometimes the state just never changes. Happens for a new user recording their first video, 
+  // Sometimes the state just never changes. Happens for a new user recording their first video,
   // then recording another one right after in the same session.
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);  
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
-  const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
+  const timestamp = Math.floor(Date.now() / 1000); // TODO: Make accurate to start button press
 
   // Setup: Get permissions for camera from user first
   React.useEffect(() => {
@@ -52,23 +65,25 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       // OR send them back to home and request permissions again there
       // NOTE: Expo seems to ask one more permission for some reason
 
-      await setHasPermission(await checkRecordingPermissions()); 
-    }
+      await setHasPermission(await checkRecordingPermissions());
+    };
 
     asyncWrapper();
 
     // TODO: Handle cleanup before unmount using navigation.addListener?
     // See https://reactnavigation.org/docs/navigation-events/#navigationaddlistener
     return () => {
-      console.log("unmounting Recording, setting Audio.setIsEnabledAsync(false)")
+      console.log(
+        "unmounting Recording, setting Audio.setIsEnabledAsync(false)"
+      );
 
       const unmount = async () => {
         await resetRecordingAudio();
-        await Audio.setIsEnabledAsync(false);  
-      }
-  
+        await Audio.setIsEnabledAsync(false);
+      };
+
       unmount();
-    }
+    };
   }, []);
 
   // Listener on Camera state, simply debug for now
@@ -79,13 +94,14 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // "Callback method" for when the final transcript is ready.
   // Note: isRecording must be false, meaning stopRecording() was explicitly called.
   // Otherwise, if isRecording is just null, means that we have not begun recording,
-    // or we have simply switched the camera type between front or back.
+  // or we have simply switched the camera type between front or back.
   React.useEffect(() => {
-    if ((finalTranscript.length > 0) &&
-        (videoStorePath.length > 0) && 
-        (recordingFinished) && 
-        (isRecording === false)) {
-
+    if (
+      finalTranscript.length > 0 &&
+      videoStorePath.length > 0 &&
+      recordingFinished &&
+      isRecording === false
+    ) {
       // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
       // Now we can move to the next page with the final transcript result
       // Clean up and reset state
@@ -102,42 +118,44 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           ? Camera.Constants.Type.front
           : Camera.Constants.Type.back
       );
-    }
-    
+    };
+
     if (!user || user.tutorialMode) {
       // First time user does this, notify them
       Alert.alert(
         "Please Note",
         "Flipping the camera will stop any ongoing recording.",
         [
-          { 
+          {
             text: "Cancel",
           },
-          { 
+          {
             text: "Continue",
-            onPress: flipCamera
-          }
+            onPress: flipCamera,
+          },
         ]
       );
 
       // TODO: can make a specific state for this, like flipCameraNotified
-      let updatedUser = {...user, ...{ tutorialMode: false }};  // Merge old user object with new fields
+      let updatedUser = { ...user, ...{ tutorialMode: false } }; // Merge old user object with new fields
       setUser(updatedUser);
     } else {
       // User already knows this, let them flip the camera at will
       flipCamera();
     }
-  }
+  };
 
   const startRecording = async () => {
     try {
-      if (cameraRef){
+      if (cameraRef) {
         setIsRecording(true);
-      
-        let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
 
-        // TODO: SHOULD NOT NEED THIS AT ALL, 
-        // speechToTextPermission handled in SpeechToText.tsx 
+        let video = await cameraRef.current.recordAsync({
+          maxDuration: MAX_DURATION,
+        });
+
+        // TODO: SHOULD NOT NEED THIS AT ALL,
+        // speechToTextPermission handled in SpeechToText.tsx
         // camera and mic permissions handled in Home.tsx (calling getPermissions)
         // If able to start the recording, user must have permissions.
         // We set this now rather than when recording is finished, because otherwise
@@ -145,10 +163,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         let updates = {
           cameraPermission: true,
           micPermission: true,
-          speechToTextPermission: true
-        }
-    
-        let updatedUser = {...user, ...updates};  // Merge old user object with new fields
+          speechToTextPermission: true,
+        };
+
+        let updatedUser = { ...user, ...updates }; // Merge old user object with new fields
         setUser(updatedUser);
 
         // Create video and thumbnail files.
@@ -157,66 +175,60 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         setVideoStorePath(videoStorePath);
 
         // Handles the logic for extracting the video from storage and saving thumbnail
-        FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
+        FileSystem.copyAsync({ from: video.uri, to: videoStorePath }).then(
           () => {
-            VideoThumbnails.getThumbnailAsync(
-              videoStorePath,
-              { time: 0 }
-            ).then(
-              ( { uri } ) => {
-                let thumbnailPath = THUMBNAIL_DIRECTORY +
-                  timestamp.toString() + ".jpg";
-                FileSystem.copyAsync({'from': uri, 'to': thumbnailPath });
-              }
-            ).catch(
-              error => {
+            VideoThumbnails.getThumbnailAsync(videoStorePath, { time: 0 })
+              .then(({ uri }) => {
+                let thumbnailPath =
+                  THUMBNAIL_DIRECTORY + timestamp.toString() + ".jpg";
+                FileSystem.copyAsync({ from: uri, to: thumbnailPath });
+              })
+              .catch((error) => {
                 console.log("Recording:getThumbnailAsync:", error);
-              }
-            )
+              });
           }
-        )
+        );
       }
-     } catch(err){
-        console.log(err);
-     }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // Currently unused, as opting for no direct "return to gallery" button
   const navigateToGallery = () => {
-    navigation.navigate('Gallery');
-  }
+    navigation.navigate("Gallery");
+  };
 
   const navigateToRating = () => {
-    navigation.navigate('Rating', {
+    navigation.navigate("Rating", {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
     });
-  }
+  };
 
   const getTranscriptResult = (result: string) => {
     setFinalTranscript(result);
-  }
+  };
 
   const stopRecording = async () => {
     try {
       setIsRecording(false);
-      await cameraRef.current.stopRecording();  
-    } catch(err: any) {
+      await cameraRef.current.stopRecording();
+    } catch (err: any) {
       console.log("[ERROR] Recording.tsx: stopRecording", err);
     }
-  }
+  };
 
   // Distinguishes between user actually pressing the stop button,
   // while stopRecording is called in any other event that the recording stops.
   const finishRecording = async () => {
-    try {  
+    try {
       await stopRecording();
       setRecordingFinished(true);
-  
     } catch (err: any) {
       console.log(`[ERROR] Recording.tsx:finishRecording`, err);
     }
-  }
+  };
 
   // Clears previous recordings, does NOT record anything.
   const resetRecordingAudio = async () => {
@@ -227,78 +239,103 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       allowsRecordingIOS: true,
       staysActiveInBackground: true,
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
-      playsInSilentModeIOS: true,       // this option is unreliable at the moment
+      playsInSilentModeIOS: true, // this option is unreliable at the moment
       shouldDuckAndroid: false,
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
       playThroughEarpieceAndroid: false,
     });
 
-    Audio.setIsEnabledAsync(true); 
-     
+    Audio.setIsEnabledAsync(true);
+
     console.log(">>>2. Recording: resetting audio");
     try {
       console.log(">>>Resetting recording");
-      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-      await recording.stopAndUnloadAsync()
-      await Audio.setIsEnabledAsync(true); 
+      await recording.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+      );
+      await recording.stopAndUnloadAsync();
+      await Audio.setIsEnabledAsync(true);
     } catch (error) {
       console.log("err resetting recording", error);
     }
-  }
+  };
 
-  // Renders an icon that takes you to Gallery when pressed 
+  // Renders an icon that takes you to Gallery when pressed
   // Currently not used, as this feature is not requested right now
   const renderGalleryIcon = () => {
     return (
-      <Pressable onPress={navigateToGallery} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-        <MaterialCommunityIcons name={'folder-multiple-image'} style={[icons.MEDIUM, { color: 'white' }]} />
+      <Pressable
+        onPress={navigateToGallery}
+        style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+      >
+        <MaterialCommunityIcons
+          name={"folder-multiple-image"}
+          style={[icons.MEDIUM, { color: "white" }]}
+        />
       </Pressable>
-    )
-  }
+    );
+  };
 
   // Renders options to select recording length (time in seconds) in a ScrollView
   // Currently not used, as this feature is not requested right now
   const renderRecordOptions = (recording: boolean) => {
-    return (
-      isRecording
-      ?
+    return isRecording ? (
       <View style={styles.scrollContainer}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentOffset={{x: 0, y: 0}}
+          contentOffset={{ x: 0, y: 0 }}
         >
-          <View style={styles.numberButtonContainer}><Pressable><Text style={styles.numbersText}>15</Text></Pressable></View>
-          <View style={styles.numberButtonContainer}><Pressable><Text style={styles.numbersText}>30</Text></Pressable></View>
-          <View style={styles.numberButtonContainer}><Pressable><Text style={styles.numbersText}>60</Text></Pressable></View>
+          <View style={styles.numberButtonContainer}>
+            <Pressable>
+              <Text style={styles.numbersText}>15</Text>
+            </Pressable>
+          </View>
+          <View style={styles.numberButtonContainer}>
+            <Pressable>
+              <Text style={styles.numbersText}>30</Text>
+            </Pressable>
+          </View>
+          <View style={styles.numberButtonContainer}>
+            <Pressable>
+              <Text style={styles.numbersText}>60</Text>
+            </Pressable>
+          </View>
         </ScrollView>
       </View>
-      :
+    ) : (
       <></>
-    )
-  }
+    );
+  };
 
   const renderRecordIcon = () => {
-    return (
-      isRecording
-      ?
+    return isRecording ? (
       <PulseAnimation>
-        <Pressable onPress={finishRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.recordIcon]}>
+        <Pressable
+          onPress={finishRecording}
+          style={({ pressed }) => [
+            { opacity: pressed ? 0.3 : 1 },
+            styles.recordIcon,
+          ]}
+        >
           <View style={styles.centeredContainer}>
             <View style={styles.recordCircleOutline}></View>
             <View style={styles.recordSquare}></View>
           </View>
         </Pressable>
       </PulseAnimation>
-      :
-      <Pressable onPress={startRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+    ) : (
+      <Pressable
+        onPress={startRecording}
+        style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+      >
         <View style={styles.centeredContainer}>
           <View style={styles.recordCircleOutline}></View>
           <View style={styles.recordCircle}></View>
         </View>
       </Pressable>
-    )
-  }
+    );
+  };
 
   const renderCamera = () => {
     if (!hasPermission) {
@@ -307,18 +344,25 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           <GoBack />
 
           <View style={[styles.centeredContainer]}>
-            <Text style={{ textAlign: 'center' }}>No access to camera or microphone. You must grant the app permission in order to continue. If you cannot change the permissions, please delete and reinstall the app.</Text>
+            <Text style={{ textAlign: "center" }}>
+              No access to camera or microphone. You must grant the app
+              permission in order to continue. If you cannot change the
+              permissions, please delete and reinstall the app.
+            </Text>
           </View>
-       </>
-      )
+        </>
+      );
     } else {
       return (
         <>
           <GoBack />
 
           <View style={styles.flipCameraContainer}>
-            <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-              <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
+            <Pressable
+              onPress={flipCameraCallback}
+              style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+            >
+              <CustomIcon name="flip_camera" style={styles.flipCameraIcon} />
             </Pressable>
           </View>
 
@@ -326,10 +370,13 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             style={styles.cameraContainer}
             type={type}
             ref={cameraRef}
-            onCameraReady={() => setIsLoading(false) }
+            onCameraReady={() => setIsLoading(false)}
           >
             <View style={styles.captionContainer}>
-              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+              <SpeechToText
+                isRecording={isRecording}
+                getTranscriptResult={getTranscriptResult}
+              />
             </View>
 
             <View style={styles.recordContainer}>
@@ -342,47 +389,43 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         </>
       );
     }
-  }
+  };
 
   // The camera itself takes a while to load
   // Waiting for cameraRef to not be null doesn't seem to work
-  // It seems that the <Camera /> component and useRef needs to be loaded first 
+  // It seems that the <Camera /> component and useRef needs to be loaded first
   // Therefore, we still load the Camera component, but hide the display until loaded
   // The callback onCameraReady on Camera component sets our loading state
   return (
     <>
-      <View style={[styles.container, {display: isLoading ? 'none' : 'flex'}]}>
+      <View
+        style={[styles.container, { display: isLoading ? "none" : "flex" }]}
+      >
         {renderCamera()}
       </View>
-      
-      {
-        isLoading 
-        ? 
-        <FullPageSpinner size="large" />
-        : 
-        null
-      }
+
+      {isLoading ? <FullPageSpinner size="large" /> : null}
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    ...containers.DEFAULT
+    ...containers.DEFAULT,
   },
   centeredContainer: {
     ...containers.DEFAULT,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   cameraContainer: {
     flex: 1,
-    justifyContent: 'flex-end'
+    justifyContent: "flex-end",
   },
   // Similar to Gallery record button
   // TODO: Consider refactoring to common component
   recordContainer: {
-    position: 'absolute',
+    position: "absolute",
     width: "100%",
     bottom: dimensions.height / 10,
   },
@@ -395,45 +438,45 @@ const styles = StyleSheet.create({
   //   borderColor: 'red',
   // },
   recordCircleOutline: {
-    position: 'absolute',
+    position: "absolute",
     borderWidth: 1,
-    borderColor: 'white',
+    borderColor: "white",
     width: icons.LARGE.fontSize + 15,
     height: icons.LARGE.fontSize + 15,
-    borderRadius: icons.HUGE.fontSize / 2,  // to make a circle border, borderRadius = width / 2
+    borderRadius: icons.HUGE.fontSize / 2, // to make a circle border, borderRadius = width / 2
   },
   recordCircle: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     width: icons.LARGE.fontSize,
     aspectRatio: 1,
-    borderRadius: icons.LARGE.fontSize / 2,  // to make a circle border, borderRadius = width / 2
+    borderRadius: icons.LARGE.fontSize / 2, // to make a circle border, borderRadius = width / 2
   },
   recordSquare: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     aspectRatio: 1,
-    borderRadius: 4,  // to make a circle border, borderRadius = width / 2
+    borderRadius: 4, // to make a circle border, borderRadius = width / 2
     width: icons.MEDIUM.fontSize + 5,
   },
   stopIcon: {
     ...icons.HUGE,
     fontSize: icons.HUGE.fontSize - 25,
-    color: 'red'
+    color: "red",
   },
   flipCameraContainer: {
-    position: 'absolute',
+    position: "absolute",
     right: spacings.MASSIVE,
     top: spacings.ABSOLUTE_OFFSET_MEDIUM,
-    zIndex: 100
+    zIndex: 100,
   },
   flipCameraIcon: {
     ...icons.MEDIUM,
-    color: "white"
+    color: "white",
   },
   captionContainer: {
-    display: 'none',
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "none",
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
     marginHorizontal: spacings.MEDIUM,
     top: 150,
     right: 0,
@@ -443,11 +486,11 @@ const styles = StyleSheet.create({
   },
   numbersText: {
     ...text.p,
-    color: 'white',
+    color: "white",
   },
   // TODO: make the scroll container's left side start at exactly center?
   scrollContainer: {
-    position: 'absolute',
+    position: "absolute",
     // borderWidth: 1,
     // borderColor: 'white',
     width: "100%",
@@ -456,7 +499,7 @@ const styles = StyleSheet.create({
   },
   numberButtonContainer: {
     marginHorizontal: spacings.LARGE,
-  }
+  },
 });
 
 export default Recording;
