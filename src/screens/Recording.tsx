@@ -411,7 +411,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     }
   };
 
-  const renderAudioOnly = () => {
+  const renderAudioCapture = () => {
     if (!hasPermission) {
       return (
         <>
@@ -471,7 +471,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             { display: isLoading ? "none" : "flex" },
           ]}
         >
-          {renderAudioOnly()}
+          {renderAudioCapture()}
         </View>
       )}
 
