@@ -47,6 +47,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const [type, setType] = React.useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
   const [videoStorePath, setVideoStorePath] = React.useState<string>("");
+  const [cameraState, setCameraState] = React.useState<boolean>(true);
 
   // TODO: camera always set to loaded already, so we will see the black camera loading screen
   // We need to debug this because when the state is set to true (production behavior).
@@ -308,6 +309,15 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     );
   };
 
+  /**
+   * @param {boolean} cameraState
+   * indicates whether the camera is on or not: true = on, false = off.
+   * can maybe implement enum for clarity
+   */
+  const toggleCamera = () => {
+    setCameraState(cameraState ? false : true);
+  };
+
   const renderRecordIcon = () => {
     return isRecording ? (
       <PulseAnimation>
@@ -364,6 +374,16 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             >
               <CustomIcon name="flip_camera" style={styles.flipCameraIcon} />
             </Pressable>
+            {/* //TODO: Add camera toggle icon */}
+            <Pressable
+              onPress={toggleCamera}
+              style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+            >
+              <CustomIcon
+                name="eyeball_filled"
+                style={styles.cameraToggleIcon}
+              />
+            </Pressable>
           </View>
 
           <Camera
@@ -391,6 +411,46 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     }
   };
 
+  const renderAudioCapture = () => {
+    if (!hasPermission) {
+      return (
+        <>
+          <GoBack />
+
+          <View style={[styles.centeredContainer]}>
+            <Text style={{ textAlign: "center" }}>
+              No access to camera or microphone. You must grant the app
+              permission in order to continue. If you cannot change the
+              permissions, please delete and reinstall the app.
+            </Text>
+          </View>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <GoBack />
+          <View style={styles.flipCameraContainer}>
+            <Pressable
+              onPress={toggleCamera}
+              style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+            >
+              <CustomIcon
+                name="eyeball_filled"
+                style={styles.cameraToggleIcon}
+              />
+            </Pressable>
+          </View>
+
+          <View style={styles.recordContainer}>
+            {/* {renderGalleryIcon()} */}
+            {renderRecordIcon(isRecording)}
+          </View>
+        </>
+      );
+    }
+  };
+
   // The camera itself takes a while to load
   // Waiting for cameraRef to not be null doesn't seem to work
   // It seems that the <Camera /> component and useRef needs to be loaded first
@@ -398,11 +458,22 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // The callback onCameraReady on Camera component sets our loading state
   return (
     <>
-      <View
-        style={[styles.container, { display: isLoading ? "none" : "flex" }]}
-      >
-        {renderCamera()}
-      </View>
+      {cameraState ? (
+        <View
+          style={[styles.container, { display: isLoading ? "none" : "flex" }]}
+        >
+          {renderCamera()}
+        </View>
+      ) : (
+        <View
+          style={[
+            styles.audioContainer,
+            { display: isLoading ? "none" : "flex" },
+          ]}
+        >
+          {renderAudioCapture()}
+        </View>
+      )}
 
       {isLoading ? <FullPageSpinner size="large" /> : null}
     </>
@@ -410,6 +481,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 };
 
 const styles = StyleSheet.create({
+  audioContainer: {
+    ...containers.DEFAULT,
+    backgroundColor: "black",
+  },
   container: {
     ...containers.DEFAULT,
   },
@@ -471,6 +546,10 @@ const styles = StyleSheet.create({
   flipCameraIcon: {
     ...icons.MEDIUM,
     color: "white",
+  },
+  cameraToggleIcon: {
+    ...icons.HUGE,
+    color: "orange",
   },
   captionContainer: {
     display: "none",
