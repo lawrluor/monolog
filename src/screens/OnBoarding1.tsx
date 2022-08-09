@@ -7,6 +7,7 @@ import { text, spacings, colors, icons } from '../styles';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import TextEntry from '../components/TextEntry';
+import DropDown from '../components/DropDown';
 
 import { validateEmail } from '../utils/textProcessing';
 import UserContext from '../context/UserContext';
@@ -157,6 +158,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     } else {
       return (
         <View style={styles.textEntriesContainer}>
+          <DropDown />
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Gender" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[3]} textState={gender} setTextState={setGender} onFinish={() => handleTextOnFinish(3)}/></View>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Pronouns" editable isTextBox returnKeyType="next" innerRef={textRefs[4]} textState={pronouns} setTextState={setPronouns}  onFinish={() => handleTextOnFinish(4)}/></View>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[5]} textState={age} setTextState={setAge}  onFinish={handleFormSubmit}/></View>
