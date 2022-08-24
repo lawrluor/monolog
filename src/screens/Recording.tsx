@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   Alert,
+  Image,
 } from "react-native";
 
 import { Camera } from "expo-camera";
@@ -47,7 +48,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const [type, setType] = React.useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
   const [videoStorePath, setVideoStorePath] = React.useState<string>("");
-  const [cameraState, setCameraState] = React.useState<boolean>(true);
+  const [cameraOn, setCameraOn] = React.useState<boolean>(true);
 
   // TODO: camera always set to loaded already, so we will see the black camera loading screen
   // We need to debug this because when the state is set to true (production behavior).
@@ -231,6 +232,69 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     }
   };
 
+  //TODO:START RECORDING
+  const startAudioRecording = async () => {
+    try {
+      setIsRecording(true);
+      console.log("START RECORDING CONSOLE");
+      // let audio = await ;
+
+      let updates = {
+        cameraPermission: true,
+        micPermission: true,
+        speechToTextPermission: true,
+      };
+
+      let updatedUser = { ...user, ...updates }; // Merge old user object with new fields
+      setUser(updatedUser);
+
+      let timestamp = Math.floor(Date.now() / 1000);
+      // let imageStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".jpg";
+
+      // const testImage = require("../../assets/img/siri-waveform.jpg");
+      // const testImageURI = Image.resolveAssetSource(testImage).uri;
+      // const testTranscript = "Testing 123";
+      // setVideoStorePath("file:///testVideoPath");
+      // setFinalTranscript(JSON.stringify(testTranscript));
+      let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
+      setVideoStorePath(videoStorePath);
+      await FileSystem.downloadAsync(
+        "https://github.com/esc0rtd3w/blank-intro-videos/raw/master/blank.mov",
+        videoStorePath
+      ).then(({ uri }) => {
+        console.log("Video URI", uri);
+      });
+
+      // NOTE: Consider using static image for all audio only recordings
+      let thumbnailPath = THUMBNAIL_DIRECTORY + timestamp.toString() + ".jpg";
+      await FileSystem.downloadAsync(
+        "https://www.soundandcommunications.com/wp-content/uploads/2019/12/siri-waveform.jpg",
+        thumbnailPath
+      ).then(({ uri }) => {
+        console.log("Thumbnail URI", uri);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  //TODO:STOP RECORDING
+  const stopAudioRecording = async () => {
+    try {
+      setIsRecording(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const finishAudioRecording = async () => {
+    await stopAudioRecording();
+    const testTranscript = ["Testing", "123"];
+    setRecordingFinished(true);
+    setVideoStorePath("file:///testVideoPath");
+    setFinalTranscript(testTranscript);
+  };
+
   // Clears previous recordings, does NOT record anything.
   const resetRecordingAudio = async () => {
     const recording = new Audio.Recording();
@@ -309,20 +373,15 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     );
   };
 
-  /**
-   * @param {boolean} cameraState
-   * indicates whether the camera is on or not: true = on, false = off.
-   * can maybe implement enum for clarity
-   */
   const toggleCamera = () => {
-    setCameraState(cameraState ? false : true);
+    setCameraOn(cameraOn ? false : true);
   };
 
   const renderRecordIcon = () => {
     return isRecording ? (
       <PulseAnimation>
         <Pressable
-          onPress={finishRecording}
+          onPress={cameraOn ? finishRecording : finishAudioRecording}
           style={({ pressed }) => [
             { opacity: pressed ? 0.3 : 1 },
             styles.recordIcon,
@@ -336,7 +395,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       </PulseAnimation>
     ) : (
       <Pressable
-        onPress={startRecording}
+        onPress={cameraOn ? startRecording : startAudioRecording}
         style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
       >
         <View style={styles.centeredContainer}>
@@ -458,7 +517,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // The callback onCameraReady on Camera component sets our loading state
   return (
     <>
-      {cameraState ? (
+      {cameraOn ? (
         <View
           style={[styles.container, { display: isLoading ? "none" : "flex" }]}
         >
