@@ -232,7 +232,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     }
   };
 
-  //TODO:START RECORDING
   const startAudioRecording = async () => {
     try {
       setIsRecording(true);
@@ -249,13 +248,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       setUser(updatedUser);
 
       let timestamp = Math.floor(Date.now() / 1000);
-      // let imageStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".jpg";
-
-      // const testImage = require("../../assets/img/siri-waveform.jpg");
-      // const testImageURI = Image.resolveAssetSource(testImage).uri;
-      // const testTranscript = "Testing 123";
-      // setVideoStorePath("file:///testVideoPath");
-      // setFinalTranscript(JSON.stringify(testTranscript));
       let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
       setVideoStorePath(videoStorePath);
       await FileSystem.downloadAsync(
@@ -278,7 +270,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     }
   };
 
-  //TODO:STOP RECORDING
   const stopAudioRecording = async () => {
     try {
       setIsRecording(false);
