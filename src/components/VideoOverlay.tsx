@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, View, Pressable, Text, TextInput, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Pressable, Text, Alert } from 'react-native';
 
 import { DeleteVideoLog } from './Delete';
 import TranscriptEditor from './TranscriptEditor';
@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { deleteVideoLog } from '../utils/localStorageUtils';
 import { getCurrentDate } from '../utils/dates';
 
-import { icons, spacings, text, colors } from '../styles';
+import { icons, spacings, text } from '../styles';
 
 type Props = {
   videoData: any,

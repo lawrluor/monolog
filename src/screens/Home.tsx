@@ -10,6 +10,8 @@ import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
 import NewUserMessage from '../components/NewUserMessage';
+import AudioBubblesAnimation from '../components/AudioBubblesAnimation';
+
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
 import { comingSoonAlert, simpleAlert } from '../utils/customAlerts';
@@ -25,6 +27,7 @@ const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
 
 const Home = ({ navigation }: any): JSX.Element => {
+  const test = [...Array(5).keys()];
   const { user } = React.useContext(UserContext);
   const { videosCount, isLoading } = React.useContext(VideosContext);
 
@@ -163,6 +166,11 @@ const Home = ({ navigation }: any): JSX.Element => {
                 <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
               </View>
             </Pressable>
+            
+            { 
+              test.map(() => <AudioBubblesAnimation />)
+            }
+
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>
