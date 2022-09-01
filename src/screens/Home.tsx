@@ -167,9 +167,12 @@ const Home = ({ navigation }: any): JSX.Element => {
               </View>
             </Pressable>
             
-            { 
-              test.map(() => <AudioBubblesAnimation />)
-            }
+            
+            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+              { 
+                test.map((id: number) => <AudioBubblesAnimation key={id} />)
+              }
+            </View>
 
           </ScrollView>
         </LinearGradient>
