@@ -27,7 +27,7 @@ const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
 
 const Home = ({ navigation }: any): JSX.Element => {
-  const test = [...Array(5).keys()];
+  const test = [...Array(8).keys()];
   const { user } = React.useContext(UserContext);
   const { videosCount, isLoading } = React.useContext(VideosContext);
 
