@@ -14,7 +14,7 @@ const generateRandomColor = (): string => {
 
 // An individual animated Audio Bubble
 const AudioBubble = ({ shouldBegin }: any) => {
-  const easing = Easing.elastic(1);  // https://reactnative.dev/docs/easing
+  const easing = Easing.elastic(1);  // How "bouncy" https://reactnative.dev/docs/easing
 
   const [isVisible, setIsVisible] = React.useState<boolean>(false);
   const [color, setColor] = React.useState<string>(generateRandomColor());  // generate random hex value
@@ -31,23 +31,13 @@ const AudioBubble = ({ shouldBegin }: any) => {
     // NOTE: Updating any state triggers useEffect to reset opacity and movement loops.
   }
 
-  // opacity.addListener((val) => {
-  //   if (val.value === -1) {
-  //     opacityLoop();
-  //   }
-  // })
-
-  // negative coordinates allowed
-  // const generateRandomX = () => {
-  //   Math.random() - 0.5;
-
   const movementLoop = () => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(
           coordinate,
           { 
-            toValue: { x: (Math.random() - 0.5) * 200, y: Math.random() * -300 },
+            toValue: { x: (Math.random() - 0.5) * 200, y: (Math.random() -0.5) * -300 },
             duration: 3000,
             useNativeDriver: true,
             easing
@@ -131,6 +121,8 @@ const AudioBubbles = ({ shouldBegin }: any) => {
   // create array of size NUMBER_OF_BUBBLES to map through and generate each audio bubble
   const mapArray = [...Array(NUMBER_OF_BUBBLES).keys()];  
 
+  // First container: Full screen, with flex of 1, solid background. 
+  // Second container: Absolute positioned at bottom of the screen where the record icon is.
   return (
     <View style={audioBubblesStyles.container}>
       <View style={audioBubblesStyles.recordContainer}>
@@ -151,11 +143,11 @@ const AudioBubbles = ({ shouldBegin }: any) => {
 const audioBubblesStyles = StyleSheet.create({
   container: {
     flex: 1, 
-    backgroundColor: 'black'
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  // same absolute positioning from Recording.tsx
   recordContainer: {
-    position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
     width: "100%",
