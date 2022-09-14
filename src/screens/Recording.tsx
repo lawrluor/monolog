@@ -21,6 +21,7 @@ import { checkRecordingPermissions } from "../utils/permissions";
 import {
   VIDEO_DIRECTORY,
   THUMBNAIL_DIRECTORY,
+  AUDIO_DIRECTORY,
 } from "../utils/localStorageUtils";
 
 import { text, containers, icons, spacings, dimensions } from "../styles";
@@ -48,6 +49,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const [type, setType] = React.useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
   const [videoStorePath, setVideoStorePath] = React.useState<string>("");
+  const [audioStorePath, setAudioStorePath] = React.useState<string>("");
   const [cameraOn, setCameraOn] = React.useState<boolean>(true);
 
   // TODO: camera always set to loaded already, so we will see the black camera loading screen
@@ -100,7 +102,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   React.useEffect(() => {
     if (
       finalTranscript.length > 0 &&
-      videoStorePath.length > 0 &&
+      (videoStorePath.length > 0 || audioStorePath.length > 0) &&
       recordingFinished &&
       isRecording === false
     ) {
@@ -109,7 +111,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       // Clean up and reset state
       navigateToRating();
     }
-  }, [finalTranscript, videoStorePath]);
+  }, [finalTranscript, videoStorePath, audioStorePath]);
 
   const flipCameraCallback = () => {
     const flipCamera = () => {
@@ -248,13 +250,13 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       setUser(updatedUser);
 
       let timestamp = Math.floor(Date.now() / 1000);
-      let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
-      setVideoStorePath(videoStorePath);
+      let audioStorePath = AUDIO_DIRECTORY + timestamp.toString() + ".mp3";
+      setAudioStorePath(audioStorePath);
       await FileSystem.downloadAsync(
-        "https://github.com/esc0rtd3w/blank-intro-videos/raw/master/blank.mov",
-        videoStorePath
+        "https://github.com/anars/blank-audio/blob/master/2-seconds-of-silence.mp3",
+        audioStorePath
       ).then(({ uri }) => {
-        console.log("Video URI", uri);
+        console.log("Audio URI", uri);
       });
 
       // NOTE: Consider using static image for all audio only recordings
@@ -282,7 +284,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     await stopAudioRecording();
     const testTranscript = ["Testing", "123"];
     setRecordingFinished(true);
-    setVideoStorePath("file:///testVideoPath");
+    setAudioStorePath("file:///testVideoPath");
     setFinalTranscript(testTranscript);
   };
 

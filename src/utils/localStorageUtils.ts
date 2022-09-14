@@ -14,6 +14,38 @@ export const TRANSCRIPT_DIRECTORY = FileSystem.documentDirectory + 'transcripts/
 export const THUMBNAIL_DIRECTORY = FileSystem.documentDirectory + 'thumbnails/';
 export const RATING_DIRECTORY = FileSystem.documentDirectory + 'rating/';
 export const VIDEO_DIRECTORY = FileSystem.documentDirectory + 'videos/';
+export const AUDIO_DIRECTORY = FileSystem.documentDirectory + 'audios/';
+
+export const checkAudioDirectory = async () => {
+  let result = await FileSystem.getInfoAsync(AUDIO_DIRECTORY).then(
+    ({ exists, _ }) => {
+      return exists ? true : false;
+    }).catch(
+    error => {
+      console.log("[ERROR] AudiosContext:FileSystem.getInfoAsync:", error);
+      return false;
+    });
+
+  return result;
+}
+
+export const createAudioDirectory = async () => {
+  try {
+    let directoryAlreadyExists = await checkAudioDirectory();
+    // No need to create directory, already exists, so return early
+    if (directoryAlreadyExists) return Promise.resolve(true); 
+
+    FileSystem.makeDirectoryAsync(AUDIO_DIRECTORY)
+      .then(() => { return Promise.resolve(true) })
+      .catch((err: any) => {
+        console.log("[ERROR] localStorageUtils:createaAudioDirectory", err);
+        return Promise.reject(false);
+      })
+  } catch(err: any) {
+    console.log("[ERROR] localStorageUtils:createAudioDirectory", err);
+    return Promise.reject(false);
+  }
+}
 
 export const checkVideoDirectory = async () => {
   let result = await FileSystem.getInfoAsync(VIDEO_DIRECTORY).then(
@@ -139,7 +171,7 @@ export const createDirectory = async (directory: string) => {
 
 // TODO: If a promise fails, should we be allowed to continue?
 export const createAllDirectories = async() => {
-  let directories: string[] = [USER_DATA_DIRECTORY, TRANSCRIPT_DIRECTORY, THUMBNAIL_DIRECTORY, RATING_DIRECTORY, VIDEO_DIRECTORY];
+  let directories: string[] = [USER_DATA_DIRECTORY, TRANSCRIPT_DIRECTORY, THUMBNAIL_DIRECTORY, RATING_DIRECTORY, VIDEO_DIRECTORY, AUDIO_DIRECTORY];
   let promises = directories.map((d: string) => createDirectory(d));
   return await Promise.all(promises);
 }
@@ -370,6 +402,18 @@ export const deleteAllVideos = async (numberOfVideosToDelete=0) => {
     .catch((err) => console.log("[ERROR] VideosContext: deleteAllVideos", err));
 }
 
+export const deleteAllAudios = async (numberOfVideosToDelete=0) => {
+  await FileSystem.readDirectoryAsync(AUDIO_DIRECTORY)
+    .then(async (files) => {
+      // default is 0, so delete all videos by default
+      let numberOfVideos = Math.max(0, files.length - numberOfVideosToDelete);  
+      for (let i=0; i<numberOfVideos; i++) {
+        await FileSystem.deleteAsync(AUDIO_DIRECTORY + files[i]);
+      }
+    })
+    .catch((err) => console.log("[ERROR] AudiosContext: deleteAllAudios", err));
+}
+
 export const deleteAllThumbnails = async () => {
   await FileSystem.deleteAsync(THUMBNAIL_DIRECTORY);
   console.log("Deleted all thumbnails");
@@ -381,6 +425,7 @@ export const deleteAllData = async () => {
       deleteAllRatings(),
       deleteAllTranscripts(),
       deleteAllVideos(),
+      deleteAllAudios(),
       deleteAllThumbnails(),
       deleteUserData()
     ]
@@ -407,6 +452,24 @@ export const deleteVideoLog = async (filename: string) => {
     return true;
   } catch(err) {
     console.log(`[ERROR] localStorageUtils: deleteVideoLog`, err);
+    return false;
+  }
+}
+
+export const deleteAudioLog = async (filename: string) => {
+  try {
+    let promises = [
+      FileSystem.deleteAsync(`${AUDIO_DIRECTORY}${filename}.mov`), 
+      FileSystem.deleteAsync(`${THUMBNAIL_DIRECTORY}${filename}.jpg`),
+      FileSystem.deleteAsync(`${TRANSCRIPT_DIRECTORY}${filename}.txt`),
+      FileSystem.deleteAsync(`${RATING_DIRECTORY}${filename}.txt`)
+    ]
+
+    await Promise.all(promises);
+    console.log(`Deleted log ${filename}`);
+    return true;
+  } catch(err) {
+    console.log(`[ERROR] localStorageUtils: deleteAudioLog`, err);
     return false;
   }
 }
