@@ -3,30 +3,46 @@ import { View, Animated, Easing, Pressable, StyleSheet } from 'react-native';
 
 import { dimensions } from '../styles';
 
-const BUBBLE_SIZE = 70;
-const NUMBER_OF_BUBBLES = 25;
-
 // Generates a random hex code.
 // TODO: not sure if includes opacity or not, ideally not.
 const generateRandomColor = (): string => {
-  return Math.floor(Math.random()*16777215).toString(16)
+  console.log(Math.floor(Math.random()*16777215).toString(16));
+  return Math.floor(Math.random()*16777215).toString(16);
 }
+
+
+
+const BUBBLE_SIZE = 70;
+const NUMBER_OF_BUBBLES = 25;
+const COLOR = 'D4D4D455'; // generateRandomColor();
+// const START_POS = generateRandomCoordinates();  // center: { x: 0, y: 0 }
 
 // An individual animated Audio Bubble
 const AudioBubble = ({ shouldBegin }: any) => {
+  const generateRandomCoordinates = (): any => {
+    const x = (Math.random() - 0.5) * 100;  // half of max distance
+    const y = (Math.random() - 0.5) * 150;  // half of max distance
+    return { x: x, y: y };  
+  }
+
+  const START_POS = generateRandomCoordinates();  // center: { x: 0, y: 0 }
+
   const easing = Easing.elastic(1);  // How "bouncy" https://reactnative.dev/docs/easing
 
   const [isVisible, setIsVisible] = React.useState<boolean>(false);
-  const [color, setColor] = React.useState<string>(generateRandomColor());  // generate random hex value
+  const [color, setColor] = React.useState<string>(COLOR);  // generate random hex value
 
   const opacity = React.useRef(new Animated.Value(0.9)).current;
-  const coordinate = React.useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const coordinate = React.useRef(new Animated.ValueXY(START_POS)).current;
 
   const onBubblePress = () => {
     // Stop the animation, then begin the loop again. 
     // Prevents multiple simultaneous loops for the same bubble
     // done because resetAnimation() does not work
-    setColor(generateRandomColor());  // Optional: set new color 
+    
+    // setColor(generateRandomColor());  // Optional: set new color 
+    // setIsVisible(!isVisible);
+    opacityLoop();  // "pop" the bubble
 
     // NOTE: Updating any state triggers useEffect to reset opacity and movement loops.
   }
@@ -46,7 +62,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
         Animated.timing(
           coordinate,
           { 
-            toValue: { x: 0, y: 0 },
+            toValue: START_POS,
             duration: 1,  // moves back to starting point while bubble is invisible
             useNativeDriver: true,
           } 
@@ -77,7 +93,6 @@ const AudioBubble = ({ shouldBegin }: any) => {
       ])
     ).start();
   }
-
 
   React.useEffect(() => {
     console.log("shouldbegin", shouldBegin)
@@ -143,7 +158,7 @@ const AudioBubbles = ({ shouldBegin }: any) => {
 const audioBubblesStyles = StyleSheet.create({
   container: {
     flex: 1, 
-    backgroundColor: 'black',
+    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },

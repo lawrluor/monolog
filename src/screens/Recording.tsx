@@ -19,6 +19,7 @@ import GoBack from '../components/GoBack';
 import SpeechToText from '../components/SpeechToText';
 import CustomIcon from '../components/CustomIcon';
 import { FullPageSpinner } from '../components/Spinner';
+import AudioOverlay from '../components/AudioOverlay';
 import AudioBubbles from '../components/AudioBubbles';
 
 const MAX_DURATION = 600;  // seconds
@@ -266,18 +267,24 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // For when user wants audio only rather than camera on.
   const renderAudioRecordingScreen = () => {
     return (
-      <>
-        <AudioBubbles shouldBegin={isRecording} /> 
+      <AudioOverlay>
+        {isRecording
+          ?
+          <>
+            <AudioBubbles shouldBegin={isRecording} />
 
-        <View style={styles.captionContainer}>
-          <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
-        </View>
+            <View style={styles.captionContainer}>
+              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+            </View>
+          </>
+          :
+          <Text>Press the button to begin recording your audio log.</Text>
+        }
 
         <View style={styles.recordContainer}>
-          {/* {renderGalleryIcon()} */}
-          {renderRecordIcon(isRecording)}
+          {renderRecordIcon()}
         </View>
-      </>
+      </AudioOverlay>
     )
   }
 
@@ -348,22 +355,24 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
     return (
       <>
-        <View style={styles.cameraToggleContainer}>
-            <View style={styles.flipCameraContainer}>
-              <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-                <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
-              </Pressable>
-            </View>
+        <GoBack />
 
-            <View style={styles.cameraOnToggleContainer}>
-              <Pressable onPress={toggleCameraOn} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-                {renderCameraToggleIcon(isCameraOn)}
-              </Pressable>
-            </View>
+        <View style={styles.cameraToggleContainer}>
+          <View style={styles.flipCameraContainer}>
+            <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+              <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
+            </Pressable>
           </View>
 
+          <View style={styles.cameraOnToggleContainer}>
+            <Pressable onPress={toggleCameraOn} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+              {renderCameraToggleIcon(isCameraOn)}
+            </Pressable>
+          </View>
+        </View>
+
         {
-          true 
+          true
           ?
           <Camera
           style={styles.cameraContainer}
@@ -375,23 +384,31 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             {/* {renderRecordOptions(isRecording)} */}
           </Camera>
           :
-          <Camera
-          style={styles.cameraContainer}
-          type={type}
-          ref={cameraRef}
-          onCameraReady={() => setIsLoading(false) }
-          >
-            <View style={styles.captionContainer}>
-              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+          <>
+            <View style={styles.flipCameraContainer}>
+              <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+                <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
+              </Pressable>
             </View>
+            
+            <Camera
+            style={styles.cameraContainer}
+            type={type}
+            ref={cameraRef}
+            onCameraReady={() => setIsLoading(false) }
+            >
+              <View style={styles.captionContainer}>
+                <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+              </View>
 
-            <View style={styles.recordContainer}>
-              {/* {renderGalleryIcon()} */}
-              {renderRecordIcon()}
-            </View>
+              <View style={styles.recordContainer}>
+                {/* {renderGalleryIcon()} */}
+                {renderRecordIcon()}
+              </View>
 
-            {/* {renderRecordOptions(isRecording)} */}
-          </Camera>
+              {/* {renderRecordOptions(isRecording)} */}
+            </Camera>
+          </>
         }
       </>
     );
