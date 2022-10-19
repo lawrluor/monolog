@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Animated, Easing, Pressable, StyleSheet } from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
 
 import { dimensions } from '../styles';
 
@@ -12,12 +13,14 @@ const generateRandomCoordinates = (): any => {
 const MAX_SIZE = 180;
 const MIN_SIZE = 90;
 const NUMBER_OF_BUBBLES = 10;
-const COLOR = 'D4D4D455';  // use grey-ish transparent color instead of generateRandomColor();
+const COLOR = 'transparent' // 'D4D4D455';  // use grey-ish transparent color instead of generateRandomColor();
 
 // An individual animated Audio Bubble
 const AudioBubble = ({ shouldBegin }: any) => {
   // MIN_SIZE is smallest possible bubble
   const BUBBLE_SIZE = (Math.random() * (MAX_SIZE - MIN_SIZE)) + MIN_SIZE;  
+  const TIME_OFFSET = Math.random() * 500;
+
   const coordinate = generateRandomCoordinates();  // center: { x: 0, y: 0 }
 
   const easing = Easing.elastic(1);  // How "bouncy" https://reactnative.dev/docs/easing
@@ -42,6 +45,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
   const sizeLoop = () => {
     Animated.loop(
       Animated.sequence([
+        Animated.delay(TIME_OFFSET),
         Animated.timing(
           size,
           {
@@ -65,6 +69,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
   const opacityLoop = () => {
     Animated.loop(
       Animated.sequence([
+        Animated.delay(TIME_OFFSET),
         Animated.timing(
           opacity,
           {
@@ -175,8 +180,9 @@ const styles = StyleSheet.create({
   // This overlaps each bubble to make the animation pressable.
   bubblePressable: {
     flex: 1, 
-    aspectRatio: 1
-    // borderWidth: 2, 
+    aspectRatio: 1,
+    borderColor: 'white',
+    borderWidth: 2, 
   },
   container: {
     flex: 1
