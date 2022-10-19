@@ -6,7 +6,7 @@ import { useFonts } from 'expo-font';
 
 import MainNavigator from './src/navigation/MainNavigator';
 
-import { 
+import {
   createAllDirectories,
 } from './src/utils/localStorageUtils';
 
@@ -29,10 +29,10 @@ const App = (): JSX.Element => {
   const setConsoleLogging = () => {
     // Disable all console.log statements if not in Dev mode
     // See https://stackoverflow.com/questions/38939917/removing-console-log-from-react-native-app
-  
-    // if (!__DEV__) {
+
+     if (!__DEV__) {
       console.log = () => {};
-    // }
+     }
 
     // TODO: Disabling warning logs should be straightforward but does not work
     // Using Yellowbox or other deprecated methods does not work either
@@ -45,8 +45,8 @@ const App = (): JSX.Element => {
       setInTimeout(false);
     }, 500);
 
-    return () => { 
-      clearTimeout(timer) 
+    return () => {
+      clearTimeout(timer)
     }
   }, []);
 
@@ -60,7 +60,7 @@ const App = (): JSX.Element => {
     const setup = async () => {
       setConsoleLogging();
 
-      let setupFinished = await createAllDirectories();  
+      let setupFinished = await createAllDirectories();
       console.log("setupFinished", setupFinished);
       setIsLoaded(true);
     }
