@@ -9,10 +9,10 @@ const generateRandomCoordinates = (): any => {
   return { x: x, y: y };  
 }
 
-const MAX_SIZE = 148;
-const MIN_SIZE = 74;
+const MAX_SIZE = 180;
+const MIN_SIZE = 90;
 const NUMBER_OF_BUBBLES = 10;
-const COLOR = 'D4D4D455';  // use transparent color instead of generateRandomColor();
+const COLOR = 'D4D4D455';  // use grey-ish transparent color instead of generateRandomColor();
 
 // An individual animated Audio Bubble
 const AudioBubble = ({ shouldBegin }: any) => {
@@ -25,6 +25,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
   const [isVisible, setIsVisible] = React.useState<boolean>(false);
   const [color, setColor] = React.useState<string>(COLOR);  // generate random hex value
 
+  const size = React.useRef(new Animated.Value(0.3)).current;
   const opacity = React.useRef(new Animated.Value(0.9)).current;
 
   const onBubblePress = () => {
@@ -38,6 +39,29 @@ const AudioBubble = ({ shouldBegin }: any) => {
     // NOTE: Updating any state triggers useEffect to reset opacity and movement loops.
   }
 
+  const sizeLoop = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(
+          size,
+          {
+            toValue: 1.0,
+            duration: 2000,
+            useNativeDriver: true,
+          }
+        ),
+        Animated.timing(
+          size,
+          {
+            toValue: 0.3,
+            duration: 10,
+            useNativeDriver: true,
+          }
+        )
+      ])
+    ).start();
+  }
+
   const opacityLoop = () => {
     Animated.loop(
       Animated.sequence([
@@ -45,7 +69,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
           opacity,
           {
             toValue: 0,
-            duration: 2990,
+            duration: 2000,
             useNativeDriver: true,
           }
         ),
@@ -64,7 +88,10 @@ const AudioBubble = ({ shouldBegin }: any) => {
   React.useEffect(() => {
     if (shouldBegin) {
       setIsVisible(true);
-    
+      
+      size.stopAnimation();
+      sizeLoop();
+      
       opacity.stopAnimation();
       opacityLoop();
     }
@@ -82,7 +109,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
   }
 
   const transformStyle = {
-    transform: [{translateX: coordinate.x}, {translateY: coordinate.y}]
+    transform: [{translateX: coordinate.x}, {translateY: coordinate.y}, {scaleX: size}, {scaleY: size}]
   }
 
   const bubbleSize = {
@@ -91,7 +118,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
   }
 
   return (
-    <View style={[styles.container, { display: isVisible ? 'flex' : 'none'}]}>
+    <View style={[styles.container, { display: isVisible ? 'flex' : 'none' }]}>
       <Animated.View style={[styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity, backgroundColor: `#${color}` } ]} >
         <Pressable onPress={onBubblePress} hitSlop={5} style={ ({pressed}) => [styles.bubblePressable, bubbleSize, { backgroundColor: pressed ? '#FFFFFF66' : 'transparent' }] }>
         </Pressable>
