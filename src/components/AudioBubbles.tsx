@@ -3,29 +3,22 @@ import { View, Animated, Easing, Pressable, StyleSheet } from 'react-native';
 
 import { dimensions } from '../styles';
 
-// Generates a random hex code.
-// TODO: not sure if includes opacity or not, ideally not.
-const generateRandomColor = (): string => {
-  console.log(Math.floor(Math.random()*16777215).toString(16));
-  return Math.floor(Math.random()*16777215).toString(16);
+const generateRandomCoordinates = (): any => {
+  const x = (Math.random() - 0.5) * dimensions.width / 2;  // half of max distance
+  const y = (Math.random() - 0.5) * dimensions.height / 2;  // half of max distance
+  return { x: x, y: y };  
 }
 
-
-
-const BUBBLE_SIZE = 70;
-const NUMBER_OF_BUBBLES = 25;
-const COLOR = 'D4D4D455'; // generateRandomColor();
-// const START_POS = generateRandomCoordinates();  // center: { x: 0, y: 0 }
+const MAX_SIZE = 148;
+const MIN_SIZE = 74;
+const NUMBER_OF_BUBBLES = 10;
+const COLOR = 'D4D4D455';  // use transparent color instead of generateRandomColor();
 
 // An individual animated Audio Bubble
 const AudioBubble = ({ shouldBegin }: any) => {
-  const generateRandomCoordinates = (): any => {
-    const x = (Math.random() - 0.5) * 100;  // half of max distance
-    const y = (Math.random() - 0.5) * 150;  // half of max distance
-    return { x: x, y: y };  
-  }
-
-  const START_POS = generateRandomCoordinates();  // center: { x: 0, y: 0 }
+  // MIN_SIZE is smallest possible bubble
+  const BUBBLE_SIZE = (Math.random() * (MAX_SIZE - MIN_SIZE)) + MIN_SIZE;  
+  const coordinate = generateRandomCoordinates();  // center: { x: 0, y: 0 }
 
   const easing = Easing.elastic(1);  // How "bouncy" https://reactnative.dev/docs/easing
 
@@ -33,42 +26,16 @@ const AudioBubble = ({ shouldBegin }: any) => {
   const [color, setColor] = React.useState<string>(COLOR);  // generate random hex value
 
   const opacity = React.useRef(new Animated.Value(0.9)).current;
-  const coordinate = React.useRef(new Animated.ValueXY(START_POS)).current;
 
   const onBubblePress = () => {
     // Stop the animation, then begin the loop again. 
     // Prevents multiple simultaneous loops for the same bubble
     // done because resetAnimation() does not work
     
-    // setColor(generateRandomColor());  // Optional: set new color 
-    // setIsVisible(!isVisible);
+    // setIsVisible(!isVisible);  // "permanently" pop the bubble
     opacityLoop();  // "pop" the bubble
 
     // NOTE: Updating any state triggers useEffect to reset opacity and movement loops.
-  }
-
-  const movementLoop = () => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(
-          coordinate,
-          { 
-            toValue: { x: (Math.random() - 0.5) * 200, y: (Math.random() -0.5) * -300 },
-            duration: 3000,
-            useNativeDriver: true,
-            easing
-          } 
-        ),
-        Animated.timing(
-          coordinate,
-          { 
-            toValue: START_POS,
-            duration: 1,  // moves back to starting point while bubble is invisible
-            useNativeDriver: true,
-          } 
-        )
-      ])
-    ).start()
   }
 
   const opacityLoop = () => {
@@ -95,14 +62,11 @@ const AudioBubble = ({ shouldBegin }: any) => {
   }
 
   React.useEffect(() => {
-    console.log("shouldbegin", shouldBegin)
     if (shouldBegin) {
       setIsVisible(true);
     
-      coordinate.stopAnimation();  
       opacity.stopAnimation();
       opacityLoop();
-      movementLoop();
     }
 
   }, [shouldBegin])
@@ -118,13 +82,18 @@ const AudioBubble = ({ shouldBegin }: any) => {
   }
 
   const transformStyle = {
-    transform: [{translateX: coordinate.x}, {translateY: coordinate.y }]
+    transform: [{translateX: coordinate.x}, {translateY: coordinate.y}]
+  }
+
+  const bubbleSize = {
+    height: BUBBLE_SIZE,
+    borderRadius: BUBBLE_SIZE / 2
   }
 
   return (
     <View style={[styles.container, { display: isVisible ? 'flex' : 'none'}]}>
-      <Animated.View style={[styles.bubble, shadowStyle, transformStyle, { opacity: opacity, backgroundColor: `#${color}` } ]} >
-        <Pressable onPress={onBubblePress} hitSlop={5} style={ ({pressed}) => [styles.bubblePressable, {backgroundColor: pressed ? '#FFFFFF66' : 'transparent' }] }>
+      <Animated.View style={[styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity, backgroundColor: `#${color}` } ]} >
+        <Pressable onPress={onBubblePress} hitSlop={5} style={ ({pressed}) => [styles.bubblePressable, bubbleSize, { backgroundColor: pressed ? '#FFFFFF66' : 'transparent' }] }>
         </Pressable>
       </Animated.View>
     </View>
@@ -173,17 +142,13 @@ const audioBubblesStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   bubble: {
     aspectRatio: 1,
-    height: BUBBLE_SIZE,
-    borderRadius: BUBBLE_SIZE / 2,
     justifyContent: 'center',
     alignItems: 'center'
   },
   // This overlaps each bubble to make the animation pressable.
   bubblePressable: {
     flex: 1, 
-    aspectRatio: 1,
-    height: BUBBLE_SIZE,
-    borderRadius: BUBBLE_SIZE / 2,
+    aspectRatio: 1
     // borderWidth: 2, 
   },
   container: {
