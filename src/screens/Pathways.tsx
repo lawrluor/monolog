@@ -36,7 +36,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
             {
               pathwaysData.map((item, index) => {
                 return (
-                  <PathwayPreview title={item.name} key={`${item.name}_short`}>
+                  <PathwayPreview name={item.name} key={`${item.name}_short`}>
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>
@@ -44,7 +44,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                       <SignInButton background={colors.HIGHLIGHT}
                         onPress={() => { navigateToFullPathway(item.name)}}
                         >
-                        <Text style={text.h4}> Start </Text>
+                        <Text style={text.h4}> Full Desc </Text>
                       </SignInButton>
                     </View>
                   </PathwayPreview>
