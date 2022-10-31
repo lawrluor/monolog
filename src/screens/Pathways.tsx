@@ -7,13 +7,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import PathwayPreview from '../components/PathwayPreview';
 import PathwayFull from './PathwayFull';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
-import { pathwaysData } from '../utils/pathwaysData'
+import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
 
 const Pathways = ({ navigation }: any): JSX.Element => { 
 
   const navigateToFullPathway = (name: string) => {
     navigation.push('PathwayFull', { name: name })
+  }
+
+  // TODO: add prompt params for recording proompt
+  const navigateToRecord = (name: string) => {
+    navigation.push('Recording')
   }
 
   return (
@@ -45,6 +50,11 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                         onPress={() => { navigateToFullPathway(item.name)}}
                         >
                         <Text style={text.h4}> Full Desc </Text>
+                      </SignInButton>
+                      <SignInButton background={colors.HIGHLIGHT}
+                        onPress={() => { navigateToFullPathway(item.name)}}
+                        >
+                        <Text style={text.h4}> RECORDING </Text>
                       </SignInButton>
                     </View>
                   </PathwayPreview>

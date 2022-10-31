@@ -18,11 +18,7 @@ const PathwayPreview = ({ children, name, navigation}: any): JSX.Element => {
       <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
       <Text style={styles.featureTitle}> {name} {'\n'}</Text>
       {children}
-      <SignInButton background={colors.HIGHLIGHT}
-        onPress={() => { navigateToFullPathway(item.name)}}
-        >
-        <Text style={text.h4}> Full Desc </Text>
-      </SignInButton>
+      
       {/* TODO: Add button to go straight to recording, needs to know title and progress */}
     </View>
   )
