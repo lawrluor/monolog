@@ -12,6 +12,10 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
+  const navigateToRecord = (name: string) => {
+    navigation.navigate('Recording');
+  }
+
   const { name } = route.params;
   const currentPathway = pathwaysMap.get(name);
   return (
@@ -26,14 +30,19 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
         >
           <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
           <Text>
-            {'\n'}{name} : {currentPathway.progress[0]}
+            {'\n'}{name} --- # of times completed: {currentPathway.progress[0]}
           </Text>
           <Text>
             {currentPathway.long_desc}
           </Text>
           <Text>
-            {currentPathway.progress[1]}
+            Current progress: {currentPathway.progress[1]}
           </Text>
+          <SignInButton background={colors.HIGHLIGHT}
+            onPress={() => { navigateToRecord(name)}}
+            >
+            <Text style={text.h4}> RECORDING </Text>
+          </SignInButton>
         </ScrollView>
       </SafeAreaBottom>
     </View>

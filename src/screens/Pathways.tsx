@@ -18,7 +18,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
 
   // TODO: add prompt params for recording proompt
   const navigateToRecord = (name: string) => {
-    navigation.push('Recording')
+    navigation.navigate('Recording');
   }
 
   return (
@@ -52,7 +52,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                         <Text style={text.h4}> Full Desc </Text>
                       </SignInButton>
                       <SignInButton background={colors.HIGHLIGHT}
-                        onPress={() => { navigateToFullPathway(item.name)}}
+                        onPress={() => { navigateToRecord(item.name)}}
                         >
                         <Text style={text.h4}> RECORDING </Text>
                       </SignInButton>
