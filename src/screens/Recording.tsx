@@ -19,6 +19,8 @@ import GoBack from '../components/GoBack';
 import SpeechToText from '../components/SpeechToText';
 import CustomIcon from '../components/CustomIcon';
 import { FullPageSpinner } from '../components/Spinner';
+import AudioOverlay from '../components/AudioOverlay';
+import AudioBubbles from '../components/AudioBubbles';
 
 const MAX_DURATION = 600;  // seconds
 
@@ -261,6 +263,31 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     )
   }
 
+  // TODO: may want to refactor this into a separate component, then import it
+  // For when user wants audio only rather than camera on.
+  const renderAudioRecordingScreen = () => {
+    return (
+      <AudioOverlay>
+        {isRecording
+          ?
+          <>
+            <AudioBubbles shouldBegin={isRecording} />
+
+            <View style={styles.captionContainer}>
+              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+            </View>
+          </>
+          :
+          <Text>Press the button to begin recording your audio log.</Text>
+        }
+
+        <View style={styles.recordContainer}>
+          {renderRecordIcon()}
+        </View>
+      </AudioOverlay>
+    )
+  }
+
   // Renders options to select recording length (time in seconds) in a ScrollView
   // Currently not used, as this feature is not requested right now
   const renderRecordOptions = (recording: boolean) => {
@@ -311,8 +338,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     )
   }
 
+  // TODO: Bugfix/unsure if necessary to check permission at this point.
   const renderCamera = () => {
-    if (!hasPermission) {
+    // if (!hasPermission)
+    if (false) {
       return (
         <>
           <GoBack />
@@ -322,47 +351,70 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           </View>
        </>
       )
-    } else {
-      return (
-        <>
-          <GoBack />
+    }
 
-          <View style={styles.cameraToggleContainer}>
+    return (
+      <>
+        <GoBack />
+
+        <View style={styles.cameraToggleContainer}>
+          <View style={styles.flipCameraContainer}>
+            <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+              <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
+            </Pressable>
+          </View>
+
+          <View style={styles.cameraOnToggleContainer}>
+            <Pressable onPress={toggleCameraOn} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+              {renderCameraToggleIcon(isCameraOn)}
+            </Pressable>
+          </View>
+        </View>
+
+        {
+          true
+          ?
+          <Camera
+          style={styles.cameraContainer}
+          type={type}
+          ref={cameraRef}
+          onCameraReady={() => setIsLoading(false) }
+          >
+            {renderAudioRecordingScreen()}
+            {/* {renderRecordOptions(isRecording)} */}
+          </Camera>
+          :
+          <>
             <View style={styles.flipCameraContainer}>
               <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
                 <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
               </Pressable>
             </View>
-
-            <View style={styles.cameraOnToggleContainer}>
-              <Pressable onPress={toggleCameraOn} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-                {renderCameraToggleIcon(isCameraOn)}
-              </Pressable>
-            </View>
-          </View>
-
-          <Camera
+            
+            <Camera
             style={styles.cameraContainer}
             type={type}
             ref={cameraRef}
             onCameraReady={() => setIsLoading(false) }
-          >
-            <View style={styles.captionContainer}>
-              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
-            </View>
+            >
+              <View style={styles.captionContainer}>
+                <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+              </View>
 
-            <View style={styles.recordContainer}>
-              {/* {renderGalleryIcon()} */}
-              {renderRecordIcon(isRecording)}
-            </View>
+              <View style={styles.recordContainer}>
+                {/* {renderGalleryIcon()} */}
+                {renderRecordIcon()}
+              </View>
 
-            {/* {renderRecordOptions(isRecording)} */}
-          </Camera>
-        </>
-      );
-    }
+              {/* {renderRecordOptions(isRecording)} */}
+            </Camera>
+          </>
+        }
+      </>
+    );
   }
 
+  // TODO: Permissions checks
   // The camera itself takes a while to load
   // Waiting for cameraRef to not be null doesn't seem to work
   // It seems that the <Camera /> component and useRef needs to be loaded first
