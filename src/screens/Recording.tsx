@@ -22,7 +22,7 @@ import { FullPageSpinner } from '../components/Spinner';
 
 const MAX_DURATION = 600;  // seconds
 
-// NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording 
+// NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording
 export const Recording = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
 
@@ -33,13 +33,14 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const [hasPermission, setHasPermission] = React.useState<null | boolean>(false);
   const [type, setType] = React.useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
+  const [isCameraOn, setIsCameraOn] = React.useState<null | boolean>(true);
   const [videoStorePath, setVideoStorePath] = React.useState<string>('');
 
   // TODO: camera always set to loaded already, so we will see the black camera loading screen
   // We need to debug this because when the state is set to true (production behavior).
-  // Sometimes the state just never changes. Happens for a new user recording their first video, 
+  // Sometimes the state just never changes. Happens for a new user recording their first video,
   // then recording another one right after in the same session.
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);  
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
 
@@ -52,7 +53,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       // OR send them back to home and request permissions again there
       // NOTE: Expo seems to ask one more permission for some reason
 
-      await setHasPermission(await checkRecordingPermissions()); 
+      await setHasPermission(await checkRecordingPermissions());
     }
 
     asyncWrapper();
@@ -64,9 +65,9 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
       const unmount = async () => {
         await resetRecordingAudio();
-        await Audio.setIsEnabledAsync(false);  
+        await Audio.setIsEnabledAsync(false);
       }
-  
+
       unmount();
     }
   }, []);
@@ -82,8 +83,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     // or we have simply switched the camera type between front or back.
   React.useEffect(() => {
     if ((finalTranscript.length > 0) &&
-        (videoStorePath.length > 0) && 
-        (recordingFinished) && 
+        (videoStorePath.length > 0) &&
+        (recordingFinished) &&
         (isRecording === false)) {
 
       // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
@@ -92,6 +93,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       navigateToRating();
     }
   }, [finalTranscript, videoStorePath]);
+
+  const toggleCameraOn = () => {
+    setIsCameraOn(!isCameraOn);
+  }
 
   const flipCameraCallback = () => {
     const flipCamera = () => {
@@ -103,17 +108,17 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           : Camera.Constants.Type.back
       );
     }
-    
+
     if (!user || user.tutorialMode) {
       // First time user does this, notify them
       Alert.alert(
         "Please Note",
         "Flipping the camera will stop any ongoing recording.",
         [
-          { 
+          {
             text: "Cancel",
           },
-          { 
+          {
             text: "Continue",
             onPress: flipCamera
           }
@@ -133,11 +138,11 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     try {
       if (cameraRef){
         setIsRecording(true);
-      
+
         let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
 
-        // TODO: SHOULD NOT NEED THIS AT ALL, 
-        // speechToTextPermission handled in SpeechToText.tsx 
+        // TODO: SHOULD NOT NEED THIS AT ALL,
+        // speechToTextPermission handled in SpeechToText.tsx
         // camera and mic permissions handled in Home.tsx (calling getPermissions)
         // If able to start the recording, user must have permissions.
         // We set this now rather than when recording is finished, because otherwise
@@ -147,7 +152,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           micPermission: true,
           speechToTextPermission: true
         }
-    
+
         let updatedUser = {...user, ...updates};  // Merge old user object with new fields
         setUser(updatedUser);
 
@@ -200,7 +205,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const stopRecording = async () => {
     try {
       setIsRecording(false);
-      await cameraRef.current.stopRecording();  
+      await cameraRef.current.stopRecording();
     } catch(err: any) {
       console.log("[ERROR] Recording.tsx: stopRecording", err);
     }
@@ -209,10 +214,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Distinguishes between user actually pressing the stop button,
   // while stopRecording is called in any other event that the recording stops.
   const finishRecording = async () => {
-    try {  
+    try {
       await stopRecording();
       setRecordingFinished(true);
-  
+
     } catch (err: any) {
       console.log(`[ERROR] Recording.tsx:finishRecording`, err);
     }
@@ -233,20 +238,20 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       playThroughEarpieceAndroid: false,
     });
 
-    Audio.setIsEnabledAsync(true); 
-     
+    Audio.setIsEnabledAsync(true);
+
     console.log(">>>2. Recording: resetting audio");
     try {
       console.log(">>>Resetting recording");
       await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
       await recording.stopAndUnloadAsync()
-      await Audio.setIsEnabledAsync(true); 
+      await Audio.setIsEnabledAsync(true);
     } catch (error) {
       console.log("err resetting recording", error);
     }
   }
 
-  // Renders an icon that takes you to Gallery when pressed 
+  // Renders an icon that takes you to Gallery when pressed
   // Currently not used, as this feature is not requested right now
   const renderGalleryIcon = () => {
     return (
@@ -278,6 +283,12 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     )
   }
 
+  const renderCameraToggleIcon = () => {
+    return (
+      <CustomIcon name={isCameraOn ? 'camera_on' : 'camera_off'}
+                  style={styles.cameraOnToggleIcon} />
+    )
+  }
   const renderRecordIcon = () => {
     return (
       isRecording
@@ -316,10 +327,18 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         <>
           <GoBack />
 
-          <View style={styles.flipCameraContainer}>
-            <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-              <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
-            </Pressable>
+          <View style={styles.cameraToggleContainer}>
+            <View style={styles.flipCameraContainer}>
+              <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+                <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
+              </Pressable>
+            </View>
+
+            <View style={styles.cameraOnToggleContainer}>
+              <Pressable onPress={toggleCameraOn} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+                {renderCameraToggleIcon(isCameraOn)}
+              </Pressable>
+            </View>
           </View>
 
           <Camera
@@ -346,7 +365,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   // The camera itself takes a while to load
   // Waiting for cameraRef to not be null doesn't seem to work
-  // It seems that the <Camera /> component and useRef needs to be loaded first 
+  // It seems that the <Camera /> component and useRef needs to be loaded first
   // Therefore, we still load the Camera component, but hide the display until loaded
   // The callback onCameraReady on Camera component sets our loading state
   return (
@@ -354,12 +373,12 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       <View style={[styles.container, {display: isLoading ? 'none' : 'flex'}]}>
         {renderCamera()}
       </View>
-      
+
       {
-        isLoading 
-        ? 
+        isLoading
+        ?
         <FullPageSpinner size="large" />
-        : 
+        :
         null
       }
     </>
@@ -419,16 +438,26 @@ const styles = StyleSheet.create({
     fontSize: icons.HUGE.fontSize - 25,
     color: 'red'
   },
-  flipCameraContainer: {
+  cameraToggleContainer: {
     position: 'absolute',
     right: spacings.MASSIVE,
     top: spacings.ABSOLUTE_OFFSET_MEDIUM,
     zIndex: 100
   },
+  flipCameraContainer: {
+  },
   flipCameraIcon: {
     ...icons.MEDIUM,
     color: "white"
   },
+  cameraOnToggleContainer: {
+    marginTop: spacings.HUGE
+  },
+  cameraOnToggleIcon: {
+    ...icons.MEDIUM,
+    color: "white"
+  },
+
   captionContainer: {
     display: 'none',
     position: 'absolute',
