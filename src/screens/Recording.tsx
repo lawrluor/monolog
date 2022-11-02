@@ -311,6 +311,29 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     )
   }
 
+  renderCameraFeed = (isCameraOn) => {
+    if (isCameraOn) {
+      return (
+          <Camera
+            style={styles.cameraContainer}
+            type={type}
+            ref={cameraRef}
+            onCameraReady={() => setIsLoading(false) }
+          >
+            <View style={styles.captionContainer}>
+              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+            </View>
+
+            <View style={styles.recordContainer}>
+              {renderRecordIcon(isRecording)}
+            </View>
+          </Camera>
+      )
+    } else {
+      return
+    }
+  }
+
   const renderCamera = () => {
     if (!hasPermission) {
       return (
@@ -341,23 +364,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             </View>
           </View>
 
-          <Camera
-            style={styles.cameraContainer}
-            type={type}
-            ref={cameraRef}
-            onCameraReady={() => setIsLoading(false) }
-          >
-            <View style={styles.captionContainer}>
-              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
-            </View>
-
-            <View style={styles.recordContainer}>
-              {/* {renderGalleryIcon()} */}
-              {renderRecordIcon(isRecording)}
-            </View>
-
-            {/* {renderRecordOptions(isRecording)} */}
-          </Camera>
+          {renderCameraFeed(isCameraOn)}
         </>
       );
     }
