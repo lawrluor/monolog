@@ -13,6 +13,7 @@ const generateRandomCoordinates = (): any => {
 const MAX_SIZE = 180;
 const MIN_SIZE = 90;
 const NUMBER_OF_BUBBLES = 10;
+const PRESSABLE_COLOR = 'transparent';  // '#FFFFFF66'; 
 const COLOR = 'transparent' // 'D4D4D455';  // use grey-ish transparent color instead of generateRandomColor();
 
 // An individual animated Audio Bubble
@@ -23,21 +24,20 @@ const AudioBubble = ({ shouldBegin }: any) => {
 
   const coordinate = generateRandomCoordinates();  // center: { x: 0, y: 0 }
 
-  const easing = Easing.elastic(1);  // How "bouncy" https://reactnative.dev/docs/easing
-
   const [isVisible, setIsVisible] = React.useState<boolean>(false);
   const [color, setColor] = React.useState<string>(COLOR);  // generate random hex value
 
   const size = React.useRef(new Animated.Value(0.3)).current;
   const opacity = React.useRef(new Animated.Value(0.9)).current;
 
+  // Not currently used - bubbles are not interactable at the moment
   const onBubblePress = () => {
     // Stop the animation, then begin the loop again. 
     // Prevents multiple simultaneous loops for the same bubble
     // done because resetAnimation() does not work
     
     // setIsVisible(!isVisible);  // "permanently" pop the bubble
-    opacityLoop();  // "pop" the bubble
+    // opacityLoop();  // "pop" the bubble
 
     // NOTE: Updating any state triggers useEffect to reset opacity and movement loops.
   }
@@ -51,6 +51,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
           {
             toValue: 1.0,
             duration: 2000,
+            easing: Easing.linear,  // How "bouncy" during movements https://reactnative.dev/docs/easing
             useNativeDriver: true,
           }
         ),
@@ -58,7 +59,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
           size,
           {
             toValue: 0.3,
-            duration: 10,
+            duration: 1,
             useNativeDriver: true,
           }
         )
@@ -82,7 +83,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
           opacity,
           {
             toValue: 0.9,
-            duration: 10,
+            duration: 1,
             useNativeDriver: true,
           }
         )
@@ -125,7 +126,11 @@ const AudioBubble = ({ shouldBegin }: any) => {
   return (
     <View style={[styles.container, { display: isVisible ? 'flex' : 'none' }]}>
       <Animated.View style={[styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity, backgroundColor: `#${color}` } ]} >
-        <Pressable onPress={onBubblePress} hitSlop={5} style={ ({pressed}) => [styles.bubblePressable, bubbleSize, { backgroundColor: pressed ? '#FFFFFF66' : 'transparent' }] }>
+        <Pressable 
+          onPress={onBubblePress} 
+          style={ ({pressed}) => [styles.bubblePressable, bubbleSize, { backgroundColor: pressed ? PRESSABLE_COLOR : 'transparent' }] }
+          hitSlop={5} 
+        >
         </Pressable>
       </Animated.View>
     </View>
