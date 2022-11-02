@@ -33,7 +33,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const [hasPermission, setHasPermission] = React.useState<null | boolean>(false);
   const [type, setType] = React.useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
-  const [isCameraOff, setIsCameraOff] = React.useState<null | boolean>(false);
+  const [isCameraOn, setIsCameraOn] = React.useState<null | boolean>(true);
   const [videoStorePath, setVideoStorePath] = React.useState<string>('');
 
   // TODO: camera always set to loaded already, so we will see the black camera loading screen
@@ -94,8 +94,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     }
   }, [finalTranscript, videoStorePath]);
 
-  const cameraOffCallback = () => {
-    setIsCameraOff(!isCameraOff);
+  const toggleCameraOn = () => {
+    setIsCameraOn(!isCameraOn);
   }
 
   const flipCameraCallback = () => {
@@ -283,13 +283,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     )
   }
 
-  const renderCameraOffIcon = () => {
+  const renderCameraToggleIcon = () => {
     return (
-      isCameraOff
-      ?
-      <CustomIcon name='camera_off' style={styles.cameraOffIcon} />
-      :
-      <CustomIcon name='camera_on' style={styles.cameraOffIcon} />
+      <CustomIcon name={isCameraOn ? 'camera_on' : 'camera_off'}
+                  style={styles.cameraOnToggleIcon} />
     )
   }
   const renderRecordIcon = () => {
@@ -336,9 +333,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
                 <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
               </Pressable>
             </View>
-            <View style={styles.cameraOffContainer}>
-              <Pressable onPress={cameraOffCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-                {renderCameraOffIcon(isCameraOff)}
+
+            <View style={styles.cameraOnToggleContainer}>
+              <Pressable onPress={toggleCameraOn} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+                {renderCameraToggleIcon(isCameraOn)}
               </Pressable>
             </View>
           </View>
@@ -452,10 +450,10 @@ const styles = StyleSheet.create({
     ...icons.MEDIUM,
     color: "white"
   },
-  cameraOffContainer: {
+  cameraOnToggleContainer: {
     marginTop: spacings.HUGE
   },
-  cameraOffIcon: {
+  cameraOnToggleIcon: {
     ...icons.MEDIUM,
     color: "white"
   },
