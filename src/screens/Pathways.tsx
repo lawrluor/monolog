@@ -4,7 +4,7 @@ import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
 import { dimensions, text, spacings, icons, colors, debug } from '../styles';
 import GoBack from '../components/GoBack';
 import { LinearGradient } from 'expo-linear-gradient';
-import <PathwayCard></PathwayCard> from '../components/PathwayCard';
+import PathwayCard from '../components/PathwayCard';
 import PathwayFull from './PathwayFull';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
@@ -18,12 +18,11 @@ const Pathways = ({ navigation }: any): JSX.Element => {
 
   // TODO: add prompt params for recording prompt. navagate to prompt page
   const navigateToRecord = (name: string) => {
-    navigation.navigate('Recording');
+    navigation.navigate('PathwaysPrompt');
   }
 
   return (
     <View style={styles.container}>
-      <GoBack />
       <SafeAreaTop/>
       <SafeAreaBottom transparent>
         <LinearGradient
@@ -41,7 +40,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
             {
               pathwaysData.map((item, index) => {
                 return (
-                  <<PathwayCard></PathwayCard> name={item.name} key={`${item.name}_short`}>
+                  <PathwayCard name={item.name} key={`${item.name}_short`}>
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>
@@ -54,10 +53,10 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                       <SignInButton background={colors.HIGHLIGHT}
                         onPress={() => navigateToRecord(item.name)}
                         >
-                        <Text style={text.h4}> RECORDING </Text>
+                        <Text style={text.h4}> RECORD </Text>
                       </SignInButton>
                     </View>
-                  </<PathwayCard></PathwayCard>>
+                  </PathwayCard>
                 )
               })
             }

@@ -34,3 +34,16 @@ export const pathwaysMap = new Map();
       image: depression_header,
     progress: [0, 3, 10],
   })
+
+export const pathwaysPrompts = {
+  "Procrastination": {
+    1: "Why do you procrastinate?",
+    2: "Just do it already",
+    3: "You're useless",
+    4: "Bruh",
+  },
+  "Depression": {
+    1: "Did you try going on a walk?",
+    2: "You just need to drink some water"
+  },
+}

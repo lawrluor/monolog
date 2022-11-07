@@ -4,7 +4,7 @@ import {useNavigation, useRoute, getFocusedRouteNameFromRoute} from '@react-navi
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Settings, Feedback, Pathways, PathwayFull } from '../screens';
+import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Settings, Feedback, Pathways, PathwayFull, PathwaysPrompt } from '../screens';
 
 import CustomIcon from '../components/CustomIcon';
 
@@ -20,6 +20,7 @@ type StackNavigatorParams = {
   "Transcript": undefined,
   "Pathways": undefined,
   "PathwayFull": undefined,
+  "PathwaysPrompt" : undefined,
   "TabNavigator": undefined
 }
 
@@ -107,7 +108,7 @@ const TabNavigator = ({ setUser }): JSX.Element => {
             case "Vistas":
               iconName = focused ? 'eyeball_filled' : 'eyeball_outline';
               break;
-            case "Feedback":
+            case "Pathways":
               iconName = focused ? 'feedback_outline' : 'feedback_outline';  // TODO get custom Feedback icons from Greg
               break;
             default:
@@ -133,7 +134,7 @@ const TabNavigator = ({ setUser }): JSX.Element => {
       />
 
       <Tab.Screen name="Vistas" component={Vistas} options={{ headerShown: false }} />
-      <Tab.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
+      <Tab.Screen name="Pathways" component={Pathways} options={{ headerShown: false }} />
     </Tab.Navigator>
   )
 }
@@ -155,6 +156,7 @@ const AppNavigator = ({ setUser }): JSX.Element => {
       <Stack.Screen name="Transcript" component={Transcript} options={{ headerShown: false }} />
       <Stack.Screen name="Pathways" component={Pathways} options={{ headerShown: false }} />
       <Stack.Screen name="PathwayFull" component={PathwayFull} options={{ headerShown: false }} />
+      <Stack.Screen name="PathwaysPrompt" component={PathwaysPrompt} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }
