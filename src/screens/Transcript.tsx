@@ -9,7 +9,7 @@ import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from
 import { FullPageSpinner } from '../components/Spinner';
 
 const Transcript = ({ route, navigation }: any): JSX.Element => {
-  const { finalResult, selection, fileBaseName } = route.params;
+  const { finalResult, selection, fileBaseName, pathway } = route.params;
   const { toggleVideosRefresh } = React.useContext(VideosContext);
 
   // finalResultString contains the full transcript of the video
@@ -48,6 +48,10 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
   }, [])
 
   const navigateToPlayer = () => {
+    // increment their score for that pathway if there is one
+    if (pathway) {
+      //user.update score for that path
+    }
     navigation.navigate('Player', {
       video: videoData,
       navigation: navigation

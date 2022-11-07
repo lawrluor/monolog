@@ -12,7 +12,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
-  const navigateToPathways = (name: string) => {
+  const navigateToPrompt = (name: string) => {
     const level = pathwaysMap.get(name).progress[1]
     navigation.push('PathwaysPrompt', { pathway:name, level: level});
   }
@@ -40,7 +40,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
             Current progress: {currentPathway.progress[1]}
           </Text>
           <SignInButton background={colors.HIGHLIGHT}
-            onPress={() => { navigateToPathways(name)}}
+            onPress={() => { navigateToPrompt(name)}}
             >
             <Text style={text.h4}> RECORDING </Text>
           </SignInButton>

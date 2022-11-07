@@ -11,6 +11,10 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
   const { pathway, level } = route.params
   const prompt = pathwaysPrompts[pathway][level]
 
+  const navigateToRecording = (name: string) => {
+    navigation.navigate('Recording', { pathway:name });
+  }
+
   return (
     <>
       <GoBack />
@@ -18,8 +22,8 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
       <View style={styles.background}>
         <Text style={styles.promptNum}>Prompt #{level}</Text>
         <Text style={styles.prompt}>{prompt}</Text>
-        <SignInButton background={colors.HIGHLIGHT} onPress={() => { console.log("pressed") }}>
-          <Text style={text.h4}> Record </Text>
+        <SignInButton background={colors.HIGHLIGHT} onPress={() => navigateToRecording(pathway)}>
+          <Text style={text.h3}> Record </Text>
         </SignInButton>
       </View>
     </>

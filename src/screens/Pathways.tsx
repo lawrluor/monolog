@@ -16,6 +16,11 @@ const Pathways = ({ navigation }: any): JSX.Element => {
     navigation.push('PathwayFull', { name: name })
   }
 
+  const navigateToPrompt = (name: string) => {
+    const level = pathwaysMap.get(name).progress[1]
+    navigation.push('PathwaysPrompt', { pathway:name, level: level});
+  }
+
   // TODO: add prompt params for recording prompt. navagate to prompt page
   const navigateToRecord = (name: string) => {
     navigation.navigate('PathwaysPrompt');
@@ -51,9 +56,9 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                         <Text style={text.h4}> Full Desc </Text>
                       </SignInButton>
                       <SignInButton background={colors.HIGHLIGHT}
-                        onPress={() => navigateToRecord(item.name)}
+                        onPress={() => navigateToPrompt(item.name)}
                         >
-                        <Text style={text.h4}> RECORD </Text>
+                        <Text style={text.h4}> Start Pathway </Text>
                       </SignInButton>
                     </View>
                   </PathwayCard>

@@ -23,7 +23,7 @@ import { FullPageSpinner } from '../components/Spinner';
 const MAX_DURATION = 600;  // seconds
 
 // NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording 
-export const Recording = ({ navigation }: any): JSX.Element => {
+export const Recording = ({ route, navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
 
   // TODO: experiment with adding loading states (carefully) to improve UX
@@ -186,10 +186,13 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     navigation.navigate('Gallery');
   }
 
+  const { pathway } = route.params;
+
   const navigateToRating = () => {
     navigation.navigate('Rating', {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
+      pathway: pathway,
     });
   }
 

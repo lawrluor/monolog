@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Image, Pressable, StyleSheet, Alert } from 'rea
 import { text, spacings, colors } from '../styles';
 import SignInButton from './SignInButton';
 import { pathwaysMap } from '../utils/pathwaysData'
+import { comingSoonAlert } from '../utils/customAlerts';
 
 const PathwayCard = ({ children, name, navigation}: any): JSX.Element => {
 
@@ -11,6 +12,7 @@ const PathwayCard = ({ children, name, navigation}: any): JSX.Element => {
   }
 
   const currentPathway = pathwaysMap.get(name);
+  console.log("-----------------CURRENT PATHWAY:"+currentPathway+"----------------")
 
   const imageHeader = Image.resolveAssetSource(currentPathway.image).uri
   return (
