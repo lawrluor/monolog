@@ -4,7 +4,7 @@ import { text, spacings, colors } from '../styles';
 import SignInButton from './SignInButton';
 import { pathwaysMap } from '../utils/pathwaysData'
 
-const PathwayPreview = ({ children, name, navigation}: any): JSX.Element => {
+const PathwayCard = ({ children, name, navigation}: any): JSX.Element => {
 
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PathwayPreview;
+export default PathwayCard;

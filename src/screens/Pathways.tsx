@@ -4,7 +4,7 @@ import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
 import { dimensions, text, spacings, icons, colors, debug } from '../styles';
 import GoBack from '../components/GoBack';
 import { LinearGradient } from 'expo-linear-gradient';
-import PathwayPreview from '../components/PathwayPreview';
+import <PathwayCard></PathwayCard> from '../components/PathwayCard';
 import PathwayFull from './PathwayFull';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
@@ -16,7 +16,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
     navigation.push('PathwayFull', { name: name })
   }
 
-  // TODO: add prompt params for recording proompt
+  // TODO: add prompt params for recording prompt. navagate to prompt page
   const navigateToRecord = (name: string) => {
     navigation.navigate('Recording');
   }
@@ -41,7 +41,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
             {
               pathwaysData.map((item, index) => {
                 return (
-                  <PathwayPreview name={item.name} key={`${item.name}_short`}>
+                  <<PathwayCard></PathwayCard> name={item.name} key={`${item.name}_short`}>
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>
@@ -52,12 +52,12 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                         <Text style={text.h4}> Full Desc </Text>
                       </SignInButton>
                       <SignInButton background={colors.HIGHLIGHT}
-                        onPress={() => { navigateToRecord(item.name)}}
+                        onPress={() => navigateToRecord(item.name)}
                         >
                         <Text style={text.h4}> RECORDING </Text>
                       </SignInButton>
                     </View>
-                  </PathwayPreview>
+                  </<PathwayCard></PathwayCard>>
                 )
               })
             }

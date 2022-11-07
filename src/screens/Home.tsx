@@ -9,7 +9,6 @@ import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
-// import PathwayCard from '../components/PathwayCard';
 import NewUserMessage from '../components/NewUserMessage';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
@@ -21,7 +20,7 @@ import UserContext from '../context/UserContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
 import { readUserData } from '../utils/localStorageUtils';
-import SignInButton from '../components/SignInButton'; //Only for first draft
+import SignInButton from '../components/SignInButton';
 
 const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
@@ -46,6 +45,10 @@ const Home = ({ navigation }: any): JSX.Element => {
     comingSoonAlert(() => {
       console.log("uploading picture...");
     });
+  }
+
+  const navigateToPathways = async () => {
+    navigation.navigate('Pathways');
   }
 
   const renderVistasSummaryHeader = (videosCount: number) => {
@@ -169,15 +172,11 @@ const Home = ({ navigation }: any): JSX.Element => {
             <View style={[styles.featureContainer]}>
               <SignInButton //Only for first draft
                 background={colors.HIGHLIGHT}
-                onPress={() => {
-                  console.log("------------GOING TO PATHWAYS-------------")
-                  navigation.navigate('Pathways');
-                }}
+                onPress={() => { navigateToPathways() }}
               >
                 <Text>PATHWAYS</Text>
               </SignInButton>
             </View>
-            {/* <PathwayCard/> */}
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>
