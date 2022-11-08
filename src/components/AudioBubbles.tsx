@@ -5,10 +5,9 @@ import { dimensions } from '../styles';
 
 const MAX_BUBBLE_SIZE = 180;  // largest possible bubble
 const MIN_BUBBLE_SIZE = 90;  // smallest possible bubble
-const NUMBER_OF_BUBBLES = 10;  
+const NUMBER_OF_BUBBLES = 11;  
 const PRESSABLE_COLOR = 'transparent';  // '#FFFFFF66'; 
-const COLOR = 'transparent';  // 'D4D4D455'; grey-ish
-const TIME_OFFSET = Math.random() * 500;
+const COLOR = '#D4D4D444';  // 'D4D4D455'; grey-ish
 
 // An individual animated Audio Bubble, with its own individual display states
 const AudioBubble = ({ shouldBegin }: any) => {
@@ -19,12 +18,12 @@ const AudioBubble = ({ shouldBegin }: any) => {
     return { x: x, y: y };  
   }
 
+  const timeOffset = Math.random() * 1500;  // 1.5 seconds of variance
   const diameter = (Math.random() * (MAX_BUBBLE_SIZE - MIN_BUBBLE_SIZE)) + MIN_BUBBLE_SIZE;  
   const coordinate = generateRandomCoordinates();  // center: { x: 0, y: 0 }
 
   // States
   const [isVisible, setIsVisible] = React.useState<boolean>(false);
-  const [color, setColor] = React.useState<string>(COLOR);  // generate random hex value
 
   // Animation values
   const size = React.useRef(new Animated.Value(0.3)).current;
@@ -47,51 +46,31 @@ const AudioBubble = ({ shouldBegin }: any) => {
   // Changes the size of the bubble, looping between 30% to 90% of its size
   const sizeLoop = () => {
     Animated.loop(
-      Animated.sequence([
-        Animated.delay(TIME_OFFSET),
-        Animated.timing(
-          size,
-          {
-            toValue: 0.9,
-            duration: 2000,
-            easing: Easing.linear,  // "bounciness" https://reactnative.dev/docs/easing
-            useNativeDriver: true,  // required
-          }
-        ),
-        Animated.timing(
-          size,
-          {
-            toValue: 0.3,
-            duration: 1,
-            useNativeDriver: true,
-          }
-        )
-      ])
+      Animated.timing(
+        size,
+        {
+          toValue: 0.9,
+          duration: 2000,
+          delay: timeOffset,
+          easing: Easing.linear,  // "bounciness" https://reactnative.dev/docs/easing
+          useNativeDriver: true,  // required
+        }
+      )
     ).start();
   }
 
   // Changes the opacity of the bubble, looping between 0% to 90% of its opacity
   const opacityLoop = () => {
     Animated.loop(
-      Animated.sequence([
-        Animated.delay(TIME_OFFSET),
-        Animated.timing(
-          opacity,
-          {
-            toValue: 0,
-            duration: 2000,
-            useNativeDriver: true,
-          }
-        ),
-        Animated.timing(
-          opacity,
-          {
-            toValue: 0.9,
-            duration: 1,
-            useNativeDriver: true,
-          }
-        )
-      ])
+      Animated.timing(
+        opacity,
+        {
+          toValue: 0,
+          duration: 2000,
+          delay: timeOffset,
+          useNativeDriver: true,
+        }
+      )
     ).start();
   }
 
@@ -100,6 +79,10 @@ const AudioBubble = ({ shouldBegin }: any) => {
       setIsVisible(true);
       sizeLoop();
       opacityLoop();
+    }
+
+    return () => {
+      // TODO: stop animations and reset states?
     }
 
   }, [shouldBegin])
@@ -125,7 +108,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
 
   return (
     <View style={[styles.container, { display: isVisible ? 'flex' : 'none' }]}>
-      <Animated.View style={[styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity, backgroundColor: `#${color}` } ]} >
+      <Animated.View style={[styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity, backgroundColor: COLOR } ]} >
         <Pressable 
           style={ ({pressed}) => [styles.bubblePressable, bubbleSize, { backgroundColor: pressed ? PRESSABLE_COLOR : 'transparent' }] }
           hitSlop={5} 
@@ -186,10 +169,10 @@ const styles = StyleSheet.create({
     flex: 1, 
     aspectRatio: 1,
     borderColor: 'white',
-    borderWidth: 2, 
+    borderWidth: 1
   },
   container: {
-    flex: 1
+    flex: 1,
   }
 })
 
