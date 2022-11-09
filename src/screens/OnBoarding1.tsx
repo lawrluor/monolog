@@ -4,7 +4,7 @@ import { StyleSheet, View, Alert, Text, KeyboardAvoidingView, Keyboard, Platform
 import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { text, spacings, colors, icons } from '../styles';
+import { text, spacings, colors, icons, sizes } from '../styles';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import TextEntry from '../components/TextEntry';
@@ -12,6 +12,7 @@ import TextEntry from '../components/TextEntry';
 
 import { validateGender, validatePronouns, validateEmail, validateName, validateAge, genderOptions, pronounOptions } from '../utils/onboardingHelpers';
 import UserContext from '../context/UserContext';
+import SignInButton from '../components/SignInButton';
 
 const LAST_SCREEN = 2;  // 2 screens in total for onboarding process
 
@@ -60,7 +61,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
       setValidationError("Error selecting pronouns.");
       return false;
     } else if (age && !validateAge(age)) {
-      setValidationError("Error selecting gender.");
+      setValidationError("Error selecting age.");
       return false;
     } else {
       // if passes all validation checks, return true
@@ -163,29 +164,30 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
         <View style={styles.textEntriesContainer}>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="First Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)}/></View>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Last Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)}/></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" keyboardType='email-address' editable isTextBox returnKeyType="done" innerRef={textRefs[2]} textState={email} setTextState={setEmail}  onFinish={handleFormSubmit}/></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" keyboardType='email-address' editable isTextBox returnKeyType="next" innerRef={textRefs[2]} textState={email} setTextState={setEmail}  onFinish={() => handleTextOnFinish(2)}/></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[3]} textState={age} setTextState={setAge}  onFinish={handleFormSubmit}/></View>
         </View>
       )
     } else {
       return (
         <View style={styles.textEntriesContainer}>
-          <Text style={styles.genderTitle}>Gender</Text>
-
           <Picker
             selectedValue={gender}
             onValueChange={(itemValue):void => setGender(itemValue)}
+            style={styles.picker}
+            itemStyle={styles.pickerItem}
           >
             {genderOptions.map((gender, key) => <Picker.Item key={key} label={gender.label} value={gender.value} />)}
           </Picker>
 
           <Picker
-            selectedValue={gender}
+            selectedValue={pronouns}
             onValueChange={(itemValue):void => setPronouns(itemValue)}
+            style={styles.picker}
+            itemStyle={styles.pickerItem}
           >
-            {pronounOptions.map((pronoun, key) => <Picker.Item key={key} label={pronoun.label} value={pronoun.value} />)}
+            {pronounOptions.map((pronoun, key) => <Picker.Item key={key} label={pronoun.label} value={pronoun.value}></Picker.Item>)}
           </Picker>
-
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[3]} textState={age} setTextState={setAge}  onFinish={handleFormSubmit}/></View>
         </View>
       )  
     }
@@ -220,10 +222,12 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
         <View style={styles.fullWidth}></View>
 
         <View style={styles.skipTextContainer} >
+          {screenNumber === 2 && <View style={{ marginBottom: spacings.MEDIUM }}><SignInButton text={"Finish"} onPress={handleFormSubmit} background={colors.BACKGROUND}/></View>}
+          
           <Pressable onPress={handleFormSkip} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
             <Text style={styles.linkText}>Skip For Now</Text>
           </Pressable>
-
+          
           {renderValidationError()}
         </View>
       </View>
@@ -289,6 +293,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacings.MEDIUM
   },
+  textEntriesContainer: {
+    width: Math.min(sizes.SCREEN_WIDTH_66, 800),
+  },
   title: {
     ...text.h1,
   },
@@ -344,6 +351,13 @@ export const styles = StyleSheet.create({
     width: "100%",
     aspectRatio: 1000 / 1,  // extremely narrow full width container, small/invisible height
     backgroundColor: colors.BACKGROUND,
+  },
+  picker: {
+    height: 200,
+    marginTop: -15
+  },
+  pickerItem: {
+    color: 'white'
   }
 })
 

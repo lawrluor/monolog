@@ -1,13 +1,13 @@
 // Authors: Lawrence Luo & Joshua Li
-export const GENDERS = ["Male", "Female", "Other"];
-export const PRONOUNS = ["He/Him/His", "She/Her/Hers", "They/Them/Their", "Other"];
+export const GENDERS = ["Female", "Male", "Other"];
+export const PRONOUNS = ["She/Her/Hers", "He/Him/His", "They/Them/Their", "Other"];
 
 // Create objects for dropdown menus: 
-// [{'label': "--Select--", 'value': ""}, {'label': "Male", 'value': "Male"}, {'label': 'Female', 'value': "Female"}, ...]
+// [{'label': "Select Gender", 'value': ""}, {'label': "Male", 'value': "Male"}, {'label': 'Female', 'value': "Female"}, ...]
 export const genderOptions = GENDERS.map((gender: string) => ( { 'label': gender, 'value': gender } ));
 export const pronounOptions = PRONOUNS.map((pronoun: string) => ( { 'label': pronoun, 'value': pronoun } ));
-genderOptions.unshift({'label': "--Select--", 'value': ""});
-pronounOptions.unshift({'label': "--Select--", 'value': ""});
+// genderOptions.unshift({'label': "Select Gender", 'value': ""});
+// pronounOptions.unshift({'label': "Select Pronouns", 'value': ""});
 
 /*  
   validateName()
@@ -97,7 +97,6 @@ export const validateEmail = (email: string): boolean => {
 export const validateGender = (gender: string): boolean => {
   return GENDERS.includes(gender);
 }
-
 
 /*
   validatePronouns()
