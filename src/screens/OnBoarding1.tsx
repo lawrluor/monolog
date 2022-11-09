@@ -171,6 +171,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     } else {
       return (
         <View style={styles.textEntriesContainer}>
+          <Text style={styles.subTitle}>Gender</Text>
           <Picker
             selectedValue={gender}
             onValueChange={(itemValue):void => setGender(itemValue)}
@@ -180,6 +181,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
             {genderOptions.map((gender, key) => <Picker.Item key={key} label={gender.label} value={gender.value} />)}
           </Picker>
 
+          <Text style={styles.subTitle}>Pronouns</Text>
           <Picker
             selectedValue={pronouns}
             onValueChange={(itemValue):void => setPronouns(itemValue)}
@@ -199,13 +201,18 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
         return (
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Hello!</Text>
-            <Text style={styles.subTitle}>Before we start, we just have a few questions...</Text>
+            
+            <View style={styles.subTitleContainer}>
+              <Text style={[styles.subTitle, {'textAlign': 'center'}]}>Before we start, we just have a few questions...</Text>
+            </View>
           </View>
         )
       case 2:
         return (
           <View style={styles.titleContainer}>
-            <Text style={styles.subTitle}>And just a few more...</Text>
+            <View style={styles.subTitleContainer}>
+              <Text style={styles.subTitle}>And just a few more...</Text>
+            </View>
           </View>
         )
     }
@@ -293,6 +300,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacings.MEDIUM
   },
+  subTitleContainer: {
+    alignItems: 'center',
+    paddingVertical: spacings.MEDIUM
+  },
   textEntriesContainer: {
     width: Math.min(sizes.SCREEN_WIDTH_66, 800),
   },
@@ -301,8 +312,6 @@ export const styles = StyleSheet.create({
   },
   subTitle: {
     ...text.h3,
-    textAlign: 'center',
-    paddingVertical: spacings.MEDIUM
   },
   fieldContainer: {
     paddingVertical: spacings.HUGE
@@ -354,10 +363,10 @@ export const styles = StyleSheet.create({
   },
   picker: {
     height: 200,
-    marginTop: -15
+    marginTop: -20
   },
   pickerItem: {
-    color: 'white'
+    color: 'white',
   }
 })
 
