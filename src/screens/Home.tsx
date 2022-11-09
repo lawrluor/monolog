@@ -22,7 +22,7 @@ import { containers, icons, text, spacings, colors } from '../styles';
 import { readUserData } from '../utils/localStorageUtils';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = false;
+const TESTING = true;
 
 const Home = ({ navigation }: any): JSX.Element => {
   const { user } = React.useContext(UserContext);

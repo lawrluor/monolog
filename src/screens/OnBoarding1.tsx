@@ -1,15 +1,16 @@
 import React from 'react';
-import { StyleSheet, View, Text, KeyboardAvoidingView,  Keyboard, Platform, Pressable } from 'react-native';
+import { StyleSheet, View, Alert, Text, KeyboardAvoidingView, Keyboard, Platform, Pressable } from 'react-native';
 
+import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { text, spacings, colors, icons } from '../styles';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import TextEntry from '../components/TextEntry';
-import DropDown from '../components/DropDown';
+// import DropDown from '../components/DropDown';
 
-import { validateEmail } from '../utils/textProcessing';
+import { validateGender, validatePronouns, validateEmail, validateName, validateAge, genderOptions, pronounOptions } from '../utils/onboardingHelpers';
 import UserContext from '../context/UserContext';
 
 const LAST_SCREEN = 2;  // 2 screens in total for onboarding process
@@ -18,7 +19,6 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   const { setUser } = React.useContext(UserContext);
 
   const textRefs = [textRef0, textRef1, textRef2, textRef3, textRef4, textRef5] = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()];
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
@@ -29,14 +29,11 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   const [screenNumber, setScreenNumber] = React.useState<number>(1);  // start at 1 index
   const stateSetters = [setFirstName, setLastName, setEmail, setGender, setPronouns, setAge];
 
-
   React.useEffect(() => {
     // Listener to detect when move to screen 2
     // TODO: figure out a way to autofocus without jittering screen
     if (screenNumber===1) {
       selectTextRef(0);  // focus the textRef at index 3
-    } else if (screenNumber===2) {
-      selectTextRef(3);  // focus the textRef at index 3
     }
   }, [screenNumber]);
 
@@ -47,15 +44,28 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     // Case 2: User enters improperly formatted email. Returns: false
     // Case 3: User enters properly formatted email, leaving other fields blank. Returns: true
   const validateData = (): boolean => {
-    const defaultMessage = "Please try again.";
-    let isValid = true;
-
-    if (email) {
-      setValidationError("Email is not formatted properly. " + defaultMessage);
-      isValid = validateEmail(email);
+    if (email && !validateEmail(email)) {
+      setValidationError("Email is not formatted properly."); 
+      return false;
+    } else if (firstName && !validateName(firstName)) {
+      setValidationError("First name is not formatted properly.");
+      return false;
+    } else if (lastName && !validateName(lastName)) {
+      setValidationError("Last name is not formatted properly.");
+      return false;
+    } else if (gender && !validateGender(gender)) {
+      setValidationError("Error selecting gender.");
+      return false;
+    } else if (pronouns && !validatePronouns(pronouns)) {
+      setValidationError("Error selecting pronouns.");
+      return false;
+    } else if (age && !validateAge(age)) {
+      setValidationError("Error selecting gender.");
+      return false;
+    } else {
+      // if passes all validation checks, return true
+      return true;  
     }
-
-    return isValid;
   }
 
   // Clears states using state setters up to a given number of states
@@ -81,7 +91,8 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
 
   // Only allow moving forward to next page if data entered on this page is valid
   const handleFormSubmit = () => {
-    if (validateData()) renderNextOnboardingScreen();
+    if (validateData())
+     renderNextOnboardingScreen();
   }
 
   const renderNextOnboardingScreen = () => {
@@ -111,7 +122,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     };
 
     console.log("finalUserData", finalUserData);    
-    // setUser(finalUserData);  // Set in Context, which also then saves to local storage
+    setUser(finalUserData);  // Set in Context, which also then saves to local storage
   }
 
   // renders validation error if any exists
@@ -158,10 +169,23 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     } else {
       return (
         <View style={styles.textEntriesContainer}>
-          <DropDown />
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Gender" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[3]} textState={gender} setTextState={setGender} onFinish={() => handleTextOnFinish(3)}/></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Pronouns" editable isTextBox returnKeyType="next" innerRef={textRefs[4]} textState={pronouns} setTextState={setPronouns}  onFinish={() => handleTextOnFinish(4)}/></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[5]} textState={age} setTextState={setAge}  onFinish={handleFormSubmit}/></View>
+          <Text style={styles.genderTitle}>Gender</Text>
+
+          <Picker
+            selectedValue={gender}
+            onValueChange={(itemValue):void => setGender(itemValue)}
+          >
+            {genderOptions.map((gender, key) => <Picker.Item key={key} label={gender.label} value={gender.value} />)}
+          </Picker>
+
+          <Picker
+            selectedValue={gender}
+            onValueChange={(itemValue):void => setPronouns(itemValue)}
+          >
+            {pronounOptions.map((pronoun, key) => <Picker.Item key={key} label={pronoun.label} value={pronoun.value} />)}
+          </Picker>
+
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[3]} textState={age} setTextState={setAge}  onFinish={handleFormSubmit}/></View>
         </View>
       )  
     }
