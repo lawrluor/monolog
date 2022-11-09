@@ -340,29 +340,14 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   // TODO: Bugfix/unsure if necessary to check permission at this point.
   const renderCamera = () => {
-    // if (!hasPermission)
-    if (false) {
-      return (
-        <>
-          <GoBack />
-
-          <View style={[styles.centeredContainer]}>
-            <Text style={{ textAlign: 'center' }}>No access to camera or microphone. You must grant the app permission in order to continue. If you cannot change the permissions, please delete and reinstall the app.</Text>
-          </View>
-       </>
-      )
-    }
-
     return (
       <>
         <GoBack />
 
         <View style={styles.cameraToggleContainer}>
-          <View style={styles.flipCameraContainer}>
-            <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-              <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
-            </Pressable>
-          </View>
+          <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+            <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
+          </Pressable>
 
           <View style={styles.cameraOnToggleContainer}>
             <Pressable onPress={toggleCameraOn} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
@@ -372,25 +357,9 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         </View>
 
         {
-          true
+          isCameraOn
           ?
-          <Camera
-          style={styles.cameraContainer}
-          type={type}
-          ref={cameraRef}
-          onCameraReady={() => setIsLoading(false) }
-          >
-            {renderAudioRecordingScreen()}
-            {/* {renderRecordOptions(isRecording)} */}
-          </Camera>
-          :
-          <>
-            <View style={styles.flipCameraContainer}>
-              <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-                <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
-              </Pressable>
-            </View>
-            
+          <>            
             <Camera
             style={styles.cameraContainer}
             type={type}
@@ -402,13 +371,19 @@ export const Recording = ({ navigation }: any): JSX.Element => {
               </View>
 
               <View style={styles.recordContainer}>
-                {/* {renderGalleryIcon()} */}
                 {renderRecordIcon()}
               </View>
-
-              {/* {renderRecordOptions(isRecording)} */}
             </Camera>
           </>
+          :
+          <Camera
+          style={styles.cameraContainer}
+          type={type}
+          ref={cameraRef}
+          onCameraReady={() => setIsLoading(false) }
+          >
+            {renderAudioRecordingScreen()}
+          </Camera>
         }
       </>
     );
@@ -495,8 +470,6 @@ const styles = StyleSheet.create({
     right: spacings.MASSIVE,
     top: spacings.ABSOLUTE_OFFSET_MEDIUM,
     zIndex: 100
-  },
-  flipCameraContainer: {
   },
   flipCameraIcon: {
     ...icons.MEDIUM,
