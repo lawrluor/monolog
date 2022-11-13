@@ -10,7 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import UserContext from '../context/UserContext';
 
 import { checkRecordingPermissions } from '../utils/permissions';
-import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
+import { AUDIO_DIRECTORY, VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY, generateAudioUri } from '../utils/localStorageUtils';
 
 import { text, containers, icons, spacings, dimensions } from '../styles';
 
@@ -24,13 +24,16 @@ import AudioBubbles from '../components/AudioBubbles';
 
 const MAX_DURATION = 600;  // seconds
 
+// TODO(ryanluo): Flag to turn on camera off flows.
+const USE_CAMERA_OFF = true;
+
 // NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording
 export const Recording = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
 
   // TODO: experiment with adding loading states (carefully) to improve UX
   const cameraRef = React.useRef(null);
-  const [finalTranscript, setFinalTranscript] = React.useState<string>('');
+  const [finalTranscript, setFinalTranscript] = React.useState<string[]>(['']);
   const [recordingFinished, setRecordingFinished] = React.useState<boolean>(false);
   const [hasPermission, setHasPermission] = React.useState<null | boolean>(false);
   const [type, setType] = React.useState(Camera.Constants.Type.front);
@@ -84,6 +87,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Otherwise, if isRecording is just null, means that we have not begun recording,
     // or we have simply switched the camera type between front or back.
   React.useEffect(() => {
+    console.log("pika", finalTranscript, videoStorePath, recordingFinished, isRecording)
     if ((finalTranscript.length > 0) &&
         (videoStorePath.length > 0) &&
         (recordingFinished) &&
@@ -94,7 +98,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       // Clean up and reset state
       navigateToRating();
     }
-  }, [finalTranscript, videoStorePath]);
+  }, [finalTranscript, videoStorePath, recordingFinished]);
 
   const toggleCameraOn = () => {
     setIsCameraOn(!isCameraOn);
@@ -138,7 +142,15 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   const startRecording = async () => {
     try {
-      if (cameraRef){
+      let timestamp = Math.floor(Date.now() / 1000);
+      if (USE_CAMERA_OFF) {
+        setIsRecording(true);
+        let audioFilePath = generateAudioUri(timestamp.toString() + ".mp3");
+        FileSystem.writeAsStringAsync(audioFilePath, "test.mp3");
+        setFinalTranscript(["test"]);
+        setVideoStorePath(audioFilePath);
+        // TODO(ryanluo): create thumbnail
+      } else if (cameraRef) {
         setIsRecording(true);
 
         let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
@@ -159,7 +171,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         setUser(updatedUser);
 
         // Create video and thumbnail files.
-        let timestamp = Math.floor(Date.now() / 1000);
         let videoStorePath = VIDEO_DIRECTORY + timestamp.toString() + ".mov";
         setVideoStorePath(videoStorePath);
 
@@ -194,6 +205,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   }
 
   const navigateToRating = () => {
+    console.log("pikatranscript", finalTranscript);
     navigation.navigate('Rating', {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
@@ -207,7 +219,9 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const stopRecording = async () => {
     try {
       setIsRecording(false);
-      await cameraRef.current.stopRecording();
+
+      // TODO(ryanluo): remove this when we actually implement cam off.
+      if (!USE_CAMERA_OFF) { await cameraRef.current.stopRecording(); }
     } catch(err: any) {
       console.log("[ERROR] Recording.tsx: stopRecording", err);
     }
@@ -266,6 +280,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // TODO: may want to refactor this into a separate component, then import it
   // For when user wants audio only rather than camera on.
   const renderAudioRecordingScreen = () => {
+    // TODO(ryanluo): enable this when we're ready.
+    // <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
     return (
       <AudioOverlay>
         {isRecording
@@ -274,7 +290,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             <AudioBubbles shouldBegin={isRecording} />
 
             <View style={styles.captionContainer}>
-              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
             </View>
           </>
           :
@@ -359,7 +374,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         {
           isCameraOn
           ?
-          <>            
+          <>
             <Camera
             style={styles.cameraContainer}
             type={type}

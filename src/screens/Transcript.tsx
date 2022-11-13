@@ -19,9 +19,9 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [videoData, setVideoData] = React.useState(null);
 
-  // Doesn't contain our final data, yet but shares the same name when passed to VideoContainer 
+  // Doesn't contain our final data, yet but shares the same name when passed to VideoContainer
   // For fully processed logs, videoData will include: transcript_uri, thumbnail_uri, etc.
-  // let videoData = { 
+  // let videoData = {
   //   'uri': videoStorePath,
   //   'transcript_content': finalResultString,
   //   'rating': selection,
@@ -32,26 +32,31 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
   // which includes the final transcript, rating, and more
   React.useEffect(() => {
     const asyncWrapper = async () => {
-      // queries videoData object from local DB, that has saved attributes from previous screens 
+      // queries videoData object from local DB, that has saved attributes from previous screens
       // such as rating file, video file name, etc.
       // It will not find a saved transcript yet, as one does not exist yet
       // So, we add the final transcript after getting the mostly finished videoData object.
-      let queriedVideoData = await initVideoDataObject(fileBaseName);  
+      let queriedVideoData = await initVideoDataObject(fileBaseName);
       queriedVideoData['transcript_content'] = finalResultString;
       setVideoData(queriedVideoData);
       setIsLoading(false);
-      writeFinalTranscript(await generateTranscriptUri(fileBaseName), finalResultString); 
-      toggleVideosRefresh();  // TODO: move this somewhere better   
+      writeFinalTranscript(await generateTranscriptUri(fileBaseName), finalResultString);
+      toggleVideosRefresh();  // TODO: move this somewhere better
     }
 
     asyncWrapper();
   }, [])
 
   const navigateToPlayer = () => {
-    navigation.navigate('Player', {
-      video: videoData,
-      navigation: navigation
-    });
+    if (videoData.uri !== "") {
+      navigation.navigate('Player', {
+        video: videoData,
+        navigation: navigation
+      });
+    } else {
+      // TODO(ryanluo): fix navigation after we create a view for audio-only.
+      navigation.navigate('Gallery');
+    }
   }
 
   // Once loaded successfully, immediately navigate to Player with params for the loaded videoData
