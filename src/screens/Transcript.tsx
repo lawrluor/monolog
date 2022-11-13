@@ -4,13 +4,14 @@ import VideosContext from '../context/VideosContext';
 
 import { Audio } from 'expo-av';
 
-import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from '../utils/localStorageUtils';
+import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri, checkFileExists } from '../utils/localStorageUtils';
 
 import { FullPageSpinner } from '../components/Spinner';
 
 const Transcript = ({ route, navigation }: any): JSX.Element => {
   const { finalResult, selection, fileBaseName } = route.params;
   const { toggleVideosRefresh } = React.useContext(VideosContext);
+  const { videoExists, setVideoExists } = React.useState<boolean>(null);
 
   // finalResultString contains the full transcript of the video
   // Joins the array of strings into one long string.
@@ -39,6 +40,7 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
       let queriedVideoData = await initVideoDataObject(fileBaseName);
       queriedVideoData['transcript_content'] = finalResultString;
       setVideoData(queriedVideoData);
+      setVideoExists(checkFileExists(videoData.uri));
       setIsLoading(false);
       writeFinalTranscript(await generateTranscriptUri(fileBaseName), finalResultString);
       toggleVideosRefresh();  // TODO: move this somewhere better
@@ -48,7 +50,8 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
   }, [])
 
   const navigateToPlayer = () => {
-    if (videoData.uri !== "") {
+    // TODO(ryanluo): Update after we differentiate audio/video creations.
+    if (videoExists) {
       navigation.navigate('Player', {
         video: videoData,
         navigation: navigation

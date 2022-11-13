@@ -25,6 +25,7 @@ export const checkAudioDirectory = async () => {
       console.log("[ERROR] VideosContext:FileSystem.getInfoAsync:", error);
       return false;
     });
+
   return result;
 }
 
@@ -137,24 +138,24 @@ export const createThumbnailDirectory = async () => {
   }
 }
 
-export const checkDirectoryExists = async (directory: string) => {
+export const checkFileExists = async (directory: string) => {
   try {
     return await FileSystem.getInfoAsync(directory)
       .then(({ exists, _ }) => {
         return Promise.resolve(exists);
       }).catch((err: any) => {
-        console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${directory}):`, err);
+        console.log(`[ERROR] localStorageUtils:checkFileExists(${directory}):`, err);
         return Promise.reject(false);
       });
   } catch (err: any) {
-    console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${directory}):`, err);
+    console.log(`[ERROR] localStorageUtils:checkFileExists(${directory}):`, err);
     return Promise.reject(false);
   }
 }
 
 export const createDirectory = async (directory: string) => {
   try {
-    let directoryExists = await checkDirectoryExists(directory);
+    let directoryExists = await checkFileExists(directory);
     if (directoryExists) return Promise.resolve(true);
 
     return await FileSystem.makeDirectoryAsync(directory)
@@ -516,21 +517,10 @@ export const initVideoDataObject = async (filename: string) => {
   let transcriptContent = await getTranscriptContent(transcriptUri);
   let rating = await getRating(filename);
 
-  let videoUri = await FileSystem.getInfoAsync(generateVideoUri(filename)).then(
-    ({ exists, _ }) => {
-      return exists ? generateVideoUri(filename) : "";
-    }).catch(
-    error => {
-      console.log(
-        "[ERROR] VideosContext:initVideoDataObject:FileSystem.getInfoAsync:",
-         error);
-      return "";
-    });
-
   let videoData = {
     "baseName": filename,
-    "name": videoUri,
-    "uri": videoUri,
+    "name": generateVideoUri(filename),
+    "uri": generateVideoUri(filename),
     "thumbnail_uri": generateThumbnailUri(filename),
     "transcript_uri": transcriptUri,
     "transcript_content": transcriptContent,
