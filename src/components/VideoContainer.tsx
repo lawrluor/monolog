@@ -19,7 +19,6 @@ const VideoContainer = ({ videoData, navigation, showVideo }: Props): JSX.Elemen
   // The isPlaying state is then also read by VideoOverlay,
   // to determine whether to show certain playback controls or the transcript modal.
   const [isPlaying, setIsPlaying] = React.useState<boolean>(true);
-  console.log("pikaVideoContainer: ", showVideo);
 
   return (
     <>

@@ -11,7 +11,6 @@ type Props = {
 const Player = ({ route, navigation }: Props): JSX.Element => {
   const { video, showVideo } = route.params;
 
-  console.log("pika:player:showVideo:", showVideo);
   return (
     <VideoContainer videoData={video} navigation={navigation}
         showVideo={showVideo}/>
