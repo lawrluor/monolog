@@ -27,7 +27,7 @@ type Props = {
 const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element => {
   const { toggleVideosRefresh } = React.useContext(VideosContext);
   const [modalShown, setModalShown] = React.useState<boolean>(false);
-  
+
   const deleteLogCallback = () => {
     Alert.alert(
       "Warning",
@@ -44,7 +44,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
       toggleVideosRefresh();
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Home' }] 
+        routes: [{ name: 'Home' }]
       });
 
       navigation.navigate('Home');
@@ -67,12 +67,12 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
     }
   }
 
-  // Displays a button that can be clicked to reveal the entire transcript text 
+  // Displays a button that can be clicked to reveal the entire transcript text
   const renderShowTranscriptButton = () => {
     return (
       <View style={styles.button}>
         <Pressable onPress={() => setModalShown(!modalShown)} hitSlop={spacings.hitSlopLarge} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-          <CustomIcon name={'transcript'} style={styles.iconActions} />
+          <CustomIcon name={'open_transcript'} style={styles.iconActions} />
         </Pressable>
       </View>
     )
@@ -81,7 +81,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   // Not currently displaying captions
   const renderCaption = () => {
     return (
-      !modalShown 
+      !modalShown
       ?
       <View style={styles.contentContainer}>
         <VideoCaption text={videoData.caption} />
@@ -115,7 +115,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
         </View>
 
         <View style={styles.button}>
-          
+
           <Pressable onPress={changeRating} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
             <Text style={styles.emojiText}>{videoData.rating.substring(0, 2) || '❔'}</Text>
           </Pressable>
@@ -127,9 +127,9 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   const resetNavigationToGallery = () => {
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Home' }] 
+      routes: [{ name: 'Home' }]
     });
-  
+
     navigation.navigate('Home');
   }
 
@@ -139,7 +139,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
     <>
       {modalShown ? <></> : <GoBack callback={resetNavigationToGallery}/> }
       {modalShown ? <></> : <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View> }
-      
+
       <View style={styles.videoContainer}>
 
         {/* TODO: Send full populated videoData object with transcript + rating? */}
@@ -153,11 +153,11 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
       {/* TODO: Store video date as MM/DD/YYYY in the video storage */}
       {/* TODO: Give option for date type for personalization */}
 
-      <TranscriptEditor 
+      <TranscriptEditor
         modalShown={modalShown}
         setModalShown={setModalShown}
         textContentFromRecording={videoData.transcript_content}
-        transcriptUri={videoData.transcript_uri} 
+        transcriptUri={videoData.transcript_uri}
         date={videoData.date || getCurrentDate()}
       />
     </>
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   deleteLogContainer: {
-    position: 'absolute', 
+    position: 'absolute',
     // Matches spacings in GoBack component
     right: spacings.MASSIVE,
     top: spacings.ABSOLUTE_OFFSET_MEDIUM,

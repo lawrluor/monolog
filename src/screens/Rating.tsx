@@ -18,7 +18,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
 
   const [emojis, setEmojis] = React.useState(['😥','😐','🙂','😃', '😍']);
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
-  const { fileBaseName, finalResult } = route.params;
+  const { fileBaseName, finalResult, isCameraOn } = route.params;
 
   const updateMoodMap = async (emojiValue: number) => {
     // Global Data Structure is sorted by date
@@ -68,7 +68,8 @@ const Rating = ({ route, navigation }): JSX.Element => {
   }
 
   const navigateToTranscript = (selection: string) => {
-    navigation.navigate('Transcript', { selection, fileBaseName, finalResult });
+    navigation.navigate('Transcript',
+        { selection, fileBaseName, finalResult, isCameraOn});
   }
 
   const setSelectedEmojiWrapper = (emojiIndex: number) => {
