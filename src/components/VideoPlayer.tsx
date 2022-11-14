@@ -5,14 +5,17 @@ import { Audio, Video } from 'expo-av';
 import { FullPageSpinner } from './Spinner';
 
 import { containers, dimensions } from '../styles';
+import AudioOverlay from '../components/AudioOverlay';
+import AudioBubbles from '../components/AudioBubbles';
 
 type Props = {
-  videoUri: string
+  showVideo: any
+  videoUri: string,
   isPlaying: boolean,
   setIsPlaying: any,
 }
 
-const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element => {
+const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): JSX.Element => {
   const video = React.useRef(null);
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);  // TODO: set loading handling
@@ -34,7 +37,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
       console.log("err resetting recording", error);
     }
   }
-    
+
   // Audio settings for this video
   React.useEffect(() => {
     const setAudioModes = async () => {
@@ -65,14 +68,14 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
 
       await Audio.setIsEnabledAsync(true);
 
-      
+
       if (video && video.current) {
         let status = await video.current.getStatusAsync();
         console.log("status", status);
         console.log("-----2. VideoPlayer: audio loaded, now playing video");
         await video.current.loadAsync({ uri: videoUri, volume: 1.0 });
         await video.current.playAsync();
-        
+
       }
     }
 
@@ -85,7 +88,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
     //     .catch((err: any) => {
     //       console.log("[ERROR] VideoPlayer: useEffect", err);
     //     });
-        
+
     //   video.current.unloadAsync()
     //     .then()
     //     .catch((err: any) => {
@@ -96,7 +99,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
     return () => {
       console.log("unmounting VideoPlayer");
       // crucial line: allows us to unmount audio for bug-free recording
-      Audio.setIsEnabledAsync(false);  
+      Audio.setIsEnabledAsync(false);
 
       const unmount = async () => {
         try {
@@ -128,6 +131,14 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
     <>
       <View style={[styles.container, { display: isLoading || !status.isLoaded ? 'none' : 'flex'}]}>
         <Pressable onPress={togglePlay}>
+          {
+            showVideo === "true" ? null :
+              <View style={styles.audioContainer}>
+                <AudioOverlay>
+                  <AudioBubbles shouldBegin={isPlaying} />
+                </AudioOverlay>
+              </View>
+          }
           <Video
             ref={video}
             shouldPlay
@@ -146,7 +157,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying }: Props): JSX.Element 
         ?
           <FullPageSpinner size="large" />
         :
-        null 
+        null
       }
     </>
   );
@@ -158,9 +169,14 @@ const styles = StyleSheet.create({
     // paddingTop: Constants.statusBarHeight,
 
   },
+  audioContainer: {
+    width: dimensions.width,
+    height: dimensions.height,
+    zIndex: 100
+  },
   video: {
     width: dimensions.width,
-    height: dimensions.height
+    height: dimensions.height,
   },
   buttons: {
     flexDirection: 'row',
@@ -169,7 +185,7 @@ const styles = StyleSheet.create({
   }
 });
 
-  // This useEffect is not currently used, but will handle sound not playing properly. 
+  // This useEffect is not currently used, but will handle sound not playing properly.
   // Keep for now
   // useEffect(() => {
   //   Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
