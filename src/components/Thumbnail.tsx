@@ -14,7 +14,7 @@ const Thumbnail = ({ navigation, video }: Props): JSX.Element => {
     navigation.navigate('Player', {
       video: video,
       navigation: navigation,
-      isCameraOn: "true"  // TODO(ryanluo): update this to read from storage.
+      showVideo: "true"  // TODO(ryanluo): update this to read from storage.
     });
   }
 

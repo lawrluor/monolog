@@ -51,7 +51,7 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
     navigation.navigate('Player', {
       video: videoData,
       navigation: navigation,
-      isCameraOn: isCameraOn
+      showVideo: isCameraOn
     });
   }
 
