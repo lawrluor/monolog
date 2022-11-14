@@ -41,7 +41,7 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
       let queriedVideoData = await initVideoDataObject(fileBaseName);
       queriedVideoData['transcript_content'] = finalResultString;
       setVideoData(queriedVideoData);
-      setVideoExists(checkFileExists(videoData.uri));
+      setVideoExists(checkFileExists(queriedVideoData.uri));
       setIsLoading(false);
       writeFinalTranscript(await generateTranscriptUri(fileBaseName), finalResultString);
       toggleVideosRefresh();  // TODO: move this somewhere better
