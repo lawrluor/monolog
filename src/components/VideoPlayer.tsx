@@ -9,12 +9,14 @@ import AudioOverlay from '../components/AudioOverlay';
 import AudioBubbles from '../components/AudioBubbles';
 
 type Props = {
-  showVideo: any
+  showVideo: string
   videoUri: string,
   isPlaying: boolean,
   setIsPlaying: any,
 }
 
+// showVideo is a string that determines whether AudioOverlay.tsx is displayed
+// over the video.
 const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): JSX.Element => {
   const video = React.useRef(null);
 
