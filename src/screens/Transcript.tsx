@@ -11,6 +11,7 @@ import { FullPageSpinner } from '../components/Spinner';
 const Transcript = ({ route, navigation }: any): JSX.Element => {
   const { finalResult, selection, fileBaseName } = route.params;
   const { toggleVideosRefresh } = React.useContext(VideosContext);
+  // TODO(ryanluo): Remove when we handle Audio File handling.
   const { videoExists, setVideoExists } = React.useState<boolean>(null);
 
   // finalResultString contains the full transcript of the video
@@ -50,7 +51,6 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
   }, [])
 
   const navigateToPlayer = () => {
-    // TODO(ryanluo): Update after we differentiate audio/video creations.
     if (videoExists) {
       navigation.navigate('Player', {
         video: videoData,

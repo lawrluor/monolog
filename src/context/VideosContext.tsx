@@ -66,8 +66,8 @@ export const VideosProvider:React.FC = ({ children }) => {
   // [ { title, key, data [ { list [ { name, uri } ] }] } ]
   const getVideosFromStorage = async (query: string="") => {
     // NOTE: because VideosContext is triggered BEFORE App.tsx completes,
-    // we must first create the Video directory on initial load instead of waiting
-    // for App.tsx to create it first.
+    // we must first create the Video/Audio directory on initial load instead of
+    // waiting for App.tsx to create it first.
     // TODO: consider moving context for Videos around MainNavigator only, so it WILL wait for App.tsx
     await createDirectory(VIDEO_DIRECTORY);
     await createDirectory(AUDIO_DIRECTORY);

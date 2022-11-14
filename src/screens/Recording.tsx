@@ -10,7 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import UserContext from '../context/UserContext';
 
 import { checkRecordingPermissions } from '../utils/permissions';
-import { AUDIO_DIRECTORY, VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY, generateAudioUri } from '../utils/localStorageUtils';
+import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY, generateAudioUri } from '../utils/localStorageUtils';
 
 import { text, containers, icons, spacings, dimensions } from '../styles';
 
@@ -23,9 +23,6 @@ import AudioOverlay from '../components/AudioOverlay';
 import AudioBubbles from '../components/AudioBubbles';
 
 const MAX_DURATION = 600;  // seconds
-
-// TODO(ryanluo): Remove after we set up audio recording library.
-const USE_CAMERA_OFF = true;
 
 // NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording
 export const Recording = ({ navigation }: any): JSX.Element => {
@@ -141,6 +138,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   const startRecording = async () => {
     try {
+      // Timestamp is used as a key for all files written during recording.
       let timestamp = Math.floor(Date.now() / 1000);
       if (!isCameraOn) {
         // TODO(ryanluo): Implement Audio Library, this is dummy code for now.
@@ -219,8 +217,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     try {
       setIsRecording(false);
 
-      // TODO(ryanluo): remove this when we actually implement cam off.
-      if (!isCameraOn) { await cameraRef.current.stopRecording(); }
+      if (isCameraOn) { await cameraRef.current.stopRecording(); }
     } catch(err: any) {
       console.log("[ERROR] Recording.tsx: stopRecording", err);
     }
