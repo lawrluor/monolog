@@ -127,18 +127,24 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
     }
   }
 
+  // We render AudioOverlay if we should not show the video.
+  const renderAudioOverlay = (showVideo: boolean) => {
+    return (
+      showVideo === "false" ?
+        <View style={styles.audioOverlayContainer}>
+           <AudioOverlay>
+             <AudioBubbles shouldBegin={isPlaying} />
+           </AudioOverlay>
+         </View>
+        :
+        <></>
+    )
+  }
   return (
     <>
       <View style={[styles.container, { display: isLoading || !status.isLoaded ? 'none' : 'flex'}]}>
         <Pressable onPress={togglePlay}>
-          {
-            showVideo === "true" ? null :
-              <View style={styles.audioContainer}>
-                <AudioOverlay>
-                  <AudioBubbles shouldBegin={isPlaying} />
-                </AudioOverlay>
-              </View>
-          }
+          {renderAudioOverlay(showVideo)}
           <Video
             ref={video}
             shouldPlay
@@ -169,14 +175,13 @@ const styles = StyleSheet.create({
     // paddingTop: Constants.statusBarHeight,
 
   },
-  audioContainer: {
+  audioOverlayContainer: {
     width: dimensions.width,
-    height: dimensions.height,
-    zIndex: 100
+    height: dimensions.height
   },
   video: {
     width: dimensions.width,
-    height: dimensions.height,
+    height: dimensions.height
   },
   buttons: {
     flexDirection: 'row',
