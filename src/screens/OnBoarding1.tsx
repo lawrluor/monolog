@@ -171,7 +171,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     } else {
       return (
         <View style={styles.textEntriesContainer}>
-          <Text style={styles.subTitle}>Gender</Text>
+          <Text style={styles.pickerTitle}>Gender</Text>
           <Picker
             selectedValue={gender}
             onValueChange={(itemValue):void => setGender(itemValue)}
@@ -181,7 +181,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
             {genderOptions.map((gender, key) => <Picker.Item key={key} label={gender.label} value={gender.value} />)}
           </Picker>
 
-          <Text style={styles.subTitle}>Pronouns</Text>
+          <Text style={styles.pickerTitle}>Pronouns</Text>
           <Picker
             selectedValue={pronouns}
             onValueChange={(itemValue):void => setPronouns(itemValue)}
@@ -228,7 +228,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
         {/* See comments in style: this invisible component allows full width container */}
         <View style={styles.fullWidth}></View>
 
-        <View style={styles.skipTextContainer} >
+        <View style={styles.skipTextContainer}>
           {screenNumber === 2 && <View style={{ marginBottom: spacings.MEDIUM }}><SignInButton text={"Finish"} onPress={handleFormSubmit} background={colors.BACKGROUND}/></View>}
           
           <Pressable onPress={handleFormSkip} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
@@ -298,11 +298,11 @@ export const styles = StyleSheet.create({
   },
   titleContainer: {
     alignItems: 'center',
-    paddingVertical: spacings.MEDIUM
+    paddingVertical: spacings.HUGE
   },
   subTitleContainer: {
     alignItems: 'center',
-    paddingVertical: spacings.MEDIUM
+    paddingVertical: spacings.LARGE
   },
   textEntriesContainer: {
     width: Math.min(sizes.SCREEN_WIDTH_66, 800),
@@ -361,13 +361,19 @@ export const styles = StyleSheet.create({
     aspectRatio: 1000 / 1,  // extremely narrow full width container, small/invisible height
     backgroundColor: colors.BACKGROUND,
   },
-  picker: {
-    height: 200,
-    marginTop: -20
+  pickerTitle: {
+    ...text.h4,
   },
+  picker: {
+    height: 140,
+    marginTop: -20,
+  },
+  // Note: The highlight color on the selected item cannot be changed (easily) yet.
+  // Could have a flag on if item is selected, dynamically assign style as variable in the component
   pickerItem: {
-    color: 'white',
-  }
+    ...text.h4,
+    height: 140,
+  },
 })
 
 export default OnBoarding1;
