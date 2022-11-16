@@ -6,6 +6,7 @@ import GoBack from '../components/GoBack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
 import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
+import ProgressBar from '../components/ProgressBar';
 
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
 
@@ -19,6 +20,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
 
   const { name } = route.params;
   const currentPathway = pathwaysMap.get(name);
+  const progress = currentPathway.progress[1] / 10* 100;
   return (
     <View style={styles.container}>
       <GoBack />
@@ -30,48 +32,47 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
           showsVerticalScrollIndicator={false}
         >
           <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
-          <Text>
-            {'\n'}{name} --- # of times completed: {currentPathway.progress[0]}
+          <Text style={styles.title}>
+            {name} --- {currentPathway.progress[0]} stars
           </Text>
-          <Text>
+          <Text style={styles.description}>
             {currentPathway.long_desc}
           </Text>
-          <Text>
-            Current progress: {currentPathway.progress[1]}
-          </Text>
+          <ProgressBar currentProgress={3} total={10}>
+          </ProgressBar>
+        </ScrollView>
+        <View style={styles.recordButton}>
           <SignInButton background={colors.HIGHLIGHT}
             onPress={() => { navigateToPrompt(name)}}
             >
             <Text style={text.h4}> RECORDING </Text>
           </SignInButton>
-        </ScrollView>
+        </View>
       </SafeAreaBottom>
     </View>
   );
 }
 
-{/* <SignInButton background={colors.HIGHLIGHT}
-              onPress={() => {
-                let currentObj = pathwaysMap.get(name);
-                console.log(currentObj.image)
-              }}
-              >
-              <Text style={text.h4}> CONSOLE LOG </Text>
-            </SignInButton> */}
-
-
-
-
-
-
-
-
-
-
-
-
-
 const styles = StyleSheet.create({
+  progressBarFill: {
+    backgroundColor: '#8BED4F',
+  },
+  progressBarContainer: {
+    flex: 1,
+    flexDirection: "column", //column direction
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: '10%',
+    backgroundColor: 'transparent',
+    padding: 8,
+  },
+  progressBar: {
+    height: 5,
+    flexDirection: 'row',
+    width: '100%',
+    backgroundColor: 'lightgrey',
+    borderColor: '#000',
+  },
   // Doesn't use the default container, as that adds a bottom block
   container: {
     flex: 1,
@@ -88,18 +89,20 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end'
   },
     imageHeader: {
-    width: "100%",
+    // width: "100%",
     height: undefined,
-    aspectRatio: 1,
+    aspectRatio: 1.68,
+    flex: 1,
+    resizeMode: 'contain'
   },
   // This container size is dependent on the size of the brandImage below
   // This ensures that the image does not overflow the container
   // A padding on the brandHeader ensures adequate vertical spacing no matter the image size
   bodyContainer: {
-    paddingHorizontal: spacings.HUGE,
+    // paddingHorizontal: spacings.HUGE,
   },
   scrollContentContainerStyle: {
-    paddingVertical: spacings.HUGE,
+    // paddingVertical: spacings.HUGE,
   },
   headerRightIconContainer: {
     ...debug,
@@ -108,8 +111,24 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   title: {
-    ...text.h2
+    ...text.h3,
+    margin: spacings.HUGE,
+    marginBottom: spacings.SMALL,
+    color: 'black',
   },
+  description: {
+    margin: spacings.HUGE,
+  },
+  recordButton: {
+    position: 'absolute',
+    bottom: '0%',
+    left: '0%',
+    backgroundColor: 'transparent',
+    paddingTop: '5%',
+    paddingBottom: '5%',
+    paddingLeft: '16%',
+    paddingRight: '16%',
+  }
 });
 
 export default PathwayFull;
