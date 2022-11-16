@@ -5,17 +5,16 @@ import Svg, { Defs, RadialGradient, Stop, Circle, Rect, Use } from "react-native
 
 import { dimensions } from '../styles';
 
-const MAX_BUBBLE_SIZE = 180;  // largest possible bubble
-const MIN_BUBBLE_SIZE = 90;  // smallest possible bubble
-const NUMBER_OF_BUBBLES = 8;  
-const COLOR = 'transparent';  // 'D4D4D455'; grey-ish
+const MAX_BUBBLE_SIZE = 240;  // largest possible bubble
+const MIN_BUBBLE_SIZE = 120;  // smallest possible bubble
+const NUMBER_OF_BUBBLES = 10;  
 
 // An individual animated Audio Bubble, with its own individual display states
 const AudioBubble = ({ shouldBegin }: any) => {
   // Helper function: Math.random() to generate range (-0.5, 0.5) then scaled to screen width
   const generateRandomCoordinates = (): any => {
-    const x = (Math.random() - 0.5) * dimensions.width / 2;  // half of max distance
-    const y = (Math.random() - 0.5) * dimensions.height / 2;  // half of max distance
+    const x = (Math.random() - 0.5) * dimensions.width;
+    const y = (Math.random() - 0.5) * dimensions.height / 1.5;  // 2/3 of max distance
     return { x: x, y: y };  
   }
 
@@ -107,35 +106,30 @@ const AudioBubble = ({ shouldBegin }: any) => {
     borderRadius: diameter / 2
   }
 
-  const SvgEllipse = () => {
+  // The "bubble" itself, drawn with SVG
+  // The <Defs> defines the gradient properties to use, 
+  // which are then assigned to the <Circle> `fill` attribute
+  // There are three "rings" of the SVG: white in the center, transparent, then white again
+  const SvgCircle = () => {
     return (
-      <Svg width="150" height="150">
+      <Svg width={bubbleSize.height} height={bubbleSize.height}>
         <Defs>
-          <RadialGradient
-            id="grad"
-            gradientUnits="userSpaceOnUse"
-          >
-            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
-            <Stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.1" />
-            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="1" />
+          <RadialGradient id="gradient">
+            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.5" />
+            <Stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.55" />
           </RadialGradient>
         </Defs>
-        <Circle cx = "50%" cy = "50%" r = "50%" fill="url(#grad)" />
+
+        <Circle cx = "50%" cy = "50%" r = "50%" fill="url(#gradient)" />
       </Svg>
     )
   }
 
   return (
-    
     <View style={[styles.container, { display: isVisible ? 'flex' : 'none' }]}>
-      <Animated.View style={[styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity, backgroundColor: COLOR } ]} >
-        <Pressable 
-          style={[styles.bubblePressable, bubbleSize]}
-          hitSlop={5} 
-        >
-          <SvgEllipse />
-          
-        </Pressable>
+      <Animated.View style={[ styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity } ]} >
+        <SvgCircle />
       </Animated.View>
     </View>
   )
@@ -180,13 +174,8 @@ const audioBubblesStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  bubble: {
-    aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   // This overlaps each bubble to make the animation pressable.
-  bubblePressable: {
+  bubble: {
     flex: 1, 
     alignItems: 'center',
     justifyContent: 'center',
