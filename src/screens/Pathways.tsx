@@ -4,7 +4,7 @@ import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
 import { dimensions, text, spacings, icons, colors, debug } from '../styles';
 import GoBack from '../components/GoBack';
 import { LinearGradient } from 'expo-linear-gradient';
-import <PathwayCard></PathwayCard> from '../components/PathwayCard';
+import PathwayCard from '../components/PathwayCard';
 import PathwayFull from './PathwayFull';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
@@ -41,7 +41,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
             {
               pathwaysData.map((item, index) => {
                 return (
-                  <<PathwayCard></PathwayCard> name={item.name} key={`${item.name}_short`}>
+                  <PathwayCard name={item.name} key={`${item.name}_short`}>
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>
@@ -57,7 +57,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                         <Text style={text.h4}> RECORDING </Text>
                       </SignInButton>
                     </View>
-                  </<PathwayCard></PathwayCard>>
+                  </PathwayCard>
                 )
               })
             }
