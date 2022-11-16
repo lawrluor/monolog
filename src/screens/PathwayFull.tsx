@@ -7,8 +7,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
 import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
 import ProgressBar from '../components/ProgressBar';
+import { BorderlessButton } from 'react-native-gesture-handler';
 
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
+  const { name } = route.params;
+  const currentPathway = pathwaysMap.get(name);
+  const progress = currentPathway.progress[1] / 10* 100;
 
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
@@ -17,27 +21,39 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
     const level = pathwaysMap.get(name).progress[1]
     navigation.push('PathwaysPrompt', { pathway:name, level: level});
   }
+  const BodyText = () => {
+    const text = currentPathway.long_desc
+    let textArray = text.split("<b>")
 
-  const { name } = route.params;
-  const currentPathway = pathwaysMap.get(name);
-  const progress = currentPathway.progress[1] / 10* 100;
+    return (
+      <View style={styles.description}>
+        {
+          textArray.map((item, index) => {
+            const bold = index % 2;
+            return (
+              <Text style={bold ? styles.bodyHeader : styles.bodyText}>
+                { item }
+              </Text>
+            )
+          })
+        }
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <GoBack />
       <SafeAreaTop/>
       <SafeAreaBottom transparent>
         <ScrollView
-          style={styles.bodyContainer}
-          contentContainerStyle={styles.scrollContentContainerStyle}
           showsVerticalScrollIndicator={false}
         >
           <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
           <Text style={styles.title}>
             {name} --- {currentPathway.progress[0]} stars
           </Text>
-          <Text style={styles.description}>
-            {currentPathway.long_desc}
-          </Text>
+          <BodyText></BodyText>
           <ProgressBar currentProgress={3} total={10}>
           </ProgressBar>
         </ScrollView>
@@ -98,11 +114,15 @@ const styles = StyleSheet.create({
   // This container size is dependent on the size of the brandImage below
   // This ensures that the image does not overflow the container
   // A padding on the brandHeader ensures adequate vertical spacing no matter the image size
-  bodyContainer: {
-    // paddingHorizontal: spacings.HUGE,
+  bodyHeader: {
+    ...text.h3,
+    color: 'black',
+    marginTop: 10,
+    marginBottom: 10,
   },
-  scrollContentContainerStyle: {
-    // paddingVertical: spacings.HUGE,
+  bodyText: {
+    ...text.h5,
+    color: 'black',
   },
   headerRightIconContainer: {
     ...debug,

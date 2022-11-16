@@ -4,6 +4,7 @@ import { text, spacings, colors, containers } from '../styles';
 import SignInButton from './SignInButton';
 import { pathwaysMap } from '../utils/pathwaysData'
 import { comingSoonAlert } from '../utils/customAlerts';
+import ProgressBar from './ProgressBar';
 
 const PathwayCard = ({ children, name, navigation}: any): JSX.Element => {
 
@@ -17,7 +18,10 @@ const PathwayCard = ({ children, name, navigation}: any): JSX.Element => {
   return (
     <View style={styles.featureContainer}>
       <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
-      <Text style={styles.featureTitle}> {name} </Text>
+      <Text style={styles.featureTitle}> {name} </Text> 
+      <View style={styles.progressBar}>
+        <ProgressBar  currentProgress={3} total={10}></ProgressBar>
+      </View>
       {children}
       
       {/* TODO: Add button to go straight to recording, needs to know title and progress */}
@@ -50,6 +54,12 @@ const styles = StyleSheet.create({
     aspectRatio: 1.68, 
     flex: 1,
     resizeMode: 'contain'
+  },
+  progressBar: {
+    position: 'absolute',
+    right: 0,
+    top: 200,
+    width: '60%'
   }
 });
 
