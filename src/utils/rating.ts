@@ -14,15 +14,15 @@ export const createRatingFromFile = async (filename:string):
     return new Rating(JSON.parse(await readFile(filename)));
   } catch (error) {
     // Try creating from a legacy rating file.
-    let rating = await getRating(filename);
-    if (rating.length != 2) {
+    let rating = await getRating(filename)
+    if (rating.length != 3) {
       // rating file is malformed, exit.
-      return Promise.reject("[ERROR]: rating.ts: Malformed rating file");
+      return null;
     }
     let ratingJson = {
       filename: filename,
-      emoji: rating[0],
-      index: rating[1],
+      emoji: rating.substring(0,2),
+      index: rating[2],
       isCameraOn: "true"
     };
     return new Rating(ratingJson);
@@ -56,15 +56,18 @@ class Rating {
 
    // Expects that ratingJson is well-formed with the following structure:
    // {
-   //   filename: "{FILENAME}"
    //   emoji: "{EMOJI}"
    //   index: "{NUMBER}"
    //   isCameraOn: "{IS_CAMERA_ON}"
    // }
    constructor(ratingJson:any) {
-     this.filename = ratingJson.filename;
+     if ("filename" in ratingJson) {
+       this.filename = ratingJson.filename;
+     } else {
+       this.filename = ""
+     }
      this.emoji = ratingJson.emoji;
-     this.index = parseInt(ratingJson.number);
+     this.index = parseInt(ratingJson.index);
 
      // Parse to boolean.
      this.isCameraOn = JSON.parse(ratingJson.isCameraOn);

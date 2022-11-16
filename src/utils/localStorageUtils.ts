@@ -8,6 +8,7 @@
 import * as FileSystem from 'expo-file-system';
 import { resolvePath } from 'react-native-reanimated/lib/types/lib/reanimated2/animation/styleAnimation';
 import { filteredWords, removePunctuation } from './textProcessing';
+import { createRatingFromFile } from './rating';
 
 export const USER_DATA_DIRECTORY = FileSystem.documentDirectory + 'userData/';
 export const TRANSCRIPT_DIRECTORY = FileSystem.documentDirectory + 'transcripts/';
@@ -126,24 +127,24 @@ export const createThumbnailDirectory = async () => {
   }
 }
 
-export const checkDirectoryExists = async (directory: string) => {
+export const checkFileExists = async (filename: string) => {
   try {
-    return await FileSystem.getInfoAsync(directory)
+    return await FileSystem.getInfoAsync(filename)
       .then(({ exists, _ }) => {
         return Promise.resolve(exists);
       }).catch((err: any) => {
-        console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${directory}):`, err);
+        console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${filename}):`, err);
         return Promise.reject(false);
       });
   } catch (err: any) {
-    console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${directory}):`, err);
+    console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${filename}):`, err);
     return Promise.reject(false);
   }
 }
 
 export const createDirectory = async (directory: string) => {
   try {
-    let directoryExists = await checkDirectoryExists(directory);
+    let directoryExists = await checkFileExists(directory);
     if (directoryExists) return Promise.resolve(true);
 
     return await FileSystem.makeDirectoryAsync(directory)
@@ -456,9 +457,8 @@ export const getTranscriptContent = async (transcriptUri: string) => {
 
 export const getRating = async (uri: string) => {
   let rating: string = "";
-  let ratingFullUri = `${RATING_DIRECTORY}${uri}.txt`;
 
-  rating = await FileSystem.readAsStringAsync(ratingFullUri)
+  rating = await FileSystem.readAsStringAsync(uri)
     .then((content: string) => {
       return content;
     })
@@ -499,8 +499,12 @@ export const generateRatingUri = (filename: string) => {
 export const initVideoDataObject = async (filename: string) => {
   let transcriptUri = generateTranscriptUri(filename);
   let transcriptContent = await getTranscriptContent(transcriptUri);
-  let rating = await getRating(filename);
 
+  let ratingObject = await createRatingFromFile(generateRatingUri(filename));
+  let rating = ""
+  if (ratingObject) {
+    rating = `${ratingObject.emoji}${ratingObject.index}`
+  }
   let videoData = {
     "baseName": filename,
     "name": generateVideoUri(filename),
