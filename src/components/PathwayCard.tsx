@@ -16,7 +16,7 @@ const PathwayCard = ({ children, name, navigation}: any): JSX.Element => {
   return (
     <View style={styles.featureContainer}>
       <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
-      <Text style={styles.featureTitle}> {name} {'\n'}</Text>
+      <Text style={styles.featureTitle}> {name} </Text>
       {children}
       
       {/* TODO: Add button to go straight to recording, needs to know title and progress */}

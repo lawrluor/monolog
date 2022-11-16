@@ -30,7 +30,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
         >
           <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
           <Text>
-            {'\n'}{name} --- # of times completed: {currentPathway.progress[0]}
+            {name} --- # of times completed: {currentPathway.progress[0]}
           </Text>
           <Text>
             {currentPathway.long_desc}
