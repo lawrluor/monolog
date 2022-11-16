@@ -94,7 +94,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       // Clean up and reset state
       navigateToRating();
     }
-  }, [finalTranscript, videoStorePath]);
+  }, [finalTranscript, videoStorePath, recordingFinished]);
 
   const toggleCameraOn = () => {
     setIsCameraOn(!isCameraOn);
@@ -138,7 +138,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   const startRecording = async () => {
     try {
-      if (cameraRef){
+      if (cameraRef) {
         setIsRecording(true);
 
         let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
@@ -197,6 +197,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     navigation.navigate('Rating', {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
+      isCameraOn: isCameraOn.toString()
     });
   }
 
@@ -268,19 +269,17 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const renderAudioRecordingScreen = () => {
     return (
       <AudioOverlay>
+        <View style={styles.captionContainer}>
+          <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+        </View>
         {isRecording
           ?
           <>
             <AudioBubbles shouldBegin={isRecording} />
-
-            <View style={styles.captionContainer}>
-              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
-            </View>
           </>
           :
           <Text>Press the button to begin recording your audio log.</Text>
         }
-
         <View style={styles.recordContainer}>
           {renderRecordIcon()}
         </View>
@@ -359,7 +358,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         {
           isCameraOn
           ?
-          <>            
+          <>
             <Camera
             style={styles.cameraContainer}
             type={type}
