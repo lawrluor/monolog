@@ -1,14 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, Alert, Text, KeyboardAvoidingView, Keyboard, Platform, Pressable } from 'react-native';
+import { StyleSheet, View, Text, KeyboardAvoidingView, Keyboard, Platform, Pressable } from 'react-native';
 
-import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { text, spacings, colors, icons, sizes } from '../styles';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import TextEntry from '../components/TextEntry';
-// import DropDown from '../components/DropDown';
+import DropDown from '../components/DropDown';
 
 import { validateGender, validatePronouns, validateEmail, validateName, validateAge, genderOptions, pronounOptions } from '../utils/onboardingHelpers';
 import UserContext from '../context/UserContext';
@@ -161,7 +160,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   const renderTextEntries = () => {
     if (screenNumber===1) {
       return (
-        <View style={styles.textEntriesContainer}>
+        <View style={styles.formContainer}>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="First Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)}/></View>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Last Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)}/></View>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" keyboardType='email-address' editable isTextBox returnKeyType="next" innerRef={textRefs[2]} textState={email} setTextState={setEmail}  onFinish={() => handleTextOnFinish(2)}/></View>
@@ -170,26 +169,9 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
       )
     } else {
       return (
-        <View style={styles.textEntriesContainer}>
-          <Text style={styles.pickerTitle}>Gender</Text>
-          <Picker
-            selectedValue={gender}
-            onValueChange={(itemValue):void => setGender(itemValue)}
-            style={styles.picker}
-            itemStyle={styles.pickerItem}
-          >
-            {genderOptions.map((gender, key) => <Picker.Item key={key} label={gender.label} value={gender.value} />)}
-          </Picker>
-
-          <Text style={styles.pickerTitle}>Pronouns</Text>
-          <Picker
-            selectedValue={pronouns}
-            onValueChange={(itemValue):void => setPronouns(itemValue)}
-            style={styles.picker}
-            itemStyle={styles.pickerItem}
-          >
-            {pronounOptions.map((pronoun, key) => <Picker.Item key={key} label={pronoun.label} value={pronoun.value}></Picker.Item>)}
-          </Picker>
+        <View style={styles.formContainer}>
+          <DropDown title={"Pronouns"} options={pronounOptions} selectedValue={pronouns} setSelectedValue={setPronouns}  />
+          <DropDown title={"Pronouns"} options={genderOptions} selectedValue={gender} setSelectedValue={setGender}  />
         </View>
       )  
     }
@@ -304,7 +286,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacings.LARGE
   },
-  textEntriesContainer: {
+  formContainer: {
     width: Math.min(sizes.SCREEN_WIDTH_66, 800),
   },
   title: {
@@ -360,19 +342,6 @@ export const styles = StyleSheet.create({
     width: "100%",
     aspectRatio: 1000 / 1,  // extremely narrow full width container, small/invisible height
     backgroundColor: colors.BACKGROUND,
-  },
-  pickerTitle: {
-    ...text.h4,
-  },
-  picker: {
-    height: 140,
-    marginTop: -20,
-  },
-  // Note: The highlight color on the selected item cannot be changed (easily) yet.
-  // Could have a flag on if item is selected, dynamically assign style as variable in the component
-  pickerItem: {
-    ...text.h4,
-    height: 140,
   },
 })
 
