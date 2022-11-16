@@ -9,7 +9,7 @@ import AudioOverlay from '../components/AudioOverlay';
 import AudioBubbles from '../components/AudioBubbles';
 
 type Props = {
-  showVideo: string
+  showVideo: boolean,
   videoUri: string,
   isPlaying: boolean,
   setIsPlaying: any,
@@ -132,16 +132,17 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
   // We render AudioOverlay if we should not show the video.
   const renderAudioOverlay = (showVideo: boolean) => {
     return (
-      showVideo === "false" ?
+      showVideo ?
+        <></>
+        :
         <View style={styles.audioOverlayContainer}>
            <AudioOverlay>
              <AudioBubbles shouldBegin={isPlaying} />
            </AudioOverlay>
          </View>
-        :
-        <></>
     )
   }
+
   return (
     <>
       <View style={[styles.container, { display: isLoading || !status.isLoaded ? 'none' : 'flex'}]}>

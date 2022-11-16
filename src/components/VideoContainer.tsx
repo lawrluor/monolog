@@ -4,7 +4,7 @@ import VideoPlayer from './VideoPlayer';
 import VideoOverlay from './VideoOverlay';
 
 type Props = {
-  showVideo: any,
+  showVideo: boolean,
   navigation: any,
   videoData: any
 }
