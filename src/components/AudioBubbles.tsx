@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Animated, Easing, Pressable, StyleSheet } from 'react-native';
+import Svg, { Defs, RadialGradient, Stop, Circle, Rect, Use } from "react-native-svg";
+
 
 import { dimensions } from '../styles';
 
 const MAX_BUBBLE_SIZE = 180;  // largest possible bubble
 const MIN_BUBBLE_SIZE = 90;  // smallest possible bubble
-const NUMBER_OF_BUBBLES = 11;  
-const PRESSABLE_COLOR = 'transparent';  // '#FFFFFF66'; 
-const COLOR = '#D4D4D444';  // 'D4D4D455'; grey-ish
+const NUMBER_OF_BUBBLES = 8;  
+const COLOR = 'transparent';  // 'D4D4D455'; grey-ish
 
 // An individual animated Audio Bubble, with its own individual display states
 const AudioBubble = ({ shouldBegin }: any) => {
@@ -106,13 +107,34 @@ const AudioBubble = ({ shouldBegin }: any) => {
     borderRadius: diameter / 2
   }
 
+  const SvgEllipse = () => {
+    return (
+      <Svg width="150" height="150">
+        <Defs>
+          <RadialGradient
+            id="grad"
+            gradientUnits="userSpaceOnUse"
+          >
+            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+            <Stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.1" />
+            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="1" />
+          </RadialGradient>
+        </Defs>
+        <Circle cx = "50%" cy = "50%" r = "50%" fill="url(#grad)" />
+      </Svg>
+    )
+  }
+
   return (
+    
     <View style={[styles.container, { display: isVisible ? 'flex' : 'none' }]}>
       <Animated.View style={[styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity, backgroundColor: COLOR } ]} >
         <Pressable 
-          style={ ({pressed}) => [styles.bubblePressable, bubbleSize, { backgroundColor: pressed ? PRESSABLE_COLOR : 'transparent' }] }
+          style={[styles.bubblePressable, bubbleSize]}
           hitSlop={5} 
         >
+          <SvgEllipse />
+          
         </Pressable>
       </Animated.View>
     </View>
@@ -146,7 +168,6 @@ const AudioBubbles = ({ shouldBegin }: any) => {
 const audioBubblesStyles = StyleSheet.create({
   container: {
     flex: 1, 
-    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -167,9 +188,8 @@ const styles = StyleSheet.create({
   // This overlaps each bubble to make the animation pressable.
   bubblePressable: {
     flex: 1, 
-    aspectRatio: 1,
-    borderColor: 'white',
-    borderWidth: 1
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   container: {
     flex: 1,
