@@ -5,27 +5,28 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { text, spacings, colors, icons, sizes } from '../styles';
 
+import { validateGender, validatePronouns, validateEmail, validateName, validateAge, genderOptions, pronounOptions } from '../utils/onboardingHelpers';
+
+import UserContext from '../context/UserContext';
+
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import TextEntry from '../components/TextEntry';
 import DropDown from '../components/DropDown';
-
-import { validateGender, validatePronouns, validateEmail, validateName, validateAge, genderOptions, pronounOptions } from '../utils/onboardingHelpers';
-import UserContext from '../context/UserContext';
 import SignInButton from '../components/SignInButton';
 
 const LAST_SCREEN = 2;  // 2 screens in total for onboarding process
 
-const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
+const OnBoarding1 = (): JSX.Element => {
   const { setUser } = React.useContext(UserContext);
 
-  const textRefs = [textRef0, textRef1, textRef2, textRef3, textRef4, textRef5] = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()];
+  const textRefs = [textRef0, textRef1, textRef2, textRef3] = [React.createRef(), React.createRef(), React.createRef(), React.createRef()];
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
   const [gender, setGender] = React.useState("");
   const [pronouns, setPronouns] = React.useState("");
   const [age, setAge] = React.useState("");
-  const [validationError, setValidationError] = React.useState<string>("");
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
   const [screenNumber, setScreenNumber] = React.useState<number>(1);  // start at 1 index
   const stateSetters = [setFirstName, setLastName, setEmail, setGender, setPronouns, setAge];
 
@@ -37,30 +38,31 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
     }
   }, [screenNumber]);
 
-  // NOTE: because we allow skipping completely, 
-  // only validate a given text field if the user has entered info already into that field
+  // NOTE: because we allow skipping the forms completely, 
+    // only validate a given field if the user has entered info already into that field.
+    // setErrorMessage() will let us conditionally render error messages via renderErrorMessage()
   // HOWEVER, if user presses "Skip for now", it skips all this. See handleFormSkip()
     // Case 1: User enters no information across all text fields. Returns: true
     // Case 2: User enters improperly formatted email. Returns: false
     // Case 3: User enters properly formatted email, leaving other fields blank. Returns: true
   const validateData = (): boolean => {
     if (email && !validateEmail(email)) {
-      setValidationError("Email is not formatted properly."); 
+      setErrorMessage("Email is not formatted properly."); 
       return false;
     } else if (firstName && !validateName(firstName)) {
-      setValidationError("First name is not formatted properly.");
+      setErrorMessage("First name is not formatted properly.");
       return false;
     } else if (lastName && !validateName(lastName)) {
-      setValidationError("Last name is not formatted properly.");
+      setErrorMessage("Last name is not formatted properly.");
       return false;
     } else if (gender && !validateGender(gender)) {
-      setValidationError("Error selecting gender.");
+      setErrorMessage("Error selecting gender.");
       return false;
     } else if (pronouns && !validatePronouns(pronouns)) {
-      setValidationError("Error selecting pronouns.");
+      setErrorMessage("Error selecting pronouns.");
       return false;
     } else if (age && !validateAge(age)) {
-      setValidationError("Error selecting age.");
+      setErrorMessage("Error selecting age.");
       return false;
     } else {
       // if passes all validation checks, return true
@@ -85,7 +87,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   }
 
   const moveToPreviousOnboardingScreen = () => {
-    setValidationError("");
+    setErrorMessage("");
     if (screenNumber > 1) setScreenNumber(screenNumber - 1);
   }
 
@@ -96,7 +98,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   }
 
   const renderNextOnboardingScreen = () => {
-    setValidationError("");
+    setErrorMessage("");
     if (screenNumber < LAST_SCREEN) {
       setScreenNumber(screenNumber + 1);
     } else {
@@ -118,24 +120,25 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
       'email': email,
       'gender': gender,
       'pronouns': pronouns,
-      'age': age.toString()
+      'age': age.toString(),
+      'signupDateTime': Date.now()
     };
 
-    console.log("finalUserData", finalUserData);    
+    console.log(finalUserData);
     setUser(finalUserData);  // Set in Context, which also then saves to local storage
   }
 
   // renders validation error if any exists
-  const renderValidationError = (): JSX.Element | null => {
-    if (validationError) {
-      return (
+  const renderErrorMessage = (): JSX.Element | null => {
+    return (
+        errorMessage 
+        ? 
         <View style={{ marginVertical: spacings.MEDIUM }}>
-          <Text style={[text.h4, { color: colors.ERROR, textAlign: 'center'}]}>{validationError}</Text>
+          <Text style={[text.h4, { color: colors.ERROR, textAlign: 'center'}]}>{errorMessage}</Text>
         </View>
-      )
-    } else {
-      return null
-    }
+        :
+        null
+    )
   }
 
   // Handles what happens when a TextInput is finished editing.
@@ -160,7 +163,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
   const renderTextEntries = () => {
     if (screenNumber===1) {
       return (
-        <View style={styles.formContainer}>
+        <View style={styles.formFieldsContainer}>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="First Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)}/></View>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Last Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)}/></View>
           <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" keyboardType='email-address' editable isTextBox returnKeyType="next" innerRef={textRefs[2]} textState={email} setTextState={setEmail}  onFinish={() => handleTextOnFinish(2)}/></View>
@@ -169,9 +172,9 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
       )
     } else {
       return (
-        <View style={styles.formContainer}>
+        <View style={styles.formFieldsContainer}>
+          <DropDown title={"Gender"} options={genderOptions} selectedValue={gender} setSelectedValue={setGender}  />
           <DropDown title={"Pronouns"} options={pronounOptions} selectedValue={pronouns} setSelectedValue={setPronouns}  />
-          <DropDown title={"Pronouns"} options={genderOptions} selectedValue={gender} setSelectedValue={setGender}  />
         </View>
       )  
     }
@@ -217,7 +220,7 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
             <Text style={styles.linkText}>Skip For Now</Text>
           </Pressable>
           
-          {renderValidationError()}
+          {renderErrorMessage()}
         </View>
       </View>
     )
@@ -286,7 +289,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacings.LARGE
   },
-  formContainer: {
+  formFieldsContainer: {
     width: Math.min(sizes.SCREEN_WIDTH_66, 800),
   },
   title: {
