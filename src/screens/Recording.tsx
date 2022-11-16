@@ -12,7 +12,7 @@ import UserContext from '../context/UserContext';
 import { checkRecordingPermissions } from '../utils/permissions';
 import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
 
-import { text, containers, icons, spacings, dimensions } from '../styles';
+import { text, containers, colors, icons, spacings, dimensions } from '../styles';
 
 import PulseAnimation from '../components/PulseAnimation';
 import GoBack from '../components/GoBack';
@@ -21,6 +21,7 @@ import CustomIcon from '../components/CustomIcon';
 import { FullPageSpinner } from '../components/Spinner';
 import AudioOverlay from '../components/AudioOverlay';
 import AudioBubbles from '../components/AudioBubbles';
+import SignInButton from '../components/SignInButton';
 
 const MAX_DURATION = 600;  // seconds
 
@@ -268,7 +269,8 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const renderAudioRecordingScreen = () => {
     return (
       <AudioOverlay>
-        {isRecording
+        {
+          isRecording
           ?
           <>
             <AudioBubbles shouldBegin={isRecording} />
@@ -278,7 +280,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             </View>
           </>
           :
-          <Text>Press the button to begin recording your audio log.</Text>
+          <SignInButton text={"Begin Recording"} onPress={startRecording} background={colors.BACKGROUND}></SignInButton>
         }
 
         <View style={styles.recordContainer}>
