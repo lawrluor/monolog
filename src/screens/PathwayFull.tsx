@@ -49,27 +49,6 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   );
 }
 
-{/* <SignInButton background={colors.HIGHLIGHT}
-              onPress={() => {
-                let currentObj = pathwaysMap.get(name);
-                console.log(currentObj.image)
-              }}
-              >
-              <Text style={text.h4}> CONSOLE LOG </Text>
-            </SignInButton> */}
-
-
-
-
-
-
-
-
-
-
-
-
-
 const styles = StyleSheet.create({
   // Doesn't use the default container, as that adds a bottom block
   container: {
