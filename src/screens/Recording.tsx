@@ -197,7 +197,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     navigation.navigate('Rating', {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
-      isCameraOn: isCameraOn.toString()
+      isCameraOn: isCameraOn,
     });
   }
 

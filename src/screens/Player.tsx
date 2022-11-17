@@ -3,7 +3,7 @@ import React from 'react';
 import VideoContainer from '../components/VideoContainer';
 
 type Props = {
-  showVideo: any,
+  showVideo: boolean,
   navigation: any,
   route: any
 }
