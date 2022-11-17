@@ -54,7 +54,7 @@ export const createVideoDirectory = async () => {
   try {
     let directoryAlreadyExists = await checkVideoDirectory();
     // No need to create directory, already exists, so return early
-    if (directoryAlreadyExists) return Promise.resolve(true);
+    if (directoryAlreadyExists) return true;
 
     FileSystem.makeDirectoryAsync(VIDEO_DIRECTORY)
       .then(() => { return Promise.resolve(true) })
@@ -133,11 +133,11 @@ export const checkFileExists = async (filename: string) => {
       .then(({ exists, _ }) => {
         return Promise.resolve(exists);
       }).catch((err: any) => {
-        console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${filename}):`, err);
+        console.log(`[ERROR] localStorageUtils:checkFileExists(${filename}):`, err);
         return Promise.reject(false);
       });
   } catch (err: any) {
-    console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${filename}):`, err);
+    console.log(`[ERROR] localStorageUtils:checkFileExists(${filename}):`, err);
     return Promise.reject(false);
   }
 }
@@ -145,7 +145,7 @@ export const checkFileExists = async (filename: string) => {
 export const createDirectory = async (directory: string) => {
   try {
     let directoryExists = await checkFileExists(directory);
-    if (directoryExists) return Promise.resolve(true);
+    if (directoryExists) return true;
 
     return await FileSystem.makeDirectoryAsync(directory)
       .then(() => { return Promise.resolve(true) })

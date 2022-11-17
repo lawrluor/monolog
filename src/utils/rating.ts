@@ -23,7 +23,7 @@ export const createRatingFromFile = async (filename:string):
       filename: filename,
       emoji: rating.substring(0,2),
       index: rating[2],
-      isCameraOn: "true"
+      isCameraOn: "true"  // default value for legacy ratings.
     };
     return new Rating(ratingJson);
   }
@@ -61,6 +61,7 @@ class Rating {
    //   isCameraOn: "{IS_CAMERA_ON}"
    // }
    constructor(ratingJson:any) {
+     // filename can be empty if this Rating was constructed from a file.
      if ("filename" in ratingJson) {
        this.filename = ratingJson.filename;
      } else {
