@@ -32,9 +32,3 @@ export const removePunctuation = (s: string): string => {
   let finalString = punctuationless.replace(/\s{2,}/g," ");  // remove spaces from deletions
   return finalString
 } 
-
-// Adapted from https://stackoverflow.com/a/9204568
-export const validateEmail = (email: string) => {
-  let re = /\S+@\S+\.\S+/;
-  return re.test(email);
-}
