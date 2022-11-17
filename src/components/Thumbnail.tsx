@@ -13,7 +13,8 @@ const Thumbnail = ({ navigation, video }: Props): JSX.Element => {
   const navigateToPlayer = () => {
     navigation.navigate('Player', {
       video: video,
-      navigation: navigation
+      navigation: navigation,
+      showVideo: "true"  // TODO(ryanluo): update this to read from storage.
     });
   }
 
