@@ -4,7 +4,6 @@ import VideoPlayer from './VideoPlayer';
 import VideoOverlay from './VideoOverlay';
 
 type Props = {
-  showVideo: boolean,
   navigation: any,
   videoData: any
 }
@@ -12,7 +11,7 @@ type Props = {
 // This container holds the VideoPlayer, which is the video itself,
 // and the VideoOverlay, which holds additional features and display for the video.
 // The VideoOverlay also holds the TranscriptEditor, which manages other state.
-const VideoContainer = ({ videoData, navigation, showVideo }: Props): JSX.Element => {
+const VideoContainer = ({ videoData, navigation }: Props): JSX.Element => {
   // isPlaying: this state is passed to VideoPlayer and is then updated by it,
   // so we can extract the state of video play WITHOUT needing the entire video playback object
 
@@ -23,7 +22,7 @@ const VideoContainer = ({ videoData, navigation, showVideo }: Props): JSX.Elemen
   return (
     <>
       <VideoPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} videoUri={videoData.uri}
-          showVideo={showVideo} />
+          showVideo={videoData.show_video} />
       <VideoOverlay videoData={videoData} isPlaying={isPlaying} navigation={navigation}/>
     </>
   );

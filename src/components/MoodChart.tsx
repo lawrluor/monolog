@@ -9,6 +9,8 @@ import Divider from './Divider';
 import VistaSummaryText from './VistaSummaryText';
 
 import VideosContext from '../context/VideosContext';
+import { generateRatingUri } from '../utils/localStorageUtils';
+import { createRatingFromFile } from '../utils/rating';
 
 import { text, spacings, colors } from '../styles';
 
@@ -108,13 +110,11 @@ const MoodChart = ({ abridged, callback }: any) => {
        for (const timestamp of videoTimestamps) {
          // This is both the emoji file name and the timeestamp in seconds.
          let emojiFile = timestamp + ".txt";
-         FileSystem.readAsStringAsync(FileSystem.documentDirectory +
-            "rating/" + emojiFile)
-         .then((emojiValue) => {
-           updateMoodMap(parseInt(emojiValue[emojiValue.length-1]), emojiFile.slice(0,-4));
-         })
-         .catch(error => {
-           console.log("initializeMoodTracker:readAsStringAsync", error);
+         let ratingObject = createRatingFromFile(
+             generateRatingUri(emojiFile)).then((ratingObject) => {
+               updateMoodMap(ratingObject.index, timestamp);
+         }).catch(error => {
+           console.log("MoodChart:createRatingFromFile", error);
          });  // readAsStringAsync
         }
       })  // readDirectoryAsync
@@ -361,7 +361,7 @@ const MoodChart = ({ abridged, callback }: any) => {
           <Decorator/>
           <DashedLines/>
           <SolidLines/>
-        </LineChart> 
+        </LineChart>
 
         <View style={{ marginVertical: spacings.LARGE }}>
           <Divider color={colors.SECONDARY} widthPercentage={95} />
