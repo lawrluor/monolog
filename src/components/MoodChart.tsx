@@ -111,7 +111,8 @@ const MoodChart = ({ abridged, callback }: any) => {
          // This is both the emoji file name and the timeestamp in seconds.
          let emojiFile = timestamp + ".txt";
          let ratingObject = createRatingFromFile(
-             generateRatingUri(emojiFile)).then((ratingObject) => {
+             generateRatingUri(timestamp)).then((ratingObject) => {
+               console.log("pika", ratingObject);
                updateMoodMap(ratingObject.index, timestamp);
          }).catch(error => {
            console.log("MoodChart:createRatingFromFile", error);

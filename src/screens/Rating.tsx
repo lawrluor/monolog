@@ -56,7 +56,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
       console.log("pika:writingrating",
           emojis[selectedEmojiIndex], selectedEmojiIndex.toString(), isCameraOn);
       createRatingFromMetadata(
-          emojis[selectedEmojiIndex], selectedEmojiIndex.toString(), isCameraOn)
+          emojis[selectedEmojiIndex], selectedEmojiIndex, isCameraOn)
         .writeRatingToFile(generateRatingUri(fileBaseName));
 
       navigateToTranscript(emojis[selectedEmojiIndex]);
