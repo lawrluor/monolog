@@ -32,7 +32,7 @@ export const createRatingFromMetadata = (
     emoji:string, index:number, isCameraOn:boolean):Rating => {
   return new Rating({
       emoji: emoji,
-      index: JSON.stringify(index),
+      index: index.toString(),
       isCameraOn: JSON.stringify(isCameraOn)
   });
 }

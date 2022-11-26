@@ -109,8 +109,8 @@ const MoodChart = ({ abridged, callback }: any) => {
        videoTimestamps.reverse()
        for (const timestamp of videoTimestamps) {
          // This is both the emoji file name and the timeestamp in seconds.
-         createRatingFromFile(
-             generateRatingUri(timestamp)).then((rating) => {
+         createRatingFromFile(generateRatingUri(timestamp))
+             .then((rating) => {
                updateMoodMap(rating.index, timestamp);
          }).catch(error => {
            console.log("MoodChart:createRatingFromFile", error);
