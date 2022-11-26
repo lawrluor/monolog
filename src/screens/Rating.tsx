@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as FileSystem from 'expo-file-system';
 
 import { generateRatingUri } from '../utils/localStorageUtils';
+import { createRatingFromMetadata } from '../utils/rating.ts';
 
 import VideosContext from '../context/VideosContext';
 
@@ -51,9 +52,10 @@ const Rating = ({ route, navigation }): JSX.Element => {
     if (selectedEmojiIndex >= 0) {
       updateMoodMap(selectedEmojiIndex);
 
-      // to ratings/filename.txt, we write with format "${emoji}{index} i.e. "😍4"
-      // We will parse the rating file later as needed
-      FileSystem.writeAsStringAsync(generateRatingUri(fileBaseName), `${emojis[selectedEmojiIndex]}${selectedEmojiIndex.toString()}`);
+      // See utils/rating.ts for how Ratings are created and written.
+      createRatingFromMetadata(
+          emojis[selectedEmojiIndex], selectedEmojiIndex, isCameraOn)
+        .writeRatingToFile(generateRatingUri(fileBaseName));
 
       navigateToTranscript(emojis[selectedEmojiIndex]);
     } else {

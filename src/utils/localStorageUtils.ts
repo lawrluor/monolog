@@ -512,7 +512,9 @@ export const initVideoDataObject = async (filename: string) => {
     "thumbnail_uri": generateThumbnailUri(filename),
     "transcript_uri": transcriptUri,
     "transcript_content": transcriptContent,
-    "rating": rating
+    "rating": rating,
+    // isCameraOn means show video, defaults to true (see ratings.ts)
+    "show_video": ratingObject.isCameraOn
   }
 
   return videoData;

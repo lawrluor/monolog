@@ -3,7 +3,7 @@
 // You can construct from a filename by reading from local storage or by passing
 // in required values.
 // Attributes are accessed with the '.' operator.
-import { getRating, readFile } from '../utils/localStorageUtils';
+import { getRating, readFile, writeFile } from '../utils/localStorageUtils';
 
 // Tries to create a rating from a file.
 // Best effort to create backwards-compatible legacy rating object.
@@ -11,39 +11,33 @@ import { getRating, readFile } from '../utils/localStorageUtils';
 export const createRatingFromFile = async (filename:string):
     Promise<Rating> => {
   try {
-    return new Rating(JSON.parse(await readFile(filename)));
-  } catch (error) {
-    // Try creating from a legacy rating file.
-    let rating = await getRating(filename)
-    if (rating.length != 3) {
-      // rating file is malformed, exit.
-      return null;
+    let content = await readFile(filename);
+    if (content.length == 3) {
+      let rating = {
+        emoji: content.substring(0,2),
+        index: content[2],
+        isCameraOn: "true"  // default value for legacy ratings.
+      }
+      return new Rating(rating);
     }
-    let ratingJson = {
-      filename: filename,
-      emoji: rating.substring(0,2),
-      index: rating[2],
-      isCameraOn: "true"  // default value for legacy ratings.
-    };
-    return new Rating(ratingJson);
+    let rating = JSON.parse(content);
+    return new Rating(rating);
+  } catch {
+    return;
   }
 }
 
 // Create Rating from video metadata, can't fail.
-// We don't set filename because we didn't read from a file.
 export const createRatingFromMetadata = (
     emoji:string, index:number, isCameraOn:boolean):Rating => {
   return new Rating({
       emoji: emoji,
-      index: index,
-      isCameraOn: true
+      index: index.toString(),
+      isCameraOn: JSON.stringify(isCameraOn)
   });
 }
 
 class Rating {
-   // This Rating was parsed from this file stored at filename.
-   filename:string;
-
    // emoji is the emoji selected by a user.
    emoji:string;
 
@@ -61,12 +55,6 @@ class Rating {
    //   isCameraOn: "{IS_CAMERA_ON}"
    // }
    constructor(ratingJson:any) {
-     // filename can be empty if this Rating was constructed from a file.
-     if ("filename" in ratingJson) {
-       this.filename = ratingJson.filename;
-     } else {
-       this.filename = ""
-     }
      this.emoji = ratingJson.emoji;
      this.index = parseInt(ratingJson.index);
 
@@ -76,10 +64,13 @@ class Rating {
 
     public toString = () : string => {
       return JSON.stringify({
-        filename: this.filename,
         emoji: this.emoji,
         index: this.index,
         isCameraOn: this.isCameraOn
       });
+    }
+
+    public writeRatingToFile = async (filename:string) : boolean => {
+      return await writeFile(filename, this.toString());
     }
 }
