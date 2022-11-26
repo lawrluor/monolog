@@ -6,7 +6,7 @@ import { dimensions, spacings } from '../styles';
 // TODO: How to define navigation?
 type Props = {
   navigation: any,
-  video: any,
+  video: any
 }
 
 const Thumbnail = ({ navigation, video}: Props): JSX.Element => {
@@ -14,7 +14,6 @@ const Thumbnail = ({ navigation, video}: Props): JSX.Element => {
     navigation.navigate('Player', {
       video: video,
       navigation: navigation,
-      showVideo: video.show_video
     });
   }
 

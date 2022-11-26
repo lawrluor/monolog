@@ -53,8 +53,6 @@ const Rating = ({ route, navigation }): JSX.Element => {
       updateMoodMap(selectedEmojiIndex);
 
       // See utils/rating.ts for how Ratings are created and written.
-      console.log("pika:writingrating",
-          emojis[selectedEmojiIndex], selectedEmojiIndex.toString(), isCameraOn);
       createRatingFromMetadata(
           emojis[selectedEmojiIndex], selectedEmojiIndex, isCameraOn)
         .writeRatingToFile(generateRatingUri(fileBaseName));
