@@ -4,11 +4,10 @@ import { text, spacings, colors, containers } from '../styles';
 import { pathwaysMap } from '../utils/pathwaysData'
 import ProgressBar from './ProgressBar';
 import UserContext from '../context/UserContext';
-import SignInButton from './SignInButton';
-import { incrementUserProgress } from '../utils/updatePathwaysUser';
 
-const PathwayCard = ({ children, pathwayName, navigation}: any): JSX.Element => {
+const PathwayCard = ({ children, pathwayName}: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
+
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }

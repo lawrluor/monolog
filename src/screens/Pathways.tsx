@@ -10,6 +10,7 @@ import { NavigationHelpersContext, useNavigation } from '@react-navigation/nativ
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
 import { updateCurrentPathway } from '../utils/updatePathwaysUser';
+import GoForward from '../components/GoForward';
 
 const Pathways = ({ navigation }: any): JSX.Element => { 
 
@@ -44,15 +45,11 @@ const Pathways = ({ navigation }: any): JSX.Element => {
               pathwaysData.map((item, index) => {
                 return (
                   <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
+                    <GoForward callback={() => { navigateToFullPathway(item.name) }} />
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>
-                    <View style={styles.navigateButton }>
-                      <SignInButton background={colors.HIGHLIGHT}
-                        onPress={() => { navigateToFullPathway(item.name)}}
-                        >
-                        <Text style={text.h4}> Full Desc </Text>
-                      </SignInButton>
+                    <View style={ styles.navigateButton }>
                       <SignInButton background={colors.HIGHLIGHT}
                         onPress={() => navigateToPrompt(item.name)}
                         >
@@ -112,6 +109,10 @@ const styles = StyleSheet.create({
   },
   navigateButton: {
     alignSelf: 'center',
+  },
+  forwardArrow: {
+    top: spacings.HUGE,
+    right: 0,
   },
 });
 

@@ -1,17 +1,17 @@
 import React from 'react';
-import { ScrollView, View, Text, Image, Pressable, StyleSheet, Alert } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, Alert } from 'react-native';
 import { dimensions, text, spacings, icons, colors, debug } from '../styles';
 import SignInButton from '../components/SignInButton';
 import GoBack from '../components/GoBack';
-import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
+import { pathwaysMap } from '../utils/pathwaysData'
 import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
-import ProgressBar from '../components/ProgressBar';
 import { updateCurrentPathway } from '../utils/updatePathwaysUser';
+import ProgressMap from '../components/ProgressMap';
 
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const { pathwayName } = route.params;
   const currentPathway = pathwaysMap.get(pathwayName);
-  const progress = currentPathway.progress[1] / 10* 100;
+  const progress = currentPathway.progress[1] / 10* 100;  //TODO: Replace with dynamic user functions
 
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
@@ -54,8 +54,8 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
             {pathwayName} --- {currentPathway.progress[0]} stars
           </Text>
           <BodyText></BodyText>
-          <ProgressBar currentProgress={3} total={10}>
-          </ProgressBar>
+          {/* //TODO: Replace with user functions */}
+          <ProgressMap currentProgress={2} total={10}/>  
         </ScrollView>
         <View style={styles.recordButton}>
           <SignInButton background={colors.HIGHLIGHT}
@@ -70,24 +70,13 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
 }
 
 const styles = StyleSheet.create({
-  progressBarFill: {
-    backgroundColor: '#8BED4F',
+  progressMap: {
+    margin: spacings.HUGE,
   },
-  progressBarContainer: {
-    flex: 1,
-    flexDirection: "column", //column direction
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: '10%',
-    backgroundColor: 'transparent',
-    padding: 8,
-  },
-  progressBar: {
-    height: 5,
-    flexDirection: 'row',
-    width: '100%',
-    backgroundColor: 'lightgrey',
-    borderColor: '#000',
+  mapDot: {
+    ...icons.SMALL,
+    color: colors.ERROR,
+    margin: spacings.HUGE,
   },
   // Doesn't use the default container, as that adds a bottom block
   container: {
