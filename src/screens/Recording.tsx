@@ -176,9 +176,9 @@ export const Recording = ({ route, navigation }: any): JSX.Element => {
           }
         )
       }
-     } catch(err){
+    } catch(err){
         console.log(err);
-     }
+    }
   };
 
   // Currently unused, as opting for no direct "return to gallery" button
@@ -186,13 +186,10 @@ export const Recording = ({ route, navigation }: any): JSX.Element => {
     navigation.navigate('Gallery');
   }
 
-  const { pathway } = route.params;
-
   const navigateToRating = () => {
-    navigation.navigate('Rating', {
+      navigation.navigate('Rating', {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
-      pathway: pathway,
     });
   }
 

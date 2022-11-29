@@ -94,14 +94,14 @@ pathwaysMap.set('Anxiety', {
   })
 
 export const pathwaysPrompts = {
-  "Procrastination": {
-    1: "Why do you procrastinate?",
-    2: "Just do it already",
-    3: "You're useless",
-    4: "Bruh",
-  },
-  "Depression": {
-    1: "Did you try going on a walk?",
-    2: "You just need to drink some water"
-  },
+  "Procrastination": [
+    "Why do you procrastinate?",
+    "Just do it already",
+    "You're useless",
+    "Bruh",
+  ],
+  "Anxiety": [
+    "Did you try going on a walk?",
+    "You just need to drink some water"
+  ],
 }

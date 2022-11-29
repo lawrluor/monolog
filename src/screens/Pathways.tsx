@@ -9,21 +9,19 @@ import PathwayFull from './PathwayFull';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
+import { updateCurrentPathway } from '../utils/updatePathwaysUser';
 
 const Pathways = ({ navigation }: any): JSX.Element => { 
 
-  const navigateToFullPathway = (name: string) => {
-    navigation.push('PathwayFull', { name: name })
+  const navigateToFullPathway = (pathwayName: string) => {
+    navigation.push('PathwayFull', { pathwayName: pathwayName })
   }
 
-  const navigateToPrompt = (name: string) => {
-    const level = pathwaysMap.get(name).progress[1]
-    navigation.push('PathwaysPrompt', { pathway:name, level: level});
-  }
-
-  // TODO: add prompt params for recording prompt. navagate to prompt page
-  const navigateToRecord = (name: string) => {
-    navigation.navigate('PathwaysPrompt');
+  const navigateToPrompt = async (pathwayName: string) => {
+    await updateCurrentPathway(pathwayName);
+    console.log('PATHWAY NAME', pathwayName)
+    const level = pathwaysMap.get(pathwayName).progress[1]
+    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: level});
   }
 
   return (
@@ -45,7 +43,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
             {
               pathwaysData.map((item, index) => {
                 return (
-                  <PathwayCard name={item.name} key={`${item.name}_short`}>
+                  <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>

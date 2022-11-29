@@ -1,26 +1,30 @@
 import React from 'react';
 import { ScrollView, View, Text, Image, Pressable, StyleSheet, Alert } from 'react-native';
 import { text, spacings, colors, containers } from '../styles';
-import SignInButton from './SignInButton';
 import { pathwaysMap } from '../utils/pathwaysData'
-import { comingSoonAlert } from '../utils/customAlerts';
 import ProgressBar from './ProgressBar';
+import UserContext from '../context/UserContext';
+import SignInButton from './SignInButton';
+import { incrementUserProgress } from '../utils/updatePathwaysUser';
 
-const PathwayCard = ({ children, name, navigation}: any): JSX.Element => {
-
+const PathwayCard = ({ children, pathwayName, navigation}: any): JSX.Element => {
+  const { user, setUser } = React.useContext(UserContext);
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
 
-  const currentPathway = pathwaysMap.get(name);
-
+  const currentPathway = pathwaysMap.get(pathwayName);
+  let currentLevel = 0
+  if (user[pathwayName]) {
+    currentLevel = user[pathwayName]['currentLevel']
+  }
   const imageHeader = Image.resolveAssetSource(currentPathway.image).uri
   return (
     <View style={styles.featureContainer}>
       <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
-      <Text style={styles.featureTitle}> {name} </Text> 
+      <Text style={styles.featureTitle}> {pathwayName} </Text> 
       <View style={styles.progressBar}>
-        <ProgressBar  currentProgress={3} total={10}></ProgressBar>
+        <ProgressBar  currentProgress={currentLevel} total={10}></ProgressBar>
       </View>
       {children}
       

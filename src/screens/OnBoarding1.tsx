@@ -104,7 +104,9 @@ const OnBoarding1 = ({ route, navigation }: any): JSX.Element => {
       'email': email,
       'gender': gender,
       'pronouns': pronouns,
-      'age': age.toString()
+      'age': age.toString(),
+      'pathways': {},
+      'currentPathway': '',
     };
 
     console.log("onb", finalUserData);

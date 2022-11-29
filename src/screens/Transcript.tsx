@@ -7,17 +7,19 @@ import { Audio } from 'expo-av';
 import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from '../utils/localStorageUtils';
 
 import { FullPageSpinner } from '../components/Spinner';
+import { incrementUserProgress, updateCurrentPathway } from '../utils/updatePathwaysUser';
+import UserContext from '../context/UserContext';
 
 const Transcript = ({ route, navigation }: any): JSX.Element => {
-  const { finalResult, selection, fileBaseName, pathway } = route.params;
+  const { finalResult, selection, fileBaseName } = route.params;
   const { toggleVideosRefresh } = React.useContext(VideosContext);
-
   // finalResultString contains the full transcript of the video
   // Joins the array of strings into one long string.
   const finalResultString: string = finalResult.join(' ');
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [videoData, setVideoData] = React.useState(null);
+  const { user, setUser } = React.useContext(UserContext);
 
   // Doesn't contain our final data, yet but shares the same name when passed to VideoContainer 
   // For fully processed logs, videoData will include: transcript_uri, thumbnail_uri, etc.
@@ -49,8 +51,9 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
 
   const navigateToPlayer = () => {
     // increment their score for that pathway if there is one
-    if (pathway) {
-      //user.update score for that path
+    console.log("USER IN TRANSCRIPT", user)
+    if (user.currentPathway !== "") {
+      incrementUserProgress(user.currentPathway)
     }
     navigation.navigate('Player', {
       video: videoData,

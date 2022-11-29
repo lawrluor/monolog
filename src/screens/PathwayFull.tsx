@@ -3,23 +3,23 @@ import { ScrollView, View, Text, Image, Pressable, StyleSheet, Alert } from 'rea
 import { dimensions, text, spacings, icons, colors, debug } from '../styles';
 import SignInButton from '../components/SignInButton';
 import GoBack from '../components/GoBack';
-import { LinearGradient } from 'expo-linear-gradient';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
 import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
 import ProgressBar from '../components/ProgressBar';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import { updateCurrentPathway } from '../utils/updatePathwaysUser';
 
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
-  const { name } = route.params;
-  const currentPathway = pathwaysMap.get(name);
+  const { pathwayName } = route.params;
+  const currentPathway = pathwaysMap.get(pathwayName);
   const progress = currentPathway.progress[1] / 10* 100;
 
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
-  const navigateToPrompt = (name: string) => {
-    const level = pathwaysMap.get(name).progress[1]
-    navigation.push('PathwaysPrompt', { pathway:name, level: level});
+  const navigateToPrompt = (pathwayName: string) => {
+    updateCurrentPathway(pathwayName);
+    const level = pathwaysMap.get(pathwayName).progress[1] //TODO: Replace with user functions
+    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: level});
   }
   const BodyText = () => {
     const text = currentPathway.long_desc
@@ -51,7 +51,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
         >
           <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
           <Text style={styles.title}>
-            {name} --- {currentPathway.progress[0]} stars
+            {pathwayName} --- {currentPathway.progress[0]} stars
           </Text>
           <BodyText></BodyText>
           <ProgressBar currentProgress={3} total={10}>
@@ -59,7 +59,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
         </ScrollView>
         <View style={styles.recordButton}>
           <SignInButton background={colors.HIGHLIGHT}
-            onPress={() => { navigateToPrompt(name)}}
+            onPress={() => { navigateToPrompt(pathwayName)}}
             >
             <Text style={text.h4}> RECORDING </Text>
           </SignInButton>

@@ -6,18 +6,27 @@ import GoBack from '../components/GoBack';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
 import { pathwaysPrompts } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
+import { removeCurrentPathway, updateCurrentPathway } from '../utils/updatePathwaysUser';
+import { readUserData } from '../utils/localStorageUtils';
 
 const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
   const { pathway, level } = route.params
-  const prompt = pathwaysPrompts[pathway][level]
-
-  const navigateToRecording = (name: string) => {
-    navigation.navigate('Recording', { pathway:name });
+  let pathwaysPromptsData = JSON.stringify(pathwaysPrompts)
+  pathwaysPromptsData = JSON.parse(pathwaysPromptsData)
+  console.log("Pathway ", pathway)
+  const prompt = pathwaysPromptsData[pathway][level]
+  const navigateToRecording = (pathwayName: string) => {
+    navigation.navigate('Recording', { pathway:pathwayName });
   }
-
+  const backAndReset = async () => {
+    // reset users current pathway
+    await removeCurrentPathway();
+    console.log(await readUserData())
+    navigation.goBack()
+  }
   return (
     <>
-      <GoBack />
+      <GoBack callback={() => backAndReset()}/>
       
       <View style={styles.background}>
         <Text style={styles.promptNum}>Prompt #{level}</Text>
