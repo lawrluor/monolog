@@ -5,7 +5,8 @@ import { pathwaysMap } from '../utils/pathwaysData'
 import ProgressBar from './ProgressBar';
 import UserContext from '../context/UserContext';
 
-const PathwayCard = ({ children, pathwayName}: any): JSX.Element => {
+const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
+  const MAX_LEVELS = 10
   const { user, setUser } = React.useContext(UserContext);
 
   const getImageURI = (img) => {
@@ -13,21 +14,19 @@ const PathwayCard = ({ children, pathwayName}: any): JSX.Element => {
   }
 
   const currentPathway = pathwaysMap.get(pathwayName);
-  let currentLevel = 0
-  if (user[pathwayName]) {
-    currentLevel = user[pathwayName]['currentLevel']
-  }
+  const currentLevel = user['pathways'][pathwayName]? user['pathways'][pathwayName]['currentLevel'] : 0
+  // if (user['pathways'][pathwayName]) {
+  //   currentLevel = user[pathwayName]['currentLevel']
+  // }
   const imageHeader = Image.resolveAssetSource(currentPathway.image).uri
   return (
     <View style={styles.featureContainer}>
       <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
       <Text style={styles.featureTitle}> {pathwayName} </Text> 
       <View style={styles.progressBar}>
-        <ProgressBar  currentProgress={currentLevel} total={10}></ProgressBar>
+        <ProgressBar  currentProgress={currentLevel} total={MAX_LEVELS}></ProgressBar>
       </View>
       {children}
-      
-      {/* TODO: Add button to go straight to recording, needs to know title and progress */}
     </View>
   )
 }

@@ -50,7 +50,7 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
   }, [])
 
   const navigateToPlayer = () => {
-    // increment their score for that pathway if there is one
+    // TODO: increment their score for that pathway if there is one
     console.log("USER IN TRANSCRIPT", user)
     if (user.currentPathway !== "") {
       incrementUserProgress(user.currentPathway)

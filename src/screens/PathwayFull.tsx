@@ -7,11 +7,14 @@ import { pathwaysMap } from '../utils/pathwaysData'
 import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
 import { updateCurrentPathway } from '../utils/updatePathwaysUser';
 import ProgressMap from '../components/ProgressMap';
+import UserContext from '../context/UserContext';
 
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const { pathwayName } = route.params;
+  const { user, setUser } = React.useContext(UserContext);
+  const MAX_LEVELS = 10
+  const userCurrentLevel = user['pathways'][pathwayName]? user['pathways'][pathwayName]['currentLevel'] : 1
   const currentPathway = pathwaysMap.get(pathwayName);
-  const progress = currentPathway.progress[1] / 10* 100;  //TODO: Replace with dynamic user functions
 
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
@@ -54,14 +57,13 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
             {pathwayName} --- {currentPathway.progress[0]} stars
           </Text>
           <BodyText></BodyText>
-          {/* //TODO: Replace with user functions */}
-          <ProgressMap currentProgress={2} total={10}/>  
+          <ProgressMap currentProgress={userCurrentLevel} total={MAX_LEVELS}/>  
         </ScrollView>
         <View style={styles.recordButton}>
           <SignInButton background={colors.HIGHLIGHT}
             onPress={() => { navigateToPrompt(pathwayName)}}
             >
-            <Text style={text.h4}> RECORDING </Text>
+            <Text style={text.h4}> Record next pathway </Text>
           </SignInButton>
         </View>
       </SafeAreaBottom>
@@ -70,14 +72,6 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
 }
 
 const styles = StyleSheet.create({
-  progressMap: {
-    margin: spacings.HUGE,
-  },
-  mapDot: {
-    ...icons.SMALL,
-    color: colors.ERROR,
-    margin: spacings.HUGE,
-  },
   // Doesn't use the default container, as that adds a bottom block
   container: {
     flex: 1,
@@ -130,13 +124,14 @@ const styles = StyleSheet.create({
   },
   recordButton: {
     position: 'absolute',
-    bottom: '0%',
-    left: '0%',
+    bottom: spacings.HUGE,
+    left: '10%',
     backgroundColor: 'transparent',
-    paddingTop: '5%',
-    paddingBottom: '5%',
-    paddingLeft: '16%',
-    paddingRight: '16%',
+    // paddingTop: '5%',
+    // paddingBottom: '5%',
+    // paddingLeft: '16%',
+    // paddingRight: '16%',
+    margin:spacings.HUGE,
   }
 });
 
