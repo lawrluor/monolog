@@ -14,7 +14,7 @@ const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
   }
 
   const currentPathway = pathwaysMap.get(pathwayName);
-  const currentLevel = user['pathways'][pathwayName]? user['pathways'][pathwayName]['currentLevel'] : 0
+  const currentLevel = user['pathways'][pathwayName]? user['pathways'][pathwayName]['currentLevel']-1 : 0
   // if (user['pathways'][pathwayName]) {
   //   currentLevel = user[pathwayName]['currentLevel']
   // }
@@ -34,6 +34,7 @@ const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
 const styles = StyleSheet.create({
   featureTitle: {
     ...text.h3,
+    margin: spacings.MEDIUM,
     marginBottom: spacings.SMALL,
     color: colors.PRIMARY
   },
@@ -59,9 +60,9 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     position: 'absolute',
-    right: 0,
-    top: 200,
-    width: '60%'
+    right: 10,
+    top: 210,
+    width: '55%'
   }
 });
 

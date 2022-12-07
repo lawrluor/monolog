@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     // display: 'flex',
     // flexDirection: 'column',
     position: 'relative',
-    top: 15,
+    top: 13,
   },
   progressBarFill: {
     backgroundColor: '#8BED4F',

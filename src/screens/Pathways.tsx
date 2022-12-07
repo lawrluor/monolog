@@ -73,8 +73,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   featureDescription: {
-    marginBottom: spacings.SMALL,
-    marginLeft: spacings.SMALL,
+    margin: spacings.HUGE,
+    marginTop: spacings.SMALL,
+    color: colors.SECONDARY,
   },
   headerContainer: {
     flexDirection: 'row',
