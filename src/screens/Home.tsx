@@ -21,6 +21,7 @@ import UserContext from '../context/UserContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
 import { readUserData } from '../utils/localStorageUtils';
+import SignInButton from '../components/SignInButton';
 
 const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
@@ -45,6 +46,10 @@ const Home = ({ navigation }: any): JSX.Element => {
     comingSoonAlert(() => {
       console.log("uploading picture...");
     });
+  }
+
+  const navigateToPathways = async () => {
+    navigation.navigate('Pathways');
   }
 
   const renderVistasSummaryHeader = (videosCount: number) => {
@@ -150,6 +155,7 @@ const Home = ({ navigation }: any): JSX.Element => {
             contentContainerStyle={styles.scrollContentContainerStyle}
             showsVerticalScrollIndicator={false}
           >
+
             {renderVistasSummaryHeader(videosCount)}
             {alertVisible && (videosCount < VIDEOS_THRESHOLD)
               ? <NewUserMessage navigateCallback={navigateToRecord} />
@@ -164,6 +170,14 @@ const Home = ({ navigation }: any): JSX.Element => {
                 <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
               </View>
             </Pressable>
+            <View style={[styles.featureContainer]}>
+              <SignInButton //Only for first draft
+                background={colors.HIGHLIGHT}
+                onPress={() => { navigateToPathways() }}
+              >
+                <Text>PATHWAYS</Text>
+              </SignInButton>
+            </View>
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>

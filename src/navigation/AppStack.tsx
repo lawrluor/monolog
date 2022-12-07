@@ -4,7 +4,7 @@ import {useNavigation, useRoute, getFocusedRouteNameFromRoute} from '@react-navi
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Settings, Feedback } from '../screens';
+import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Settings, Feedback, Pathways, PathwayFull } from '../screens';
 
 import CustomIcon from '../components/CustomIcon';
 
@@ -18,6 +18,8 @@ type StackNavigatorParams = {
   "Player": undefined,
   "Rating": undefined,
   "Transcript": undefined,
+  "Pathways": undefined,
+  "PathwayFull": undefined,
   "TabNavigator": undefined
 }
 
@@ -27,6 +29,7 @@ type TabNavigatorParams = {
   "Home": undefined,
   "Vistas": undefined,
   "Settings": undefined,
+  "Pathways": undefined,
   "Feedback": undefined
 }
 
@@ -150,6 +153,8 @@ const AppNavigator = ({ setUser }): JSX.Element => {
       </Stack.Group>
       <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
       <Stack.Screen name="Transcript" component={Transcript} options={{ headerShown: false }} />
+      <Stack.Screen name="Pathways" component={Pathways} options={{ headerShown: false }} />
+      <Stack.Screen name="PathwayFull" component={PathwayFull} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }
