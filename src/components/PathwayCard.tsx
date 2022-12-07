@@ -12,9 +12,10 @@ const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
+  console.log("USER STATE:", user)
 
   const currentPathway = pathwaysMap.get(pathwayName);
-  const currentLevel = user['pathways'][pathwayName]? user['pathways'][pathwayName]['currentLevel']-1 : 0
+  const currentLevel = (pathwayName in user['pathways'])? user['pathways'][pathwayName]['currentLevel']-1 : 0
   // if (user['pathways'][pathwayName]) {
   //   currentLevel = user[pathwayName]['currentLevel']
   // }

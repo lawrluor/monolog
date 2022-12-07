@@ -6,7 +6,7 @@ PODS:
   - EXAV (9.2.3):
     - ExpoModulesCore
     - UMCore
-  - EXCamera (11.3.1):
+  - EXCamera (11.2.2):
     - ExpoModulesCore
     - UMCore
   - EXConstants (11.0.2):
@@ -303,11 +303,9 @@ PODS:
     - React-jsi (= 0.63.4)
   - RNCMaskedView (0.1.10):
     - React
-  - RNFS (2.20.0):
-    - React-Core
   - RNGestureHandler (1.10.3):
     - React-Core
-  - RNReanimated (2.12.0):
+  - RNReanimated (2.2.4):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -315,6 +313,7 @@ PODS:
     - glog
     - RCTRequired
     - RCTTypeSafety
+    - React
     - React-callinvoker
     - React-Core
     - React-Core/DevSupport
@@ -332,13 +331,14 @@ PODS:
     - React-RCTNetwork
     - React-RCTSettings
     - React-RCTText
+    - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
   - RNScreens (3.4.0):
     - React-Core
     - React-RCTImage
-  - RNSVG (12.4.4):
-    - React-Core
+  - RNSVG (12.1.1):
+    - React
   - UMAppLoader (2.2.0)
   - UMCore (7.1.2)
   - UMReactNativeAdapter (6.3.9):
@@ -397,7 +397,6 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
-  - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -503,8 +502,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
-  RNFS:
-    :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
@@ -529,7 +526,7 @@ SPEC CHECKSUMS:
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
   EXAV: 67bcc1d0afeb1fab854b206c84b9f2afbd61d0cd
-  EXCamera: f8e616b0154eb8981b95dfe72792c996f80999a4
+  EXCamera: 042b334f6ee9b918855fe4c4f155d4c372300a5f
   EXConstants: 4cb52b6d8f636c767104a44bf7db3873e9c01a6f
   EXErrorRecovery: 404d827bc7d42f306c062d58a60b06afc4d082b3
   EXFileSystem: 0a04aba8da751b9ac954065911bcf166503f8267
@@ -571,11 +568,10 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
-  RNReanimated: 7191bbcc6c2c18d8961d1504ce64ffed340e9b07
+  RNReanimated: e5040efc7c90da0b190a6525fcfc7e1e75973b21
   RNScreens: 21b73c94c9117e1110a79ee0ee80c93ccefed8ce
-  RNSVG: ecd661f380a07ba690c9c5929c475a44f432d674
+  RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
   UMCore: ce3a4faa010239063b8343895b29a6d97b01069d
   UMReactNativeAdapter: d03cefd0e4e4179ab8c490408589f1c8a6c8b785

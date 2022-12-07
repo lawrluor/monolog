@@ -2,11 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 const ProgressBar = ({ currentProgress, total }: any): JSX.Element => { 
-  const progress = currentProgress / total * 100;
+  const progress = Math.floor(currentProgress / total * 100);
   
   return (
-    <View style={styles.parent}>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <View style={styles.barContainer}>
         <View style={[styles.progressBar]}>
           <View style={[StyleSheet.absoluteFill, styles.progressBarFill, { width: `${progress}%` }]} />
         </View>
@@ -17,10 +17,10 @@ const ProgressBar = ({ currentProgress, total }: any): JSX.Element => {
 
 }
 const styles = StyleSheet.create({
-  parent: {
+  container: {
     flexDirection: 'row',
   },
-  container: {
+  barContainer: {
     flex: 1,
     flexDirection: "column", //column direction
     justifyContent: 'center',
