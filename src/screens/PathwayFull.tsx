@@ -24,6 +24,8 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
     const level = pathwaysMap.get(pathwayName).progress[1] //TODO: Replace with user functions
     navigation.push('PathwaysPrompt', { pathway:pathwayName, level: level});
   }
+  // Given the long description for a pathway it parses the description
+  // to add headers where '<b>' tag is found in the text
   const BodyText = () => {
     const text = currentPathway.long_desc
     let textArray = text.split("<b>")

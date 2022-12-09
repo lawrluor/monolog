@@ -4,7 +4,7 @@ import {useNavigation, useRoute, getFocusedRouteNameFromRoute} from '@react-navi
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Settings, Feedback, Pathways, PathwayFull, PathwaysPrompt } from '../screens';
+import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Pathways, PathwayFull, PathwaysPrompt } from '../screens';
 
 import CustomIcon from '../components/CustomIcon';
 
