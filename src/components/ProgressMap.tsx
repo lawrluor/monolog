@@ -61,7 +61,8 @@ const styles = StyleSheet.create({
     aspectRatio: .95,
     // height: 100,
     width: 50,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
+    marginRight: spacings.HUGE,
   },
   completedFinal: {
     aspectRatio: 1.8,
