@@ -22,6 +22,7 @@ import UserContext from '../context/UserContext';
 import { containers, icons, text, spacings, colors } from '../styles';
 import { readUserData } from '../utils/localStorageUtils';
 import SignInButton from '../components/SignInButton';
+import FullScreenModal from '../components/FullScreenModal';
 
 const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
@@ -181,6 +182,8 @@ const Home = ({ navigation }: any): JSX.Element => {
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>
+
+      <FullScreenModal message={"The Mood Tracker Vista is designed to help you see how your mood might change throughout the week!"} />
     </>
   )
 }
