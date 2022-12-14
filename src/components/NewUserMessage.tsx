@@ -11,32 +11,23 @@ import { text, spacings, icons, colors } from '../styles';
 // It also will not render if the user closes the alert
 // These states belong to the parent component, which renders this component conditionally,
   // and is NOT passed these states as props.
-const NewUserMessage = ({ navigateCallback }: any) => {
+const NewUserMessage = ({ navigateCallback, message, actionMessage }: any) => {
   return (
     <View style={styles.featureContainer}>
       <View style={styles.newUserAlertTextContainer}>
         <Text style={styles.newUserAlertText}>
-          Your vistas will appear after your first log.
-          Press the button below to get started!
+          {message}
         </Text>
       </View>
 
       <View style={styles.newUserAlertButtonContainer}>
-        <SignInButton 
+        <SignInButton
           background={colors.HIGHLIGHT}
           onPress={navigateCallback}
-        > 
-          <Text style={text.h4}>Record</Text>
+        >
+          <Text style={text.h4}>{actionMessage}</Text>
         </SignInButton>
       </View>
-
-      {/* <Pressable 
-        onPress={() => shouldDisplayCallback(false)} 
-        hitSlop={spacings.hitSlopLarge}
-        style={ ({pressed}) => [styles.closeButtonContainer, {opacity: pressed ? 0.3 : 1}] }
-      >
-        <Ionicons style={styles.closeButton} name="close" />
-      </Pressable> */}
     </View>
   )
 }

@@ -22,7 +22,7 @@ import UserContext from '../context/UserContext';
 import { containers, icons, text, spacings, colors, dimensions } from '../styles';
 import { readUserData } from '../utils/localStorageUtils';
 import SignInButton from '../components/SignInButton';
-import FullScreenModal from '../components/FullScreenModal';
+import { TutorialHighlightModal } from '../components/FullScreenModal';
 
 const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
@@ -30,12 +30,11 @@ const TESTING = false;
 const Home = ({ navigation }: any): JSX.Element => {
   const { user } = React.useContext(UserContext);
   const { videosCount, isLoading } = React.useContext(VideosContext);
-  const pathways = React.useRef();
-  const [XYoffset, setXYoffset] = React.useState();
 
   // Optionally used to allow for closing alert/promo messages in Home
   const [alertVisible, setAlertVisible] = React.useState<boolean>(false);
   const [pathwaysTutorial, setPathwaysTutorial] = React.useState<boolean>(true);
+  const [XYoffset, setXYoffset] = React.useState();
 
   const navigateToVistas = () => {
     navigation.navigate('Vistas');
@@ -115,48 +114,45 @@ const Home = ({ navigation }: any): JSX.Element => {
     }
   }
 
+  // Renders the Pathways feature container
   const renderPathways = () => {
     return (
-      pathwaysTutorial
-      ?
-      <>
-        <View onLayout={(event) => {handleLayoutChange(event) }} ref={pathways} style={[styles.featureContainer, pathwaysTutorial && styles.tutorialHighlight]}>
-          <SignInButton
-            background={colors.HIGHLIGHT}
-            onPress={() => { navigateToPathways() }}
-          >
-            <Text>PATHWAYS</Text>
-          </SignInButton>
-        </View>
-      </>
-      :
-      <View onLayout={(event) => {handleLayoutChange(event) }} ref={pathways} style={[styles.featureContainer, pathwaysTutorial && styles.tutorialHighlight]}>
-        <SignInButton
-          background={colors.HIGHLIGHT}
-          onPress={() => { navigateToPathways() }}
-        >
-          <Text>PATHWAYS</Text>
-        </SignInButton>
+      <View
+        onLayout={event => handleLayoutChange(event)}
+      >
+        {
+          // TODO: this check should be based on if they've started pathways or not.
+          // Two different styles of components will be returned based on this.
+          true
+          ?
+          <NewUserMessage navigateCallback={navigateToPathways} message="You haven't started any pathways. Click below to get started!" actionMessage="View Pathways" />
+          :
+          <View style={[styles.featureContainer, { alignItems: 'center' }]}>
+            <SignInButton
+              background={colors.HIGHLIGHT}
+              onPress={() => navigateToPathways() }
+            >
+              <Text style={[styles.featureTitle, { color: 'white' }]}>View Pathways</Text>
+            </SignInButton>
+          </View>
+        }
       </View>
     )
   }
 
-  const pathwaysComponent = renderPathways();
-
-
-  // measures the dimensions and positioning of a component after it is rendered on the screen
+  // Measures the dimensions and positioning of a component after it is rendered on the screen
+  // This information is passed to TutorialHighlightModal, which allows us to position something
+  // https://stackoverflow.com/a/64882955
   const handleLayoutChange = (event: any) => {
-    console.log("testing")
     return event.target.measure((fx, fy, width, height, px, py) => {
-      console.log('Component width is: ' + width)
-      console.log('Component height is: ' + height)
-      console.log('X offset to page: ' + px)
-      console.log('Y offset to page: ' + py)
+      console.log('Component width is: ' + width);
+      console.log('Component height is: ' + height);
+      console.log('X offset to page: ' + px);
+      console.log('Y offset to page: ' + py);
       setXYoffset({ 'x': px, 'y': py });
-      return { 'x': px, 'y': py }
+      return { 'x': px, 'y': py };
     })
   }
-
 
   // Async wrapper for getting permissions
   React.useEffect(() => {
@@ -168,6 +164,11 @@ const Home = ({ navigation }: any): JSX.Element => {
       setAlertVisible(videosCount < VIDEOS_THRESHOLD);
     };
   }, [videosCount, isLoading])
+
+  // My belief is this reduces the number of calls to renderPathways()
+  // as I'm passing this component itself by reference to the TutorialHighlightModal
+  // but this probably doesn't actually do anything.
+  const pathwaysComponent = renderPathways();
 
   return (
     <>
@@ -202,10 +203,14 @@ const Home = ({ navigation }: any): JSX.Element => {
             contentContainerStyle={styles.scrollContentContainerStyle}
             showsVerticalScrollIndicator={false}
           >
-
+            {pathwaysComponent}
             {renderVistasSummaryHeader(videosCount)}
             {alertVisible && (videosCount < VIDEOS_THRESHOLD)
-              ? <NewUserMessage navigateCallback={navigateToRecord} />
+              ? <NewUserMessage
+                  navigateCallback={navigateToRecord}
+                  message={"Your vistas will appear after your first log. Press the button below to get started!"}
+                  actionMessage={"Record"}
+                />
               : null
             }
             {renderWordChartSummary(videosCount)}
@@ -218,13 +223,11 @@ const Home = ({ navigation }: any): JSX.Element => {
               </View>
             </Pressable>
 
-            {renderPathways()}
-
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>
 
-      {pathwaysTutorial && <FullScreenModal XYoffset={XYoffset}>{pathwaysComponent}</FullScreenModal>}
+      {pathwaysTutorial && <TutorialHighlightModal XYoffset={XYoffset}>{pathwaysComponent}</TutorialHighlightModal>}
     </>
   )
 }
@@ -302,11 +305,6 @@ const styles = StyleSheet.create({
   lockIcon: {
     ...icons.TINY,
     color: colors.PRIMARY,
-  },
-  tutorialHighlight: {
-    // shadowColor: 'black',
-    // shadowOpacity: 1.0,
-    // shadowRadius: 100
   }
 })
 
