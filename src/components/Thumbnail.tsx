@@ -18,13 +18,14 @@ const Thumbnail = ({ navigation, video}: Props): JSX.Element => {
     });
   }
 
+  // Renders thumbnail or camera_off depending on whether the entry was recorded
+  // with or without the camera active.
   const renderThumbnailImage = () => {
     return (
       video.show_video ?
       <Image source={{ uri: video.thumbnail_uri }} style={styles.thumbnail} /> :
-      <View style={styles.camera_off_container} >
-      <CustomIcon name='headphones_with_waves'
-          size = {icons.LARGE.fontSize} />
+        <View style={styles.camera_off_container} >
+        <CustomIcon name='headphones_with_waves' size={icons.LARGE.fontSize} />
       </View>
     )
   }
