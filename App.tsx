@@ -29,7 +29,7 @@ const App = (): JSX.Element => {
   const setConsoleLogging = () => {
     // Disable all console.log statements if not in Dev mode
     // See https://stackoverflow.com/questions/38939917/removing-console-log-from-react-native-app
-  
+
     if (!__DEV__) {
       console.log = () => {};
     }

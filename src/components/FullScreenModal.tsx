@@ -1,44 +1,61 @@
-import React, { useState } from "react";
-import { Alert, Modal, StyleSheet, Text, Pressable, View } from "react-native";
-import { dimensions, spacings } from "../styles";
+import React from "react";
+import { StyleSheet, Text, Pressable, View } from "react-native";
+import { dimensions, spacings, text } from "../styles";
 
-const FullScreenModal = ({ messageText }: any) => {
-  const [modalVisible, setModalVisible] = useState(true);  // TODO: Conditional on user data
+const FullScreenModal = ({ children, XYoffset, message }: any) => {
+  const [modalVisible, setModalVisible] = React.useState(true);  // TODO: Conditional on user data
+	console.log(XYoffset);
 
   return (
+		(modalVisible && XYoffset)
+		?
 		<Pressable
 			style={styles.container}
 			onPress={() => setModalVisible(false)}
 		>
-			<Modal
-				animationType="slide"
-				transparent={true}
-				visible={modalVisible}
-				onRequestClose={() => {
-					setModalVisible(!modalVisible);
-				}}
-			>
-				<View style={styles.messageBox}>
-					<Text style={styles.modalText}>{messageText}</Text>
-				</View>
-			</Modal>
+			<View style={styles.overlayContainer}></View>
+
+			<View style={{ position: 'absolute', left: XYoffset.x, right: XYoffset.x, top: XYoffset.y }}>
+				{children}
+			</View>
+
+			{/* <View style={styles.messageContainer}>
+				<Text style={styles.modalText}>{message}</Text>
+			</View> */}
 		</Pressable>
+		:
+		null
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+	container: {
 		height: dimensions.height,
 		width: dimensions.width,
-    justifyContent: "center",
-    alignItems: "center",
-		backgroundColor: 'black',
-		opacity: 0.4,
+		// justifyContent: "center",
+    // alignItems: "center",
+		position: 'absolute',
+		zIndex: 1
+
+	},
+  overlayContainer: {
+		height: dimensions.height,
+		width: dimensions.width,
+		backgroundColor: '#00000055',
 		position: 'absolute',
   },
-	messageBox: {
+	messageContainer: {
+    justifyContent: "center",
+    alignItems: "center",
 		backgroundColor: 'white',
-		padding: spacings.MEDIUM
+		margin: spacings.LARGE,
+		padding: spacings.LARGE,
+		borderRadius: 10,
+	},
+	modalText: {
+		...text.h4,
+		color: 'black',
+		textAlign: "center",
 	}
 });
 
