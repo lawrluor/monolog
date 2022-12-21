@@ -4,17 +4,22 @@ import { text, spacings, colors, containers } from '../styles';
 import { pathwaysMap } from '../utils/pathwaysData'
 import ProgressBar from './ProgressBar';
 import UserContext from '../context/UserContext';
-
+/*
+ * @param {string} pathwayName name of the pathway info to be displayed 
+*/
 const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
+  // Max number of prompts a pathway may contain
   const MAX_LEVELS = 10
   const { user, setUser } = React.useContext(UserContext);
 
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
-  console.log("USER STATE:", user)
 
   const currentPathway = pathwaysMap.get(pathwayName);
+
+  // If the current pathway exists in the user's data then that means they have started that pathway.
+  // If they have started that pathway set the current level or score to their level otherwise it is 0
   const currentLevel = (pathwayName in user['pathways'])? user['pathways'][pathwayName]['currentLevel']-1 : 0
   const imageHeader = Image.resolveAssetSource(currentPathway.image).uri
   return (

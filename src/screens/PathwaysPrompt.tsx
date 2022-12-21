@@ -13,7 +13,7 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
   const { pathway, level } = route.params
   let pathwaysPromptsData = JSON.stringify(pathwaysPrompts)
   pathwaysPromptsData = JSON.parse(pathwaysPromptsData)
-  console.log("Pathway ", pathway)
+
   const prompt = pathwaysPromptsData[pathway][level]
   const navigateToRecording = (pathwayName: string) => {
     navigation.navigate('Recording', { pathway:pathwayName });

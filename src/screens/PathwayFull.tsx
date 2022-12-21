@@ -12,6 +12,7 @@ import UserContext from '../context/UserContext';
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const { pathwayName } = route.params;
   const { user, setUser } = React.useContext(UserContext);
+  // Max number of prompts a pathway may contain
   const MAX_LEVELS = 10
   const userCurrentLevel = user['pathways'][pathwayName]? user['pathways'][pathwayName]['currentLevel'] : 1
   const currentPathway = pathwaysMap.get(pathwayName);
@@ -19,10 +20,12 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
+
   const navigateToPrompt = (pathwayName: string) => {
     updateCurrentPathway(pathwayName);
-    const level = pathwaysMap.get(pathwayName).progress[1] //TODO: Replace with user functions
-    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: level});
+    // If they have started that pathway set the current level to their level otherwise set it to 1
+    const currentLevel = (pathwayName in user['pathways'])? user['pathways'][pathwayName]['currentLevel']-1 : 1
+    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
   }
   // Given the long description for a pathway it parses the description
   // to add headers where '<b>' tag is found in the text
