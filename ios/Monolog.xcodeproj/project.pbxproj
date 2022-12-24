@@ -15,7 +15,6 @@
 		48F3DAE329577082008C35A3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 48F3DAD929577081008C35A3 /* AppDelegate.m */; };
 		48F3DAE429577082008C35A3 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F3DADB29577081008C35A3 /* noop-file.swift */; };
 		48F3DAE529577082008C35A3 /* Supporting in Resources */ = {isa = PBXBuildFile; fileRef = 48F3DADC29577081008C35A3 /* Supporting */; };
-		48F3DAE729577082008C35A3 /* SplashScreen in Resources */ = {isa = PBXBuildFile; fileRef = 48F3DADE29577081008C35A3 /* SplashScreen */; };
 		A42C42CF7E03793DEB486A84 /* libPods-Monolog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFDF9FA89D2DDBA732229685 /* libPods-Monolog.a */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +30,6 @@
 		48F3DADB29577081008C35A3 /* noop-file.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "Monolog/noop-file.swift"; sourceTree = "<group>"; };
 		48F3DADC29577081008C35A3 /* Supporting */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Supporting; path = Monolog/Supporting; sourceTree = "<group>"; };
 		48F3DADD29577081008C35A3 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Monolog/Info.plist; sourceTree = "<group>"; };
-		48F3DADE29577081008C35A3 /* SplashScreen */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SplashScreen; path = Monolog/SplashScreen; sourceTree = "<group>"; };
 		48F3DADF29577082008C35A3 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Monolog/AppDelegate.h; sourceTree = "<group>"; };
 		6BFD470593D3796CFE2C3FBD /* Pods-Monolog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monolog.debug.xcconfig"; path = "Target Support Files/Pods-Monolog/Pods-Monolog.debug.xcconfig"; sourceTree = "<group>"; };
 		BFDF9FA89D2DDBA732229685 /* libPods-Monolog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Monolog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,7 +62,6 @@
 				48F3DADA29577081008C35A3 /* Monolog-Bridging-Header.h */,
 				48F3DAD529577080008C35A3 /* Monolog.entitlements */,
 				48F3DADB29577081008C35A3 /* noop-file.swift */,
-				48F3DADE29577081008C35A3 /* SplashScreen */,
 				48F3DADC29577081008C35A3 /* Supporting */,
 			);
 			name = Monolog;
@@ -184,7 +181,6 @@
 				48F3DAE529577082008C35A3 /* Supporting in Resources */,
 				487B6474281B78E1002E2793 /* Fonts in Resources */,
 				48F3DAE029577082008C35A3 /* Images.xcassets in Resources */,
-				48F3DAE729577082008C35A3 /* SplashScreen in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
