@@ -7,34 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		48541EA2281B843A0095A8D9 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48541EA1281B843A0095A8D9 /* Launch Screen.storyboard */; };
+		486D9A05295773300082D373 /* Monolog-Bridging-Header.h in Sources */ = {isa = PBXBuildFile; fileRef = 48F3DADA29577081008C35A3 /* Monolog-Bridging-Header.h */; };
 		487B6474281B78E1002E2793 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 487B6473281B78E1002E2793 /* Fonts */; };
-		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		DCC07C42668F4D2387A05195 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411678231BD842FDBB37AF11 /* noop-file.swift */; };
-		E3FAE921C3E226511C3161B8 /* libPods-Monolog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74074FA7A4E02F8B2A8ADDB4 /* libPods-Monolog.a */; };
+		48F3DAE029577082008C35A3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 48F3DAD629577080008C35A3 /* Images.xcassets */; };
+		48F3DAE129577082008C35A3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 48F3DAD729577080008C35A3 /* main.m */; };
+		48F3DAE229577082008C35A3 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48F3DAD829577081008C35A3 /* Launch Screen.storyboard */; };
+		48F3DAE329577082008C35A3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 48F3DAD929577081008C35A3 /* AppDelegate.m */; };
+		48F3DAE429577082008C35A3 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F3DADB29577081008C35A3 /* noop-file.swift */; };
+		48F3DAE529577082008C35A3 /* Supporting in Resources */ = {isa = PBXBuildFile; fileRef = 48F3DADC29577081008C35A3 /* Supporting */; };
+		48F3DAE729577082008C35A3 /* SplashScreen in Resources */ = {isa = PBXBuildFile; fileRef = 48F3DADE29577081008C35A3 /* SplashScreen */; };
+		A42C42CF7E03793DEB486A84 /* libPods-Monolog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFDF9FA89D2DDBA732229685 /* libPods-Monolog.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Monolog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Monolog.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Monist/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Monist/AppDelegate.m; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Monist/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Monist/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Monist/main.m; sourceTree = "<group>"; };
-		1E9E2702D616935BB65A79EB /* Pods-Monist.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monist.release.xcconfig"; path = "Target Support Files/Pods-Monist/Pods-Monist.release.xcconfig"; sourceTree = "<group>"; };
-		411678231BD842FDBB37AF11 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "Monist/noop-file.swift"; sourceTree = "<group>"; };
-		48541EA1281B843A0095A8D9 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Monist/Launch Screen.storyboard"; sourceTree = "<group>"; };
 		487B6473281B78E1002E2793 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
-		571D5A1B6C99DE6E3829AC22 /* Pods-Monist.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monist.debug.xcconfig"; path = "Target Support Files/Pods-Monist/Pods-Monist.debug.xcconfig"; sourceTree = "<group>"; };
-		74074FA7A4E02F8B2A8ADDB4 /* libPods-Monolog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Monolog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		93957EE2C0BB4DFEBB557924 /* Monist-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "Monist-Bridging-Header.h"; path = "Monist/Monist-Bridging-Header.h"; sourceTree = "<group>"; };
-		9A27B6233DB1163EF610051E /* Pods-Monolog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monolog.debug.xcconfig"; path = "Target Support Files/Pods-Monolog/Pods-Monolog.debug.xcconfig"; sourceTree = "<group>"; };
-		A5710CF30B4BFA36DB756DA8 /* Pods-Monolog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monolog.release.xcconfig"; path = "Target Support Files/Pods-Monolog/Pods-Monolog.release.xcconfig"; sourceTree = "<group>"; };
-		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		48F3DAD529577080008C35A3 /* Monolog.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; name = Monolog.entitlements; path = Monolog/Monolog.entitlements; sourceTree = "<group>"; };
+		48F3DAD629577080008C35A3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Monolog/Images.xcassets; sourceTree = "<group>"; };
+		48F3DAD729577080008C35A3 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Monolog/main.m; sourceTree = "<group>"; };
+		48F3DAD829577081008C35A3 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Monolog/Launch Screen.storyboard"; sourceTree = "<group>"; };
+		48F3DAD929577081008C35A3 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Monolog/AppDelegate.m; sourceTree = "<group>"; };
+		48F3DADA29577081008C35A3 /* Monolog-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Monolog-Bridging-Header.h"; path = "Monolog/Monolog-Bridging-Header.h"; sourceTree = "<group>"; };
+		48F3DADB29577081008C35A3 /* noop-file.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "Monolog/noop-file.swift"; sourceTree = "<group>"; };
+		48F3DADC29577081008C35A3 /* Supporting */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Supporting; path = Monolog/Supporting; sourceTree = "<group>"; };
+		48F3DADD29577081008C35A3 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Monolog/Info.plist; sourceTree = "<group>"; };
+		48F3DADE29577081008C35A3 /* SplashScreen */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SplashScreen; path = Monolog/SplashScreen; sourceTree = "<group>"; };
+		48F3DADF29577082008C35A3 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Monolog/AppDelegate.h; sourceTree = "<group>"; };
+		6BFD470593D3796CFE2C3FBD /* Pods-Monolog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monolog.debug.xcconfig"; path = "Target Support Files/Pods-Monolog/Pods-Monolog.debug.xcconfig"; sourceTree = "<group>"; };
+		BFDF9FA89D2DDBA732229685 /* libPods-Monolog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Monolog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D28FBB5EF2BA7D559BD1FAE8 /* Pods-Monolog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monolog.release.xcconfig"; path = "Target Support Files/Pods-Monolog/Pods-Monolog.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -44,7 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E3FAE921C3E226511C3161B8 /* libPods-Monolog.a in Frameworks */,
+				A42C42CF7E03793DEB486A84 /* libPods-Monolog.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,16 +55,17 @@
 		13B07FAE1A68108700A75B9A /* Monolog */ = {
 			isa = PBXGroup;
 			children = (
-				BB2F792B24A3F905000567C9 /* Supporting */,
-				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
-				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.m */,
-				13B07FB51A68108700A75B9A /* Images.xcassets */,
-				48541EA1281B843A0095A8D9 /* Launch Screen.storyboard */,
-				13B07FB61A68108700A75B9A /* Info.plist */,
-				13B07FB71A68108700A75B9A /* main.m */,
-				411678231BD842FDBB37AF11 /* noop-file.swift */,
-				93957EE2C0BB4DFEBB557924 /* Monist-Bridging-Header.h */,
+				48F3DADF29577082008C35A3 /* AppDelegate.h */,
+				48F3DAD929577081008C35A3 /* AppDelegate.m */,
+				48F3DAD629577080008C35A3 /* Images.xcassets */,
+				48F3DADD29577081008C35A3 /* Info.plist */,
+				48F3DAD829577081008C35A3 /* Launch Screen.storyboard */,
+				48F3DAD729577080008C35A3 /* main.m */,
+				48F3DADA29577081008C35A3 /* Monolog-Bridging-Header.h */,
+				48F3DAD529577080008C35A3 /* Monolog.entitlements */,
+				48F3DADB29577081008C35A3 /* noop-file.swift */,
+				48F3DADE29577081008C35A3 /* SplashScreen */,
+				48F3DADC29577081008C35A3 /* Supporting */,
 			);
 			name = Monolog;
 			sourceTree = "<group>";
@@ -73,7 +75,7 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				74074FA7A4E02F8B2A8ADDB4 /* libPods-Monolog.a */,
+				BFDF9FA89D2DDBA732229685 /* libPods-Monolog.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -108,22 +110,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BB2F792B24A3F905000567C9 /* Supporting */ = {
-			isa = PBXGroup;
-			children = (
-				BB2F792C24A3F905000567C9 /* Expo.plist */,
-			);
-			name = Supporting;
-			path = Monist/Supporting;
-			sourceTree = "<group>";
-		};
 		D65327D7A22EEC0BE12398D9 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				571D5A1B6C99DE6E3829AC22 /* Pods-Monist.debug.xcconfig */,
-				1E9E2702D616935BB65A79EB /* Pods-Monist.release.xcconfig */,
-				9A27B6233DB1163EF610051E /* Pods-Monolog.debug.xcconfig */,
-				A5710CF30B4BFA36DB756DA8 /* Pods-Monolog.release.xcconfig */,
+				6BFD470593D3796CFE2C3FBD /* Pods-Monolog.debug.xcconfig */,
+				D28FBB5EF2BA7D559BD1FAE8 /* Pods-Monolog.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -135,13 +126,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Monolog" */;
 			buildPhases = (
-				475581D0E76BB5E6C9286A9F /* [CP] Check Pods Manifest.lock */,
+				313154C6242449F2362F20D3 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				CE44F4FD01D18EA5BA9C1D0B /* [CP] Copy Pods Resources */,
+				74A0E83920092C05C6AAF2A2 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -158,7 +149,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1420;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = TCFQ8L2D5M;
@@ -189,10 +180,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				48541EA2281B843A0095A8D9 /* Launch Screen.storyboard in Resources */,
+				48F3DAE229577082008C35A3 /* Launch Screen.storyboard in Resources */,
+				48F3DAE529577082008C35A3 /* Supporting in Resources */,
 				487B6474281B78E1002E2793 /* Fonts in Resources */,
+				48F3DAE029577082008C35A3 /* Images.xcassets in Resources */,
+				48F3DAE729577082008C35A3 /* SplashScreen in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,7 +205,7 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n../node_modules/expo-constants/scripts/get-app-config-ios.sh\n../node_modules/expo-updates/scripts/create-manifest-ios.sh\n";
 		};
-		475581D0E76BB5E6C9286A9F /* [CP] Check Pods Manifest.lock */ = {
+		313154C6242449F2362F20D3 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -235,10 +227,12 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		CE44F4FD01D18EA5BA9C1D0B /* [CP] Copy Pods Resources */ = {
+		74A0E83920092C05C6AAF2A2 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Monolog/Pods-Monolog-resources.sh",
@@ -279,9 +273,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				DCC07C42668F4D2387A05195 /* noop-file.swift in Sources */,
+				486D9A05295773300082D373 /* Monolog-Bridging-Header.h in Sources */,
+				48F3DAE429577082008C35A3 /* noop-file.swift in Sources */,
+				48F3DAE329577082008C35A3 /* AppDelegate.m in Sources */,
+				48F3DAE129577082008C35A3 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,7 +285,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A27B6233DB1163EF610051E /* Pods-Monolog.debug.xcconfig */;
+			baseConfigurationReference = 6BFD470593D3796CFE2C3FBD /* Pods-Monolog.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -305,7 +300,8 @@
 				);
 				INFOPLIST_FILE = Monolog/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Monolog;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0.6;
 				OTHER_LDFLAGS = (
@@ -315,7 +311,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.monist.monist;
 				PRODUCT_NAME = Monolog;
-				SWIFT_OBJC_BRIDGING_HEADER = "Monist/Monist-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Monolog/Monolog-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -325,7 +321,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A5710CF30B4BFA36DB756DA8 /* Pods-Monolog.release.xcconfig */;
+			baseConfigurationReference = D28FBB5EF2BA7D559BD1FAE8 /* Pods-Monolog.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -335,7 +331,8 @@
 				DEVELOPMENT_TEAM = TCFQ8L2D5M;
 				INFOPLIST_FILE = Monolog/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Monolog;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0.6;
 				OTHER_LDFLAGS = (
@@ -345,7 +342,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.monist.monist;
 				PRODUCT_NAME = Monolog;
-				SWIFT_OBJC_BRIDGING_HEADER = "Monist/Monist-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Monolog/Monolog-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -375,6 +372,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -399,7 +397,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -431,6 +429,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -448,11 +447,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

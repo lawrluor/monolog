@@ -55,7 +55,7 @@
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to securely recognize user speech to generate transcripts that you can edit later.</string>
 	<key>UILaunchStoryboardName</key>
-	<string>Launch Screen</string>
+	<string>Launch Screen.storyboard</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Launch Screen</string>
 	<key>UIRequiredDeviceCapabilities</key>
