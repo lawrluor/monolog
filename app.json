@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Monist",
-    "slug": "monist",
+    "name": "Monolog",
+    "slug": "monolog",
     "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
@@ -28,14 +28,14 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.monist.monist"
+      "bundleIdentifier": "com.monolog.monolog"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.monist.monist"
+      "package": "com.monolog.monolog"
     },
     "web": {
       "favicon": "./assets/img/favicon.png"
