@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>Monist</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -51,11 +51,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to use your device&apos;s photo library to store video logs and video thumbnail images.</string>
+	<string>Allow $(PRODUCT_NAME) to use your device's photo library to store video logs and video thumbnail images.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to securely recognize user speech to generate transcripts that you can edit later.</string>
-	<key>UILaunchImageFile</key>
-	<string></string>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
 	<key>UIMainStoryboardFile</key>

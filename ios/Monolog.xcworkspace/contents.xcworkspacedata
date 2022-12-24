@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "absolute:/Users/lawrluor/Repos/Monist/ios/Monolog.xcodeproj">
+      location = "group:Monolog.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
