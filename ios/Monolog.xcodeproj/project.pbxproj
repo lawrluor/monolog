@@ -12,9 +12,9 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		48541EA2281B843A0095A8D9 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48541EA1281B843A0095A8D9 /* Launch Screen.storyboard */; };
 		487B6474281B78E1002E2793 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 487B6473281B78E1002E2793 /* Fonts */; };
-		67110D13F1442BE53BC12B12 /* libPods-Monist.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6302835B111056116CF9AD89 /* libPods-Monist.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		DCC07C42668F4D2387A05195 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411678231BD842FDBB37AF11 /* noop-file.swift */; };
+		E3FAE921C3E226511C3161B8 /* libPods-Monolog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74074FA7A4E02F8B2A8ADDB4 /* libPods-Monolog.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,8 +30,10 @@
 		48541EA1281B843A0095A8D9 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Monist/Launch Screen.storyboard"; sourceTree = "<group>"; };
 		487B6473281B78E1002E2793 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
 		571D5A1B6C99DE6E3829AC22 /* Pods-Monist.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monist.debug.xcconfig"; path = "Target Support Files/Pods-Monist/Pods-Monist.debug.xcconfig"; sourceTree = "<group>"; };
-		6302835B111056116CF9AD89 /* libPods-Monist.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Monist.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		74074FA7A4E02F8B2A8ADDB4 /* libPods-Monolog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Monolog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		93957EE2C0BB4DFEBB557924 /* Monist-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "Monist-Bridging-Header.h"; path = "Monist/Monist-Bridging-Header.h"; sourceTree = "<group>"; };
+		9A27B6233DB1163EF610051E /* Pods-Monolog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monolog.debug.xcconfig"; path = "Target Support Files/Pods-Monolog/Pods-Monolog.debug.xcconfig"; sourceTree = "<group>"; };
+		A5710CF30B4BFA36DB756DA8 /* Pods-Monolog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monolog.release.xcconfig"; path = "Target Support Files/Pods-Monolog/Pods-Monolog.release.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -42,7 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				67110D13F1442BE53BC12B12 /* libPods-Monist.a in Frameworks */,
+				E3FAE921C3E226511C3161B8 /* libPods-Monolog.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,7 +73,7 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				6302835B111056116CF9AD89 /* libPods-Monist.a */,
+				74074FA7A4E02F8B2A8ADDB4 /* libPods-Monolog.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -120,6 +122,8 @@
 			children = (
 				571D5A1B6C99DE6E3829AC22 /* Pods-Monist.debug.xcconfig */,
 				1E9E2702D616935BB65A79EB /* Pods-Monist.release.xcconfig */,
+				9A27B6233DB1163EF610051E /* Pods-Monolog.debug.xcconfig */,
+				A5710CF30B4BFA36DB756DA8 /* Pods-Monolog.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -224,7 +228,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Monist-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Monolog-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -237,7 +241,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Monist/Pods-Monist-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Monolog/Pods-Monolog-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
@@ -246,7 +250,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Monist/Pods-Monist-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Monolog/Pods-Monolog-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -286,7 +290,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 571D5A1B6C99DE6E3829AC22 /* Pods-Monist.debug.xcconfig */;
+			baseConfigurationReference = 9A27B6233DB1163EF610051E /* Pods-Monolog.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -321,7 +325,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1E9E2702D616935BB65A79EB /* Pods-Monist.release.xcconfig */;
+			baseConfigurationReference = A5710CF30B4BFA36DB756DA8 /* Pods-Monolog.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
