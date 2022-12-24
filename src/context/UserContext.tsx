@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { writeUserData, readUserData } from '../utils/localStorageUtils';
+import { writeUserData, readUserData, createAllDirectories } from '../utils/localStorageUtils';
 
 const UserContext = React.createContext(undefined!);
 
@@ -16,9 +16,13 @@ export const UserProvider: React.FC = ({children}) => {
         setUser(fetchedUser);
       } catch (err) {
         console.log(
-          "[ERROR] UserContext.tsx:fetchUserData", err, 
-          "This error is probably because the user data directory has not been created yet, and is intended behavior."
+          "[ERROR] UserContext.tsx:fetchUserData", err,
+          "The user data directory has not been created yet, but is being created now."
         );
+
+        // await createAllDirectories();
+        // let fetchedUser = await readUserData();
+        // setUser(fetchedUser);
       }
 
       setIsLoading(false);
