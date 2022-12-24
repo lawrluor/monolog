@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3E8491D2ED408AF08ED181CC /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D258044E36EFE16DA023B03F /* ExpoModulesProvider.swift */; };
 		486D9A05295773300082D373 /* Monolog-Bridging-Header.h in Sources */ = {isa = PBXBuildFile; fileRef = 48F3DADA29577081008C35A3 /* Monolog-Bridging-Header.h */; };
 		487B6474281B78E1002E2793 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 487B6473281B78E1002E2793 /* Fonts */; };
 		48F3DAE029577082008C35A3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 48F3DAD629577080008C35A3 /* Images.xcassets */; };
@@ -33,6 +34,7 @@
 		48F3DADF29577082008C35A3 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Monolog/AppDelegate.h; sourceTree = "<group>"; };
 		6BFD470593D3796CFE2C3FBD /* Pods-Monolog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monolog.debug.xcconfig"; path = "Target Support Files/Pods-Monolog/Pods-Monolog.debug.xcconfig"; sourceTree = "<group>"; };
 		BFDF9FA89D2DDBA732229685 /* libPods-Monolog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Monolog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D258044E36EFE16DA023B03F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Monolog/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		D28FBB5EF2BA7D559BD1FAE8 /* Pods-Monolog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Monolog.release.xcconfig"; path = "Target Support Files/Pods-Monolog/Pods-Monolog.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -77,6 +79,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		67E2D7B9CCF99FF87DBED199 /* Monolog */ = {
+			isa = PBXGroup;
+			children = (
+				D258044E36EFE16DA023B03F /* ExpoModulesProvider.swift */,
+			);
+			name = Monolog;
+			sourceTree = "<group>";
+		};
+		6A0ED0848E59625639E42DAD /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				67E2D7B9CCF99FF87DBED199 /* Monolog */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -93,6 +111,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				D65327D7A22EEC0BE12398D9 /* Pods */,
+				6A0ED0848E59625639E42DAD /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -228,14 +247,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Monolog/Pods-Monolog-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXUpdates.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -273,6 +294,7 @@
 				48F3DAE429577082008C35A3 /* noop-file.swift in Sources */,
 				48F3DAE329577082008C35A3 /* AppDelegate.m in Sources */,
 				48F3DAE129577082008C35A3 /* main.m in Sources */,
+				3E8491D2ED408AF08ED181CC /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
