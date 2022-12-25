@@ -160,6 +160,14 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
           />
         </Pressable>
       </View>
+
+      {
+        isLoading || !(status?.isLoaded)
+        ?
+        <FullPageSpinner size="large" />
+        :
+        null
+      }
     </>
   );
 }
