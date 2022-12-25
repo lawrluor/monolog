@@ -29,10 +29,10 @@ const App = (): JSX.Element => {
   const setConsoleLogging = () => {
     // Disable all console.log statements if not in Dev mode
     // See https://stackoverflow.com/questions/38939917/removing-console-log-from-react-native-app
-
-     if (!__DEV__) {
+  
+    if (!__DEV__) {
       console.log = () => {};
-     }
+    }
 
     // TODO: Disabling warning logs should be straightforward but does not work
     // Using Yellowbox or other deprecated methods does not work either

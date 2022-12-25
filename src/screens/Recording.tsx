@@ -95,7 +95,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       // Clean up and reset state
       navigateToRating();
     }
-  }, [finalTranscript, videoStorePath]);
+  }, [finalTranscript, videoStorePath, recordingFinished]);
 
   const toggleCameraOn = () => {
     setIsCameraOn(!isCameraOn);
@@ -139,7 +139,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   const startRecording = async () => {
     try {
-      if (cameraRef){
+      if (cameraRef) {
         setIsRecording(true);
 
         let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
@@ -198,6 +198,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     navigation.navigate('Rating', {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
+      isCameraOn: isCameraOn,
     });
   }
 
@@ -361,7 +362,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         {
           isCameraOn
           ?
-          <>            
+          <>
             <Camera
             style={styles.cameraContainer}
             type={type}
