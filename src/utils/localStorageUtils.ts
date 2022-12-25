@@ -513,8 +513,10 @@ export const initVideoDataObject = async (filename: string) => {
     "transcript_uri": transcriptUri,
     "transcript_content": transcriptContent,
     "rating": rating,
-    // isCameraOn means show video, defaults to true (see ratings.ts)
-    "show_video": ratingObject.isCameraOn
+    // isCameraOn means show video, defaults to true in ratings.ts
+    // However, if this field doesn't exist (undefined, migrating from older versions),
+    // this will be explicitly set to boolean false
+    "show_video": true ? ratingObject?.isCameraOn : false
   }
 
   return videoData;
