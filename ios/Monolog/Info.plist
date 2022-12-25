@@ -52,12 +52,14 @@
 	<string>Allow $(PRODUCT_NAME) to access your camera</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your microphone</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to use your device's photo library to store video logs and video thumbnail images.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to securely recognize user speech to generate transcripts that you can edit later.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
-		<string>remoteNotification</string>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
