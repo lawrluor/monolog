@@ -4,16 +4,24 @@ import { FullPageSpinner } from '../components/Spinner';
 import UserContext from '../context/UserContext';
 
 // Initial screen in the mainNavigator, which App loads
-// HANDLES: reading user from Context and checking if user exists/logged in, 
+// HANDLES: reading user from Context and checking if user exists/logged in,
 // then forwarding to either AppStack or AuthStack
 const AuthLoading = ({ navigation }: any) => {
   const { user } = React.useContext(UserContext);
 
   const authenticate = async () => {
-    if (user && user.onboarded) {
-      navigation.navigate('AppStack');
+    if (user && user?.onboarded) {
+      // disallow returning to AuthLoading screen using reset
+      // this wipes the AuthLoading screen and starts with a fresh stack
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'AppStack' }]
+      });
     } else {
-      navigation.navigate('OnBoardingStack');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'OnboardingStack' }]
+      });
     }
   }
 

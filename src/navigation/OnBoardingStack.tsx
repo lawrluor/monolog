@@ -16,15 +16,15 @@ const Stack = createNativeStackNavigator<OnBoardingStackParams>(); // Generic
 const OnBoardingNavigator = (): JSX.Element => {
   return (
     <Stack.Navigator initialRouteName="Landing">
-      <Stack.Screen 
+      <Stack.Screen
         name="OnBoarding1"
         component={OnBoarding1}
         options={{
           headerShown: false,
           transitionSpec: {
             open: config,
-            close: config,
-          },
+            close: config
+          }
         }}
       />
 
@@ -36,7 +36,7 @@ const OnBoardingNavigator = (): JSX.Element => {
 // For animations: see https://reactnavigation.org/docs/stack-navigator/#animations
 const config = {
   // animation property: spring, timing
-  animation: 'spring', 
+  animation: 'spring',
 
   // config property:
   // For timing: duration, easing

@@ -2,14 +2,12 @@ import React from 'react';
 
 import VideosContext from '../context/VideosContext';
 
-import { Audio } from 'expo-av';
-
 import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from '../utils/localStorageUtils';
 
 import { FullPageSpinner } from '../components/Spinner';
 
 const Transcript = ({ route, navigation }: any): JSX.Element => {
-  const { finalResult, selection, fileBaseName, isCameraOn } = route.params;
+  const { finalResult, fileBaseName, isCameraOn } = route.params;
   const { toggleVideosRefresh } = React.useContext(VideosContext);
 
   // finalResultString contains the full transcript of the video

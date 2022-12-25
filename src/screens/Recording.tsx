@@ -46,6 +46,11 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
 
+  navigation.addListener('beforeRemove', () => {
+    console.log("Going back is disabled on this screen.");
+    return
+  });
+
   // Setup: Get permissions for camera from user first
   React.useEffect(() => {
     const asyncWrapper = async () => {
@@ -341,7 +346,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const renderCamera = () => {
     return (
       <>
-        <GoBack />
+        <GoBack  />
 
         <View style={styles.cameraToggleContainer}>
           <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
@@ -360,10 +365,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           ?
           <>
             <Camera
-            style={styles.cameraContainer}
-            type={type}
-            ref={cameraRef}
-            onCameraReady={() => setIsLoading(false) }
+              style={styles.cameraContainer}
+              type={type}
+              ref={cameraRef}
+              onCameraReady={() => setIsLoading(false) }
             >
               <View style={styles.captionContainer}>
                 <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
@@ -376,10 +381,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           </>
           :
           <Camera
-          style={styles.cameraContainer}
-          type={type}
-          ref={cameraRef}
-          onCameraReady={() => setIsLoading(false) }
+            style={styles.cameraContainer}
+            type={type}
+            ref={cameraRef}
+            onCameraReady={() => setIsLoading(false) }
           >
             {renderAudioRecordingScreen()}
           </Camera>
