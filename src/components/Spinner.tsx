@@ -52,20 +52,20 @@ const FullPageSpinner = ({ size }) => {
     >
       <ActivityIndicator size={size} />
       {
-        message 
-        ? 
+        message
+        ?
         <>
           <GoBack />
-          
+
           <View style={{ marginVertical: spacings.LARGE }}>
-            <Text style={styles.messageText}>{message}</Text> 
+            <Text style={styles.messageText}>{message}</Text>
           </View>
 
           <View style={{ marginVertical: spacings.LARGE }}>
             <ActionButton callback={deleteDataAlert} text={"Delete Data"}/>
           </View>
         </>
-        : 
+        :
         null
       }
     </LinearGradient>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: dimensions.width,
-    height: dimensions.height, 
+    height: dimensions.height,
     position: 'absolute'
   },
   messageText: {

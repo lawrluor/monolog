@@ -2,10 +2,9 @@ import React from 'react';
 import { Alert, StyleSheet, View, Text, Pressable } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
-import * as FileSystem from 'expo-file-system';
 
 import { generateRatingUri } from '../utils/localStorageUtils';
-import { createRatingFromMetadata } from '../utils/rating.ts';
+import { createRatingFromMetadata } from '../utils/rating';
 
 import VideosContext from '../context/VideosContext';
 
