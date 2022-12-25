@@ -8,7 +8,7 @@ type Props = {
 }
 
 const Player = ({ route, navigation }: Props): JSX.Element => {
-  const { video} = route.params;
+  const { video } = route.params;
 
   return (
     <VideoContainer videoData={video} navigation={navigation} />

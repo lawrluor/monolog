@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-import { useNavigation, StackActions } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import { spacings, icons, colors } from '../styles';
 
@@ -14,22 +14,22 @@ type Props = {
 
 // This component can take an optional callback function
 // But by default, will simply call navigation.goBack()
+// If going back is not possible, this component will not be returned at all
 const GoBack = ({ callback }: Props) => {
   const navigation = useNavigation();
 
   const navigateBack = () => {
-    // See https://reactnavigation.org/docs/navigation-prop/#cangoback
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      console.log('error going back');
-    }
+    navigation.goBack();
   }
 
   return (
+    navigation.canGoBack()
+    ?
     <TouchableOpacity style={styles.goBackContainer} onPress={callback ? callback : navigateBack} hitSlop={spacings.hitSlopLarge}>
       <CustomIcon style={styles.backIcon} name='back_arrow_no_circle' />
     </TouchableOpacity>
+    :
+    null
   )
 }
 
