@@ -13,7 +13,7 @@ import NewUserMessage from '../components/NewUserMessage';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
-import { comingSoonAlert, simpleAlert } from '../utils/customAlerts';
+import { comingSoonAlert, editProfileAlert, simpleAlert } from '../utils/customAlerts';
 import { getRecordingPermissions } from '../utils/permissions';
 
 import VideosContext from '../context/VideosContext';
@@ -24,7 +24,7 @@ import { readUserData } from '../utils/localStorageUtils';
 import SignInButton from '../components/SignInButton';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = true;
+const TESTING = false;
 
 const Home = ({ navigation }: any): JSX.Element => {
   const { user } = React.useContext(UserContext);
@@ -43,9 +43,7 @@ const Home = ({ navigation }: any): JSX.Element => {
 
   const navigateToProfile = async () => {
     console.log(await readUserData());
-    comingSoonAlert(() => {
-      console.log("uploading picture...");
-    });
+    editProfileAlert();
   }
 
   const navigateToPathways = async () => {
@@ -155,7 +153,6 @@ const Home = ({ navigation }: any): JSX.Element => {
             contentContainerStyle={styles.scrollContentContainerStyle}
             showsVerticalScrollIndicator={false}
           >
-
             {renderVistasSummaryHeader(videosCount)}
             {alertVisible && (videosCount < VIDEOS_THRESHOLD)
               ? <NewUserMessage navigateCallback={navigateToRecord} />
@@ -164,16 +161,17 @@ const Home = ({ navigation }: any): JSX.Element => {
             {renderWordChartSummary(videosCount)}
             {renderMoodChartSummary(videosCount)}
 
-            <Pressable onPress={() => comingSoonAlert(()=>{})} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+            <Pressable onPress={() => comingSoonAlert(null)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
               <View style={[styles.featureContainer, styles.socialContainer]}>
                 <Text style={styles.featureTitle}>Social</Text>
                 <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
               </View>
             </Pressable>
+
             <View style={[styles.featureContainer]}>
-              <SignInButton //Only for first draft
+              <SignInButton
                 background={colors.HIGHLIGHT}
-                onPress={() => { navigateToPathways() }}
+                onPress={navigateToPathways}
               >
                 <Text>PATHWAYS</Text>
               </SignInButton>
