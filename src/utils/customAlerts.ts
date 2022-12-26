@@ -19,23 +19,33 @@ export const simpleAlert = (title, message, buttonText, callback) => {
   )
 }
 
-export const editProfileAlert = () => {
+export const editProfileAlert = (callback=null) => {
   return Alert.alert(
     "Edit Profile",
     "This feature is coming soon.",
     [
-      { text: "Delete Data", onPress: deleteDataAlert, style: 'destructive' },
+      { text: "Delete Data", onPress: () => deleteDataAlert(callback), style: 'destructive' },
       { text: "OK" },
     ]
   )
 }
 
-export const deleteDataAlert = () => {
+export const deleteDataAlert = (callback=null) => {
+  const deleteDataWrapper = async () => {
+    await deleteAllData();
+
+    // The callback is called after pressing the final confirmation button.
+    // Right now, this should usually be navigation.navigate('AuthLoading')
+    if (callback) {
+      callback();
+    }
+  }
+
   return Alert.alert(
     "Warning",
     "Continuing will result in all your data on Monist being deleted.",
     [
-      { text: "Continue", onPress: deleteAllData, style: 'destructive' },
+      { text: "Continue", onPress: deleteDataWrapper, style: 'destructive' },
       { text: "Cancel", style: 'cancel' }
     ]
   )

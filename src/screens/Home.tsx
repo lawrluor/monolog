@@ -28,7 +28,7 @@ const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
 
 const Home = ({ navigation }: any): JSX.Element => {
-  const { user } = React.useContext(UserContext);
+  const { user, setUser } = React.useContext(UserContext);
   const { videosCount, isLoading } = React.useContext(VideosContext);
 
   // Optionally used to allow for closing alert/promo messages in Home
@@ -45,8 +45,15 @@ const Home = ({ navigation }: any): JSX.Element => {
   }
 
   const navigateToProfile = async () => {
-    console.log(await readUserData());
-    editProfileAlert();
+    // console.log(await readUserData());
+
+    // When user confirms they want to delete account,
+    // we delete the data in userContext, then go back to AuthLoading
+    // which handles auth state for us and should display Landing page.
+    editProfileAlert(() => {
+      setUser({});
+      navigation.navigate('AuthLoading')
+    });
   }
 
   const navigateToPathways = async () => {
