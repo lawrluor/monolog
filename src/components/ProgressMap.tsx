@@ -12,18 +12,20 @@ import {
 } from '../../assets/img/pathway-map'
 
 const ProgressMap = ({ currentProgress, total }: any): JSX.Element => {
+  
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
+
   let completedArray = [];
   let uncompletedArray = [];
   for(let mapI= 0; mapI < total-1; mapI++){
     if(mapI=== currentProgress){ 
       completedArray.push(<Image style={styles.currentPoint} key={mapI} source={{uri:getImageURI(unlocked_current)}}/>)
     } else if (mapI< currentProgress) {
-      completedArray.push(<Image style={styles.uncompletedPoint} key={mapI} source={{uri:getImageURI(unlocked_completed)}}/>)
+      completedArray.push(<Image style={styles.mapPoint} key={mapI} source={{uri:getImageURI(unlocked_completed)}}/>)
     } else {
-      uncompletedArray.push(<Image style={styles.uncompletedPoint} key={mapI} source={{uri:getImageURI(locked_prompt)}}/>)
+      uncompletedArray.push(<Image style={styles.mapPoint} key={mapI} source={{uri:getImageURI(locked_prompt)}}/>)
     }
   }
   if(currentProgress === total-1) {
@@ -44,37 +46,27 @@ const styles = StyleSheet.create({
   progressMap: {
     margin: spacings.MASSIVE,
     padding: spacings.HUGE,
-    flex: 1,
   },
-  mapDot: {
-    ...icons.SMALL,
-    color: colors.HIGHLIGHT,
-    margin: spacings.HUGE,
-  },
-  uncompletedPoint: {
-    aspectRatio: 1.5,
-    // height: 100,
+  mapPoint: {
+    aspectRatio: 1.25,
     width: 80,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   uncompletedFinal: {
-    aspectRatio: .95,
-    // height: 100,
+    aspectRatio: .75,
     width: 50,
     resizeMode: 'contain',
     marginRight: spacings.HUGE,
   },
   completedFinal: {
     aspectRatio: 1.8,
-    // height: 100,
     width: 90,
-    bottom: 12,
+    bottom: 7,
     right: 20,
     resizeMode: 'contain'
   },
   currentPoint: {
-    aspectRatio: 1.8,
-    // height: 100,
+    aspectRatio: 1.55,
     width: 90,
     bottom: 12,
     resizeMode: 'contain'

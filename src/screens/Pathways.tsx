@@ -45,7 +45,9 @@ const Pathways = ({ navigation }: any): JSX.Element => {
               pathwaysData.map((item, index) => {
                 return (
                   <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
-                    <GoForward callback={() => { navigateToFullPathway(item.name) }} />
+                    <View style={styles.forwardArrow}>
+                      <GoForward callback={() => { navigateToFullPathway(item.name) }} />
+                    </View>
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>
@@ -112,8 +114,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   forwardArrow: {
-    top: spacings.HUGE,
-    right: 0,
+    // top:0,
+    // padding: spacings.HUGE,
+    // margin: spacings.HUGE,
+    position: 'absolute',
+    bottom: '125%',
+    left: '80%',
   },
 });
 

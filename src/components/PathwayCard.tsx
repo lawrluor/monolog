@@ -5,7 +5,7 @@ import { pathwaysMap } from '../utils/pathwaysData'
 import ProgressBar from './ProgressBar';
 import UserContext from '../context/UserContext';
 
-const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
+const PathwayCard = ({ children, pathwayName, navigation }: any): JSX.Element => {
   const MAX_LEVELS = 10
   const { user, setUser } = React.useContext(UserContext);
 
