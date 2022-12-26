@@ -36,8 +36,9 @@ const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
 
 const styles = StyleSheet.create({
   featureTitle: {
-    ...text.h3,
+    ...text.h4,
     margin: spacings.MEDIUM,
+    paddingLeft: spacings.SMALL,
     marginBottom: spacings.SMALL,
     color: colors.PRIMARY
   },

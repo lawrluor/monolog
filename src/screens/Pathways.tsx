@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     paddingVertical: spacings.HUGE,
-    paddingHorizontal: spacings.HUGE,
+    // paddingHorizontal: spacings.MEDIUM,
     justifyContent: 'space-between',
     alignItems: 'flex-end'
   },
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   title: {
-    ...text.h2
+    ...text.h2,
   },
   hidden: {
     display: 'none',
