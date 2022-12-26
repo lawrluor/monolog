@@ -48,6 +48,16 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
     )
   }
 
+  // Set button text to Begin/Continue pathway based on user's progress
+  const beginOrContinue = (pathwayName: string) => {
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    if (currentLevel > 1) {
+      return "Continue Pathway"
+    } else {
+      return "Begin Pathway"
+    }
+  }
+
   return (
     <View style={styles.container}>
       <GoBack />
@@ -67,7 +77,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
           <SignInButton background={colors.HIGHLIGHT}
             onPress={() => { navigateToPrompt(pathwayName)}}
             >
-            <Text style={text.h4}> Record next pathway </Text>
+            <Text style={text.h4}> {beginOrContinue(pathwayName)} </Text>
           </SignInButton>
         </View>
       </SafeAreaBottom>

@@ -26,6 +26,16 @@ const Pathways = ({ navigation }: any): JSX.Element => {
     navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
   }
 
+  // Set button text to Begin/Continue pathway based on user's progress
+  const beginOrContinue = (pathwayName: string) => {
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    if (currentLevel > 1) {
+      return "Continue Pathway"
+    } else {
+      return "Begin Pathway"
+    }
+  }
+
   return (
     <View style={styles.container}>
       <SafeAreaTop/>
@@ -56,7 +66,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                       <SignInButton background={colors.HIGHLIGHT}
                         onPress={() => navigateToPrompt(item.name)}
                         >
-                        <Text style={text.h4}> Start Pathway </Text>
+                        <Text style={text.h4}> {beginOrContinue(item.name)} </Text>
                       </SignInButton>
                     </View>
                   </PathwayCard>
