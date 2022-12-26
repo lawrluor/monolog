@@ -118,8 +118,8 @@ const styles = StyleSheet.create({
     // padding: spacings.HUGE,
     // margin: spacings.HUGE,
     position: 'absolute',
-    bottom: '125%',
-    left: '80%',
+    bottom: '122.5%',
+    left: '78%',
   },
 });
 
