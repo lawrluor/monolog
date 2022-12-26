@@ -50,12 +50,34 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
 
   // When the user reaches transcript page to increment the scores on their pathways
   const incrementPathwayProgress = () => {
+    const MAX_LEVELS = 10
     const pathwayName = user.currentPathway
-    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    const currentPathwayLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
+    const timesCompleted = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['timesCompleted'] : 0
+    if ( currentPathwayLevel === MAX_LEVELS ) {
+      let updates = {
+        pathways: {
+          ...user.pathways,
+          [pathwayName]: {
+            currentLevel: 1,
+            timesCompleted: timesCompleted+1
+          }
+        },
+        // Reset current pathway so that if a user records a non pathway prompt
+        // it does not increment the previous pathway
+        currentPathway: " "
+      }
+      let updatedUser = { ...user, ...updates };
+      setUser(updatedUser)
+      return
+    }
     let updates = {
       pathways: {
         ...user.pathways,
-        [pathwayName]: currentLevel + 1
+        [pathwayName]: {
+          currentLevel: currentPathwayLevel + 1,
+          timesCompleted: timesCompleted
+        }
       },
       // Reset current pathway so that if a user records a non pathway prompt
       // it does not increment the previous pathway
