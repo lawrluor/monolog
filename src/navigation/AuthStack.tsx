@@ -14,6 +14,8 @@ type AuthStackParams = {
 
 const Stack = createNativeStackNavigator<AuthStackParams>(); // Generic
 
+// NOTE: This entire navigator component is not used as the moment,
+// as creating user accounts is not supported.
 const AuthNavigator = (): JSX.Element => {
   return (
     <Stack.Navigator initialRouteName="Landing">
