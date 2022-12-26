@@ -13,7 +13,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
   // Max number of prompts a pathway may contain
   const MAX_LEVELS = 10
-  const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+  const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
   const currentPathway = pathwaysMap.get(pathwayName);
 
   const getImageURI = (img) => {
@@ -23,7 +23,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const navigateToPrompt = async (pathwayName: string) => {
     let updatedUser = { ...user, ...{ currentPathway: pathwayName } }
     setUser(updatedUser)
-    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    // const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
     navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
   }
   // Given the long description for a pathway it parses the description
@@ -68,7 +68,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
         >
           <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
           <Text style={styles.title}>
-            {pathwayName} --- {currentPathway.progress[0]} stars
+            {pathwayName} --- {user['pathways'][pathwayName]['timesCompleted']} stars
           </Text>
           <BodyText></BodyText>
           <ProgressMap currentProgress={currentLevel} total={MAX_LEVELS}/>  

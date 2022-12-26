@@ -15,14 +15,13 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
   let pathwaysPromptsData = JSON.stringify(pathwaysPrompts)
   pathwaysPromptsData = JSON.parse(pathwaysPromptsData)
 
-  const prompt = pathwaysPromptsData[pathway][level]
+  const prompt = pathwaysPromptsData[pathway][level-1]
   const navigateToRecording = () => {
     navigation.navigate('Recording');
   }
   const backAndReset = async () => {
     let updatedUser = { ...user, ...{ currentPathway: " " } }
     setUser(updatedUser)
-    console.log('USER ON PROMPT', user)
     navigation.goBack()
   }
   return (

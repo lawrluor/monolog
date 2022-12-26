@@ -300,11 +300,17 @@ export const Recording = ({ route, navigation }: any): JSX.Element => {
     )
   }
 
+  const backAndReset = async () => {
+    let updatedUser = { ...user, ...{ currentPathway: " " } }
+    setUser(updatedUser)
+    navigation.goBack()
+  }
+
   const renderCamera = () => {
     if (!hasPermission) {
       return (
         <>
-          <GoBack />
+          <GoBack callback={() => backAndReset()}/>
 
           <View style={[styles.centeredContainer]}>
             <Text style={{ textAlign: 'center' }}>No access to camera or microphone. You must grant the app permission in order to continue. If you cannot change the permissions, please delete and reinstall the app.</Text>
@@ -314,7 +320,7 @@ export const Recording = ({ route, navigation }: any): JSX.Element => {
     } else {
       return (
         <>
-          <GoBack />
+          <GoBack callback={() => backAndReset()}/>
 
           <View style={styles.flipCameraContainer}>
             <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>

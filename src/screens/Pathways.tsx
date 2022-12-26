@@ -22,7 +22,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
   const navigateToPrompt = async (pathwayName: string) => {
     let updatedUser = { ...user, ...{ currentPathway: pathwayName } }
     setUser(updatedUser)
-    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
     navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
   }
 
