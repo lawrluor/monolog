@@ -7,21 +7,22 @@ import { NavigationHelpersContext, useNavigation } from '@react-navigation/nativ
 import { pathwaysPrompts } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
 import { removeCurrentPathway, updateCurrentPathway } from '../utils/updatePathwaysUser';
-import { readUserData } from '../utils/localStorageUtils';
+import UserContext from '../context/UserContext';
 
 const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
   const { pathway, level } = route.params
+  const { user, setUser } = React.useContext(UserContext);
   let pathwaysPromptsData = JSON.stringify(pathwaysPrompts)
   pathwaysPromptsData = JSON.parse(pathwaysPromptsData)
 
   const prompt = pathwaysPromptsData[pathway][level]
-  const navigateToRecording = (pathwayName: string) => {
-    navigation.navigate('Recording', { pathway:pathwayName });
+  const navigateToRecording = () => {
+    navigation.navigate('Recording');
   }
   const backAndReset = async () => {
-    // reset users current pathway
-    await removeCurrentPathway();
-    console.log(await readUserData())
+    let updatedUser = { ...user, ...{ currentPathway: " " } }
+    setUser(updatedUser)
+    console.log('USER ON PROMPT', user)
     navigation.goBack()
   }
   return (
@@ -31,7 +32,7 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
       <View style={styles.background}>
         <Text style={styles.promptNum}>Prompt #{level}</Text>
         <Text style={styles.prompt}>{prompt}</Text>
-        <SignInButton background={colors.HIGHLIGHT} onPress={() => navigateToRecording(pathway)}>
+        <SignInButton background={colors.HIGHLIGHT} onPress={() => navigateToRecording()}>
           <Text style={text.h3}> Record </Text>
         </SignInButton>
       </View>

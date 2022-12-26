@@ -7,7 +7,6 @@ import { Audio } from 'expo-av';
 import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from '../utils/localStorageUtils';
 
 import { FullPageSpinner } from '../components/Spinner';
-import { incrementUserProgress, updateCurrentPathway } from '../utils/updatePathwaysUser';
 import UserContext from '../context/UserContext';
 
 const Transcript = ({ route, navigation }: any): JSX.Element => {
@@ -49,11 +48,28 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
     asyncWrapper();
   }, [])
 
+  // When the user reaches transcript page to increment the scores on their pathways
+  const incrementPathwayProgress = () => {
+    const pathwayName = user.currentPathway
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    let updates = {
+      pathways: {
+        ...user.pathways,
+        [pathwayName]: currentLevel + 1
+      },
+      // Reset current pathway so that if a user records a non pathway prompt
+      // it does not increment the previous pathway
+      currentPathway: " "
+    }
+    let updatedUser = { ...user, ...updates };
+    setUser(updatedUser)
+  }
+
   const navigateToPlayer = () => {
     // TODO: increment their score for that pathway if there is one
     console.log("USER IN TRANSCRIPT", user)
-    if (user.currentPathway !== "") {
-      incrementUserProgress(user.currentPathway)
+    if (user.currentPathway !== " ") {
+      incrementPathwayProgress()
     }
     navigation.navigate('Player', {
       video: videoData,

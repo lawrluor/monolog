@@ -20,7 +20,7 @@ const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
 
   // If the current pathway exists in the user's data then that means they have started that pathway.
   // If they have started that pathway set the current level or score to their level otherwise it is 0
-  const currentLevel = (pathwayName in user['pathways'])? user['pathways'][pathwayName]['currentLevel']-1 : 0
+  const currentLevel = (pathwayName in user['pathways'])? user['pathways'][pathwayName]-1 : 0
   const imageHeader = Image.resolveAssetSource(currentPathway.image).uri
   return (
     <View style={styles.featureContainer}>

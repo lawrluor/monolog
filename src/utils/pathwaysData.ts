@@ -1,107 +1,63 @@
 import {
   procrastination_header,
   anxiety_header,
-  sleep_header,
-  trauma_ptsd_header,
-  self_esteem_header,
-  anger_header,
 } from '../../assets/img/pathway-headers'
 
 export const pathwaysData = [
   {
     name: "Procrastination",
-    short_desc: "Procrastination often follows a cycle. By identifying and understanding the steps within we can break out from this cycle.",
-    long_desc: `
-    This should be bolded
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.`,
+    short_desc: "A prompt today, keeps the procrastination away.",
+    long_desc: `Procrastination often follows a cycle. By identifying and understanding the steps within this cycle, you can learn how to better manage your emotions around procrastination and improve on your habits for the future.`,
     progress: [0,3]
   },
   {
-    name: "Anxiety",
-    short_desc: "Anxiety hurts",
-    long_desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.",
+    name: "General Anxiety",
+    short_desc: "You are not your thoughts",
+    long_desc: "Learn more about chronic worrying and generalised anxiety disorder as well as suggested strategies for how you can manage your worrying and anxiety through this pathway",
     progress: [0,2]
   },
-  {
-    name: "trauma_ptsd",
-    short_desc: "Anxiety hurts",
-    long_desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.",
-  }, 
-  {
-    name: "Anger",
-    short_desc: "Anxiety hurts",
-    long_desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.",
-  },
-  {
-    name: "Self-Esteem",
-    short_desc: "Anxiety hurts",
-    long_desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.",
-  },
-  {
-    name: "Sleep",
-    short_desc: "Anxiety hurts",
-    long_desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.",
-  }
 ]
 
 export const pathwaysMap = new Map();
   // progress => [# times completed, current prompt #, total prompts]
 pathwaysMap.set('Procrastination', {
   name: "Procrastination",
-  short_desc: "Anxiety hurts",
-  long_desc: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem.<b>This should be bolded<b>Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.`,
+  short_desc: "A prompt today, keeps the procrastination away",
+  long_desc: `Procrastination often follows a cycle. By identifying and understanding the steps within this cycle, you can learn how to better manage your emotions around procrastination and improve on your habits for the future.`,
   image: procrastination_header,
   progress: [0, 3, 10],
   })
-pathwaysMap.set('Anxiety', {
-  name: "Anxiety",
-  short_desc: "Anxiety hurts",
-  long_desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.",
+pathwaysMap.set('General Anxiety', {
+  name: "General Anxiety",
+  short_desc: "You are not your thoughts",
+  long_desc: "Learn more about chronic worrying and generalised anxiety disorder as well as suggested strategies for how you can manage your worrying and anxiety through this pathway",
   image: anxiety_header,
   progress: [0, 3, 10],
-  })
-  pathwaysMap.set('trauma_ptsd', { 
-    name: "Trauma & PTSD",
-    short_desc: "Anxiety hurts",
-    long_desc: `
-    This should be bolded
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. 
-    This should be bolded
-    Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.`,
-    image: trauma_ptsd_header,
-    progress: [0, 3, 10],
-  })
-  pathwaysMap.set('Anger', { 
-    name: "Anger",
-    short_desc: "Anxiety hurts",
-    long_desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.",
-    image: anger_header,
-    progress: [0, 3, 10],
-  })
-  pathwaysMap.set('Self-Esteem', { 
-    name: "Self-Esteem",
-    short_desc: "Anxiety hurts",
-    long_desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.",
-    image: self_esteem_header,
-    progress: [0, 3, 10],
-  })
-  pathwaysMap.set('Sleep', { 
-    name: "Sleep",
-    short_desc: "Anxiety hurts",
-    long_desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim ac ipsum tempus vehicula. Quisque at leo pharetra, venenatis metus sit amet, efficitur justo. Sed vel tortor metus. Duis mattis, dolor quis dapibus semper, elit purus lobortis massa, eget mollis velit tellus sed sem. Phasellus ante ipsum, consectetur quis interdum et, porta sit amet nibh. Suspendisse et neque ut sem pretium varius. Mauris eget tortor et lectus condimentum tempus. Proin euismod leo eu orci congue ornare. Mauris ac odio vel arcu molestie cursus quis et erat. Mauris odio nisi, interdum nec lacus ac, egestas pretium nisi. Donec ante quam, interdum eu molestie nec, maximus a quam.",
-    image: sleep_header,
-    progress: [0, 3, 10],
   })
 
 export const pathwaysPrompts = {
   "Procrastination": [
-    "Why do you procrastinate?",
-    "Just do it already",
-    "You're useless",
-    "Bruh",
+    "What is a goal or task that you have been procrastinating on completing?",
+    "Describe the discomfort that might come up when attempting to approach a task/goal",
+    "Why do you think you might procrastinate? Share some emotions or thoughts that commonly arise",
+    "What sort of justifications or reasons do you use to avoid approaching a goal or task?",
+    "What are some procrastination activities you engage in to distract yourself from the goal or task that you need to be completing?",
+    "What negative consequences do you see from procrastinating? How do they enable you to continue procrastinating in the future?",
+    "Reflecting back on your procrastination cycle, how can you adjust the unhelpful emotions or thoughts that come along with the initial discomfort when approaching a task or goal? What can you tell yourself instead?",
+    "How can you dismiss the justifications or reasons you might typically use when procrastinating? What are encouraging messages you can tell yourself instead?",
+    "What are positive results we can see from not procrastinating? How do they enable you to avoid procrastinating in the future?",
+    "How can we continue to avoid procrastinating through practical strategies? How can we change this habit?",
   ],
-  "Anxiety": [
-    "Did you try going on a walk?",
-    "You just need to drink some water"
+  "General Anxiety": [
+    "Can you be absolutely certain about everything in life? Share more about how you feel about this.",
+    "What are the advantages of requiring certainty in life? How has needing certainty in life been helpful to you?",
+    "What are the advantages of requiring certainty in life? How has needing certainty in life been helpful to you?",
+    "What are the disadvantages of requiring certainty in life? How has needing certainty in life been unhelpful to you or detrimental to your life?",
+    "Acknowledge the presence of worries about being uncertain. What do you notice yourself thinking, feeling and doing when you are needing certainty?",
+    "Don’t engage with your worries or try to control them, just observe them with interest and describe your experience to yourself. What can you tell yourself to help you let go of your need for certainty?",
+    "What can you tell yourself to help when your mind wanders back to needing certainty?  What can you tell yourself to help you be more present-focused?",
+    "Let's practice with a specific scenario. What is something that is worrying you or has worried you recently?",
+    "With this specific scenario, what do you notice yourself thinking, feeling, and doing when you are worrying?",
+    "With this specific scenario, what can you tell yourself to help when your mind wanders back to needing certainty?  What can you tell yourself to help you be more present-focused?",
   ],
 }
