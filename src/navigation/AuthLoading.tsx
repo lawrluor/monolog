@@ -11,17 +11,18 @@ const AuthLoading = ({ navigation }: any) => {
 
   const authenticate = async () => {
     if (user && user?.onboarded) {
-      // disallow returning to AuthLoading screen using reset
+      // Once user is "signed in", disallow returning to AuthLoading screen using reset
       // this wipes the AuthLoading screen and starts with a fresh stack
       navigation.reset({
         index: 0,
         routes: [{ name: 'AppStack' }]
       });
     } else {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'OnBoardingStack' }]
-      });
+      // Note: Must use .navigate(), so AuthLoading is still in the navigation stack
+      // This is because AuthLoading is listening for changes to the user state
+      // This also means that when Onboarding, can go back to Landing screen
+      // TODO: If creating sign out method, might have to handle a bit differently
+      navigation.navigate('OnBoardingStack');
     }
   }
 

@@ -38,7 +38,7 @@ const OnBoarding1 = (): JSX.Element => {
     }
   }, [screenNumber]);
 
-  // NOTE: because we allow skipping the forms completely, 
+  // NOTE: because we allow skipping the forms completely,
     // only validate a given field if the user has entered info already into that field.
     // setErrorMessage() will let us conditionally render error messages via renderErrorMessage()
   // HOWEVER, if user presses "Skip for now", it skips all this. See handleFormSkip()
@@ -47,7 +47,7 @@ const OnBoarding1 = (): JSX.Element => {
     // Case 3: User enters properly formatted email, leaving other fields blank. Returns: true
   const validateData = (): boolean => {
     if (email && !validateEmail(email)) {
-      setErrorMessage("Email is not formatted properly."); 
+      setErrorMessage("Email is not formatted properly.");
       return false;
     } else if (firstName && !validateName(firstName)) {
       setErrorMessage("First name is not formatted properly.");
@@ -66,7 +66,7 @@ const OnBoarding1 = (): JSX.Element => {
       return false;
     } else {
       // if passes all validation checks, return true
-      return true;  
+      return true;
     }
   }
 
@@ -79,7 +79,7 @@ const OnBoarding1 = (): JSX.Element => {
     }
   }
 
-  // NOTE: clears all states, 
+  // NOTE: clears all states,
   // so wouldn't work super well for more than 2 onboarding screens without additional tweaking
   const handleFormSkip = () => {
     clearTextStates();
@@ -131,8 +131,8 @@ const OnBoarding1 = (): JSX.Element => {
   // renders validation error if any exists
   const renderErrorMessage = (): JSX.Element | null => {
     return (
-        errorMessage 
-        ? 
+        errorMessage
+        ?
         <View style={{ marginVertical: spacings.MEDIUM }}>
           <Text style={[text.h4, { color: colors.ERROR, textAlign: 'center'}]}>{errorMessage}</Text>
         </View>
@@ -146,9 +146,9 @@ const OnBoarding1 = (): JSX.Element => {
   const handleTextOnFinish = (index: number) => {
     // TODO: handle index+1 better to avoid out of range errors
     let nextIndex: number = index + 1;
-    selectTextRef(nextIndex);  
+    selectTextRef(nextIndex);
 
-    // Alternatively: Skip to end of onboarding. 
+    // Alternatively: Skip to end of onboarding.
     // Discuss: The UX of having a profile pic page that doesn't work doesn't seem to make sense.
   }
 
@@ -176,7 +176,7 @@ const OnBoarding1 = (): JSX.Element => {
           <DropDown title={"Gender"} options={genderOptions} selectedValue={gender} setSelectedValue={setGender}  />
           <DropDown title={"Pronouns"} options={pronounOptions} selectedValue={pronouns} setSelectedValue={setPronouns}  />
         </View>
-      )  
+      )
     }
   }
 
@@ -186,7 +186,7 @@ const OnBoarding1 = (): JSX.Element => {
         return (
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Hello!</Text>
-            
+
             <View style={styles.subTitleContainer}>
               <Text style={[styles.subTitle, {'textAlign': 'center'}]}>Before we start, we just have a few questions...</Text>
             </View>
@@ -215,11 +215,11 @@ const OnBoarding1 = (): JSX.Element => {
 
         <View style={styles.skipTextContainer}>
           {screenNumber === 2 && <View style={{ marginBottom: spacings.MEDIUM }}><SignInButton text={"Finish"} onPress={handleFormSubmit} background={colors.BACKGROUND}/></View>}
-          
+
           <Pressable onPress={handleFormSkip} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
             <Text style={styles.linkText}>Skip For Now</Text>
           </Pressable>
-          
+
           {renderErrorMessage()}
         </View>
       </View>
@@ -273,7 +273,7 @@ export const styles = StyleSheet.create({
   // DEBUG: Styling Bug 1: for some reason, alignItems is NEEDED for container to show.
   container: {
     flex: 1,
-    alignItems: 'center',  
+    alignItems: 'center',
   },
   formContainer: {
     flex: 1,
@@ -336,9 +336,9 @@ export const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     color: colors.BACKGROUND
   },
-  // DEBUG: Styling Bug 2. 
+  // DEBUG: Styling Bug 2.
   // Although parent (styles.container) should be able to expand to full width using flex: 1,
-  // It isn't doing that. So we need to define an invisible child component within the container, 
+  // It isn't doing that. So we need to define an invisible child component within the container,
   // with width 100%, so that the base container will expand to the full width of the screen
   fullWidth: {
     opacity: 0,  // make invisible
