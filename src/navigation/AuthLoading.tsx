@@ -20,7 +20,7 @@ const AuthLoading = ({ navigation }: any) => {
     } else {
       navigation.reset({
         index: 0,
-        routes: [{ name: 'OnboardingStack' }]
+        routes: [{ name: 'OnBoardingStack' }]
       });
     }
   }

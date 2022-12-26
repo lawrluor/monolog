@@ -130,11 +130,11 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
 
     if (routes?.name === 'Rating') {
       // Two routes ago we were at Rating
-      navigation.pop();
-      navigation.pop();
+      navigation.goBack();
+      navigation.goBack();
     } else {
       // One route ago we were at TabNavigator/Gallery
-      navigation.pop();  // simply go back as usual
+      navigation.goBack();  // simply go back as usual
     }
   }
 
