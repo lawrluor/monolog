@@ -6,7 +6,6 @@
 // TODO: consider refactoring/moving code handling local storage from other files to here.
 
 import * as FileSystem from 'expo-file-system';
-import { resolvePath } from 'react-native-reanimated/lib/types/lib/reanimated2/animation/styleAnimation';
 import { filteredWords, removePunctuation } from './textProcessing';
 import { createRatingFromFile } from './rating';
 

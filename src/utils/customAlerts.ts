@@ -19,13 +19,24 @@ export const simpleAlert = (title, message, buttonText, callback) => {
   )
 }
 
+export const editProfileAlert = () => {
+  return Alert.alert(
+    "Edit Profile",
+    "This feature is coming soon.",
+    [
+      { text: "Delete Data", onPress: deleteDataAlert, style: 'destructive' },
+      { text: "OK" },
+    ]
+  )
+}
+
 export const deleteDataAlert = () => {
   return Alert.alert(
     "Warning",
     "Continuing will result in all your data on Monist being deleted.",
     [
-      { text: "Continue", onPress: deleteAllData},
-      { text: "Cancel"}
+      { text: "Continue", onPress: deleteAllData, style: 'destructive' },
+      { text: "Cancel", style: 'cancel' }
     ]
   )
 }
@@ -35,7 +46,7 @@ export const feedbackConfirmationSuccess = () => {
     "Feedback Sent",
     "Thank you for sending the Monist team your feedback!",
     [
-      { 
+      {
         text: "OK"
       }
     ]
@@ -47,14 +58,14 @@ export const feedbackConfirmationFailure = () => {
     "Note",
     `Your feedback was not submitted.`,
     [
-      { 
+      {
         text: "OK"
       },
     ]
-  );    
+  );
 }
 
-export const comingSoonAlert = (callback) => {
+export const comingSoonAlert = (callback=null) => {
   return simpleAlert(
     title="Hold up!",
     message="This feature is coming soon.",
