@@ -9,20 +9,21 @@ import PathwayFull from './PathwayFull';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
-import { updateCurrentPathway } from '../utils/updatePathwaysUser';
 import GoForward from '../components/GoForward';
+import UserContext from '../context/UserContext';
 
 const Pathways = ({ navigation }: any): JSX.Element => { 
+  const { user, setUser } = React.useContext(UserContext);
 
   const navigateToFullPathway = (pathwayName: string) => {
     navigation.push('PathwayFull', { pathwayName: pathwayName })
   }
 
   const navigateToPrompt = async (pathwayName: string) => {
-    await updateCurrentPathway(pathwayName);
-    console.log('PATHWAY NAME', pathwayName)
-    const level = pathwaysMap.get(pathwayName).progress[1]
-    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: level});
+    let updatedUser = { ...user, ...{ currentPathway: pathwayName } }
+    setUser(updatedUser)
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
   }
 
   return (

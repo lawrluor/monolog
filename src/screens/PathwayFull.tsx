@@ -5,24 +5,26 @@ import SignInButton from '../components/SignInButton';
 import GoBack from '../components/GoBack';
 import { pathwaysMap } from '../utils/pathwaysData'
 import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
-import { updateCurrentPathway } from '../utils/updatePathwaysUser';
 import ProgressMap from '../components/ProgressMap';
 import UserContext from '../context/UserContext';
 
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const { pathwayName } = route.params;
   const { user, setUser } = React.useContext(UserContext);
+  // Max number of prompts a pathway may contain
   const MAX_LEVELS = 10
-  const userCurrentLevel = user['pathways'][pathwayName]? user['pathways'][pathwayName]['currentLevel'] : 1
+  const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
   const currentPathway = pathwaysMap.get(pathwayName);
 
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
-  const navigateToPrompt = (pathwayName: string) => {
-    updateCurrentPathway(pathwayName);
-    const level = pathwaysMap.get(pathwayName).progress[1] //TODO: Replace with user functions
-    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: level});
+
+  const navigateToPrompt = async (pathwayName: string) => {
+    let updatedUser = { ...user, ...{ currentPathway: pathwayName } }
+    setUser(updatedUser)
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
   }
   // Given the long description for a pathway it parses the description
   // to add headers where '<b>' tag is found in the text
@@ -59,7 +61,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
             {pathwayName} --- {currentPathway.progress[0]} stars
           </Text>
           <BodyText></BodyText>
-          <ProgressMap currentProgress={userCurrentLevel} total={MAX_LEVELS}/>  
+          <ProgressMap currentProgress={currentLevel} total={MAX_LEVELS}/>  
         </ScrollView>
         <View style={styles.recordButton}>
           <SignInButton background={colors.HIGHLIGHT}
