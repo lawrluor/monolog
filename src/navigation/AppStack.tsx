@@ -42,7 +42,7 @@ const TabNavigator = ({ setUser }): JSX.Element => {
   const [shouldDisplay, setShouldDisplay] = React.useState(true);
 
   // Constants for rendering TabNavigator conditionally
-  const INITIAL_TAB_ROUTE = "Home";
+  const INITIAL_TAB_ROUTE = "Rating";
   const navigation = useNavigation();
   const route = useRoute();
   const tabHiddenRoutes = ["Recording"];
@@ -111,7 +111,7 @@ const TabNavigator = ({ setUser }): JSX.Element => {
               iconName = focused ? 'feedback_outline' : 'feedback_outline';  // TODO get custom Feedback icons from Greg
               break;
             default:
-              iconName = "not_found"
+              iconName = 'feedback_outline';  // "not_found"
               break;
           }
           return <CustomIcon name={iconName} size={size} color={color} />;
@@ -132,6 +132,7 @@ const TabNavigator = ({ setUser }): JSX.Element => {
         listeners={({navigation}) => ({blur: () => navigation.setParams({screen: undefined})})}
       />
 
+      <Tab.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
       <Tab.Screen name="Vistas" component={Vistas} options={{ headerShown: false }} />
       <Tab.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
     </Tab.Navigator>
