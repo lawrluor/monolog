@@ -3,15 +3,14 @@ import { Pressable, Image, StyleSheet } from 'react-native';
 
 import { dimensions } from '../styles';
 
-const TutorialImageModal = ({ children, modalShown, imageUri }: any) => {
-	const [tutorialShown, setTutorialShown] = React.useState<boolean>(modalShown);
-
+// Always render this on top of other elements, hence zIndex style
+const TutorialImageModal = ({ children, shown, setShown, imageUri }: any) => {
 	return (
 		<>
 			{
-				tutorialShown
+				shown
 				&&
-				<Pressable style={{ zIndex: 100 }} onPress={() => setTutorialShown(!tutorialShown)}>
+				<Pressable style={{ zIndex: 999 }} onPress={() => setShown(!shown)}>
 					<Image style={styles.tutorialImage} source={ imageUri }/>
 				</Pressable>
 			}

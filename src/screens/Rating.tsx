@@ -10,16 +10,16 @@ import VideosContext from '../context/VideosContext';
 
 import GoBack from '../components/GoBack';
 import SignInButton from '../components/SignInButton';
-
-import { containers, text, dimensions, spacings, colors, icons } from '../styles';
 import TutorialImageModal from '../components/TutorialImageModal';
 
-const Rating = ({ route, navigation }): JSX.Element => {
-  const { moodData } = React.useContext(VideosContext);
+import { containers, text, dimensions, spacings, colors, icons } from '../styles';
 
-  const [emojis, setEmojis] = React.useState(['😥','😐','🙂','😃', '😍']);
+const Rating = ({ route, navigation }): JSX.Element => {
+  const { moodData, videosCount } = React.useContext(VideosContext);
+
+  const emojis = ['😥','😐','🙂','😃','😍'];
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
-  const [tutorialShown, setTutorialShown] = React.useState<boolean>(true);
+  const [tutorialShown, setTutorialShown] = React.useState<boolean>(videosCount < 1);
 
   // Temporary for testing
   route.params = { fileBaseName: 'test', finalResult: {}, isCameraOn: true}
@@ -83,7 +83,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
   }
 
   return (
-    <TutorialImageModal modalShown={tutorialShown} imageUri={require('../../assets/img/tutorials/rating.jpg')}>
+    <TutorialImageModal shown={tutorialShown} setShown={setTutorialShown} imageUri={require('../../assets/img/tutorials/rating.jpg')}>
       <LinearGradient
           // Background Linear Gradient
           colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}

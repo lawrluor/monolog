@@ -132,7 +132,6 @@ const TabNavigator = ({ setUser }): JSX.Element => {
         listeners={({navigation}) => ({blur: () => navigation.setParams({screen: undefined})})}
       />
 
-      <Tab.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
       <Tab.Screen name="Vistas" component={Vistas} options={{ headerShown: false }} />
       <Tab.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
     </Tab.Navigator>

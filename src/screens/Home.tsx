@@ -10,6 +10,7 @@ import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
 import NewUserMessage from '../components/NewUserMessage';
+import TutorialImageModal from '../components/TutorialImageModal';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
@@ -32,6 +33,8 @@ const Home = ({ navigation }: any): JSX.Element => {
 
   // Optionally used to allow for closing alert/promo messages in Home
   const [alertVisible, setAlertVisible] = React.useState<boolean>(false);
+  const [tutorial1Shown, setTutorial1Shown] = React.useState<boolean>(videosCount < 1);
+  const [tutorial2Shown, setTutorial2Shown] = React.useState<boolean>(videosCount < 1);
 
   const navigateToVistas = () => {
     navigation.navigate('Vistas');
@@ -122,8 +125,12 @@ const Home = ({ navigation }: any): JSX.Element => {
     };
   }, [videosCount, isLoading])
 
+  // There are two TutorialImageModals that appear on the home screen for new users.
+  // They each have their separate state for being shown or not shown.
+  // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShown state toggles.
   return (
-    <>
+    <TutorialImageModal shown={tutorial1Shown} setShown={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')}>
+    <TutorialImageModal shown={tutorial2Shown} setShown={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home3.jpg')}>
       <SafeAreaTop />
 
       <SafeAreaBottom>
@@ -136,7 +143,7 @@ const Home = ({ navigation }: any): JSX.Element => {
 
             <View>
               <Text style={styles.subTitle}>Welcome,</Text>
-              <Text style={styles.profileTitle}>{user.firstName || "Journaler!"}</Text>
+              <Text style={styles.profileTitle}>{user?.firstName || "Journaler!"}</Text>
             </View>
 
             <View>
@@ -181,7 +188,8 @@ const Home = ({ navigation }: any): JSX.Element => {
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>
-    </>
+    </TutorialImageModal>
+    </TutorialImageModal>
   )
 }
 
