@@ -8,9 +8,13 @@ import { pathwaysData } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
 import GoForward from '../components/GoForward';
 import UserContext from '../context/UserContext';
+import TutorialImageModal from '../components/TutorialImageModal';
+import { FullPageSpinner, Spinner } from '../components/Spinner';
 
 const Pathways = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [tutorialShown, setTutorialShown] = React.useState<boolean>(false);
 
   const navigateToFullPathway = (pathwayName: string) => {
     navigation.push('PathwayFull', { pathwayName: pathwayName })
@@ -39,46 +43,59 @@ const Pathways = ({ navigation }: any): JSX.Element => {
   }
 
   return (
-    <View style={styles.container}>
-      <SafeAreaTop/>
-      <SafeAreaBottom transparent>
-        <LinearGradient
-          colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-          style={styles.container}
-        >
-          <ScrollView
-            style={styles.bodyContainer}
-            contentContainerStyle={styles.scrollContentContainerStyle}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.headerContainer}>
-              <Text style={styles.title}>Pathways</Text>
-            </View>
-            {
-              pathwaysData.map((item, index) => {
-                return (
-                  <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
-                    <View style={styles.forwardArrow}>
-                      <GoForward callback={() => { navigateToFullPathway(item.name) }} />
-                    </View>
-                    <Text style={[text.p, styles.featureDescription]}>
-                      {item.short_desc}
-                    </Text>
-                    <View style={ styles.navigateButton }>
-                      <SignInButton background={colors.HIGHLIGHT}
-                        onPress={() => navigateToPrompt(item.name)}
-                        >
-                        <Text style={text.h4}> {beginOrContinue(item.name)} </Text>
-                      </SignInButton>
-                    </View>
-                  </PathwayCard>
-                )
-              })
-            }
-          </ScrollView>
-        </LinearGradient>
-      </SafeAreaBottom>
-    </View>
+    <TutorialImageModal
+      shown={tutorialShown}
+      setShown={setTutorialShown}
+      imageUri={require('../../assets/img/tutorials/pathways.jpg')}
+      onLoadCallback={() => setIsLoading(false)}
+    >
+      {
+        isLoading
+        ?
+        <FullPageSpinner></FullPageSpinner>
+        :
+        <View style={styles.container}>
+          <SafeAreaTop/>
+          <SafeAreaBottom transparent>
+            <LinearGradient
+              colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+              style={styles.container}
+            >
+              <ScrollView
+                style={styles.bodyContainer}
+                contentContainerStyle={styles.scrollContentContainerStyle}
+                showsVerticalScrollIndicator={false}
+              >
+                <View style={styles.headerContainer}>
+                  <Text style={styles.title}>Pathways</Text>
+                </View>
+                {
+                  pathwaysData.map((item, index) => {
+                    return (
+                      <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
+                        <View style={styles.forwardArrow}>
+                          <GoForward callback={() => { navigateToFullPathway(item.name) }} />
+                        </View>
+                        <Text style={[text.p, styles.featureDescription]}>
+                          {item.short_desc}
+                        </Text>
+                        <View style={ styles.navigateButton }>
+                          <SignInButton background={colors.HIGHLIGHT}
+                            onPress={() => navigateToPrompt(item.name)}
+                            >
+                            <Text style={text.h4}> {beginOrContinue(item.name)} </Text>
+                          </SignInButton>
+                        </View>
+                      </PathwayCard>
+                    )
+                  })
+                }
+              </ScrollView>
+            </LinearGradient>
+          </SafeAreaBottom>
+        </View>
+      }
+    </TutorialImageModal>
   )
 }
 
