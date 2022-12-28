@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 
 const ProgressBar = ({ currentProgress, total }: any): JSX.Element => { 
   const progress = Math.floor(currentProgress / total * 100);
-  
+  const MAX_LEVELS = 10 // Maximum number of prompts a pathway may have
   return (
     <View style={styles.container}>
       <View style={styles.barContainer}>
@@ -11,7 +11,7 @@ const ProgressBar = ({ currentProgress, total }: any): JSX.Element => {
           <View style={[StyleSheet.absoluteFill, styles.progressBarFill, { width: `${progress}%` }]} />
         </View>
       </View>
-      <Text style={styles.percent}>{progress}%</Text>
+      <Text style={styles.percent}>{currentProgress}/{ MAX_LEVELS }</Text>
     </View>
   )
 
@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     // flexDirection: 'column',
     position: 'relative',
     top: 13,
+    color: '#BEBEBE'
   },
   progressBarFill: {
     backgroundColor: '#8BED4F',

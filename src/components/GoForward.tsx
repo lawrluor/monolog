@@ -13,7 +13,7 @@ type Props = {
   callback?: any
 }
 
-const GoForward = ({ callback }: Props) => {
+const GoForward = ({ callback }: Props, styleProp:Props) => {
   const navigation = useNavigation();
 
   return (
