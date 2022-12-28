@@ -16,9 +16,9 @@ const VideoList = ({ navigation, videoData }) => {
 
   const renderListItem = ({ item }) => {
     return (
-      <Thumbnail 
+      <Thumbnail
         video={item}
-        navigation={navigation}>  
+        navigation={navigation}>
       </Thumbnail>
     )
   }
@@ -52,7 +52,7 @@ const VideoList = ({ navigation, videoData }) => {
 
 const styles = StyleSheet.create({
   sectionList: {
-    
+
   },
   sectionTitleContainer: {
     flex: 1,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, View, Pressable, Text, TextInput, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Pressable, Text, Alert } from 'react-native';
 
 import { DeleteVideoLog } from './Delete';
 import TranscriptEditor from './TranscriptEditor';
@@ -13,8 +13,9 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { deleteVideoLog } from '../utils/localStorageUtils';
 import { getCurrentDate } from '../utils/dates';
+import { getLastRoute, getRoutesInStack } from '../utils/navigationUtils';
 
-import { icons, spacings, text, colors } from '../styles';
+import { icons, spacings, text } from '../styles';
 
 type Props = {
   videoData: any,
@@ -27,7 +28,7 @@ type Props = {
 const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element => {
   const { toggleVideosRefresh } = React.useContext(VideosContext);
   const [modalShown, setModalShown] = React.useState<boolean>(false);
-  
+
   const deleteLogCallback = () => {
     Alert.alert(
       "Warning",
@@ -44,7 +45,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
       toggleVideosRefresh();
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Home' }] 
+        routes: [{ name: 'Home' }]
       });
 
       navigation.navigate('Home');
@@ -67,12 +68,12 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
     }
   }
 
-  // Displays a button that can be clicked to reveal the entire transcript text 
+  // Displays a button that can be clicked to reveal the entire transcript text
   const renderShowTranscriptButton = () => {
     return (
       <View style={styles.button}>
         <Pressable onPress={() => setModalShown(!modalShown)} hitSlop={spacings.hitSlopLarge} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-          <CustomIcon name={'transcript'} style={styles.iconActions} />
+          <CustomIcon name={'open_transcript'} style={styles.iconActions} />
         </Pressable>
       </View>
     )
@@ -81,7 +82,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   // Not currently displaying captions
   const renderCaption = () => {
     return (
-      !modalShown 
+      !modalShown
       ?
       <View style={styles.contentContainer}>
         <VideoCaption text={videoData.caption} />
@@ -115,7 +116,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
         </View>
 
         <View style={styles.button}>
-          
+
           <Pressable onPress={changeRating} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
             <Text style={styles.emojiText}>{videoData.rating.substring(0, 2) || '❔'}</Text>
           </Pressable>
@@ -124,22 +125,30 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
     )
   }
 
-  const resetNavigationToGallery = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Home' }] 
-    });
-  
-    navigation.navigate('Home');
+  // If navigating after making new recording (stack is: Rating -> Transcript -> Player),
+    // must pop twice to get back to Rating
+  // Otherwise if navigating from Gallery/other, pop once (stack is: Gallery -> Player)
+  // Yes, this is spaghetti code because VideoOverlay is used in both the above cases
+  const resetNavigation = async () => {
+    let routes = await getLastRoute(navigation, 2);
+
+    if (routes?.name === 'Rating') {
+      // Two routes ago we were at Rating; skip the Player route
+      navigation.goBack();
+      navigation.goBack();
+    } else {
+      // One route ago we were at TabNavigator/Gallery
+      navigation.goBack();  // simply go back as usual
+    }
   }
 
   // Do not show video overlay controls when TranscriptEditor modal is visible
   // This conditional render is handled by the boolean state modalShown
   return (
     <>
-      {modalShown ? <></> : <GoBack callback={resetNavigationToGallery}/> }
+      {modalShown ? <></> : <GoBack callback={resetNavigation} /> }
       {modalShown ? <></> : <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View> }
-      
+
       <View style={styles.videoContainer}>
 
         {/* TODO: Send full populated videoData object with transcript + rating? */}
@@ -153,11 +162,11 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
       {/* TODO: Store video date as MM/DD/YYYY in the video storage */}
       {/* TODO: Give option for date type for personalization */}
 
-      <TranscriptEditor 
+      <TranscriptEditor
         modalShown={modalShown}
         setModalShown={setModalShown}
         textContentFromRecording={videoData.transcript_content}
-        transcriptUri={videoData.transcript_uri} 
+        transcriptUri={videoData.transcript_uri}
         date={videoData.date || getCurrentDate()}
       />
     </>
@@ -218,7 +227,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   deleteLogContainer: {
-    position: 'absolute', 
+    position: 'absolute',
     // Matches spacings in GoBack component
     right: spacings.MASSIVE,
     top: spacings.ABSOLUTE_OFFSET_MEDIUM,

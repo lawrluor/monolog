@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Landing, Signup, Login } from '../screens';
+import { Signup, Login } from '../screens';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 

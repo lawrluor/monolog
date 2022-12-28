@@ -19,10 +19,10 @@ const MainNavigator = (): JSX.Element =>  {
     return (
       <NavigationContainer >
         <Stack.Navigator initialRouteName='AuthLoading' screenOptions={{ animation: 'none' }}>
-          <Stack.Screen name="AuthLoading" component={AuthLoading} options={{ headerShown: false, }} />
+          <Stack.Screen name="AuthLoading" component={AuthLoading} options={{ headerShown: false, gestureEnabled: false }} />
           <Stack.Screen name="AppStack" component={AppStack} options={{ headerShown: false }} />
           <Stack.Screen name="AuthStack" component={AuthStack} options={{ headerShown: false }} />
-          <Stack.Screen name="OnBoardingStack" component={OnBoardingStack} options={{ headerShown: false }} />
+          <Stack.Screen name="OnBoardingStack" component={OnBoardingStack} options={{ headerShown: false, gestureEnabled: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     )
@@ -30,7 +30,7 @@ const MainNavigator = (): JSX.Element =>  {
 
         // 1. Existing user: take them to AppStack (Home screen)
         // if (userData && userData.onboarded) {
-        //   return <AuthStack /> 
+        //   return <AuthStack />
         // } else {
         //   return <AppStack />
         // }

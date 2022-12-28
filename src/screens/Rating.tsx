@@ -2,9 +2,9 @@ import React from 'react';
 import { Alert, StyleSheet, View, Text, Pressable } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
-import * as FileSystem from 'expo-file-system';
 
 import { generateRatingUri } from '../utils/localStorageUtils';
+import { createRatingFromMetadata } from '../utils/rating';
 
 import VideosContext from '../context/VideosContext';
 
@@ -18,7 +18,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
 
   const [emojis, setEmojis] = React.useState(['😥','😐','🙂','😃', '😍']);
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
-  const { fileBaseName, finalResult} = route.params;
+  const { fileBaseName, finalResult, isCameraOn } = route.params;
 
   const updateMoodMap = async (emojiValue: number) => {
     // Global Data Structure is sorted by date
@@ -51,9 +51,10 @@ const Rating = ({ route, navigation }): JSX.Element => {
     if (selectedEmojiIndex >= 0) {
       updateMoodMap(selectedEmojiIndex);
 
-      // to ratings/filename.txt, we write with format "${emoji}{index} i.e. "😍4"
-      // We will parse the rating file later as needed
-      FileSystem.writeAsStringAsync(generateRatingUri(fileBaseName), `${emojis[selectedEmojiIndex]}${selectedEmojiIndex.toString()}`);
+      // See utils/rating.ts for how Ratings are created and written.
+      createRatingFromMetadata(
+          emojis[selectedEmojiIndex], selectedEmojiIndex, isCameraOn)
+        .writeRatingToFile(generateRatingUri(fileBaseName));
 
       navigateToTranscript(emojis[selectedEmojiIndex]);
     } else {
@@ -68,7 +69,8 @@ const Rating = ({ route, navigation }): JSX.Element => {
   }
 
   const navigateToTranscript = (selection: string) => {
-    navigation.navigate('Transcript', { selection, fileBaseName, finalResult});
+    navigation.navigate('Transcript',
+        { selection, fileBaseName, finalResult, isCameraOn});
   }
 
   const setSelectedEmojiWrapper = (emojiIndex: number) => {

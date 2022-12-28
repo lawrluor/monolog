@@ -26,16 +26,6 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
     navigation.goBack()
   }
   return (
-    // <>
-    //   <GoBack callback={() => backAndReset()} />
-    //   <View style={styles.background}>
-        // <Text style={styles.promptNum}>Prompt #{level}</Text>
-        // <Text style={styles.prompt}>{prompt}</Text>
-        // <SignInButton background={colors.HIGHLIGHT} onPress={() => navigateToRecording()}>
-        //   <Text style={text.h3}> Record </Text>
-        // </SignInButton>
-    //   </View>
-    // </>
     <View style={styles.container}>
       <GoBack callback={() => backAndReset()} />
       <SafeAreaTop />

@@ -6,7 +6,7 @@ import { useFonts } from 'expo-font';
 
 import MainNavigator from './src/navigation/MainNavigator';
 
-import { 
+import {
   createAllDirectories,
 } from './src/utils/localStorageUtils';
 
@@ -45,8 +45,8 @@ const App = (): JSX.Element => {
       setInTimeout(false);
     }, 500);
 
-    return () => { 
-      clearTimeout(timer) 
+    return () => {
+      clearTimeout(timer)
     }
   }, []);
 
@@ -60,7 +60,7 @@ const App = (): JSX.Element => {
     const setup = async () => {
       setConsoleLogging();
 
-      let setupFinished = await createAllDirectories();  
+      let setupFinished = await createAllDirectories();
       console.log("setupFinished", setupFinished);
       setIsLoaded(true);
     }
