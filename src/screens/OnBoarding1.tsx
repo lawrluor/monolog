@@ -121,6 +121,8 @@ const OnBoarding1 = (): JSX.Element => {
       'gender': gender,
       'pronouns': pronouns,
       'age': age.toString(),
+      'pathways': {},
+      'currentPathway': '',
       'signupDateTime': Date.now()
     };
 

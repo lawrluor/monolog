@@ -1,42 +1,41 @@
 import React from 'react';
 import { View, Animated, Easing, Pressable, StyleSheet } from 'react-native';
+import Svg, { Defs, RadialGradient, Stop, Circle, Rect, Use } from "react-native-svg";
+
 
 import { dimensions } from '../styles';
 
-const MAX_BUBBLE_SIZE = 180;  // largest possible bubble
-const MIN_BUBBLE_SIZE = 90;  // smallest possible bubble
-const NUMBER_OF_BUBBLES = 10;  
-const PRESSABLE_COLOR = 'transparent';  // '#FFFFFF66'; 
-const COLOR = 'transparent';  // 'D4D4D455'; grey-ish
-const TIME_OFFSET = Math.random() * 500;
+const MAX_BUBBLE_SIZE = 240;  // largest possible bubble
+const MIN_BUBBLE_SIZE = 120;  // smallest possible bubble
+const NUMBER_OF_BUBBLES = 10;
 
 // An individual animated Audio Bubble, with its own individual display states
 const AudioBubble = ({ shouldBegin }: any) => {
   // Helper function: Math.random() to generate range (-0.5, 0.5) then scaled to screen width
   const generateRandomCoordinates = (): any => {
-    const x = (Math.random() - 0.5) * dimensions.width / 2;  // half of max distance
-    const y = (Math.random() - 0.5) * dimensions.height / 2;  // half of max distance
-    return { x: x, y: y };  
+    const x = (Math.random() - 0.5) * dimensions.width;
+    const y = (Math.random() - 0.5) * (dimensions.height * 0.66);  // 2/3 of max distance
+    return { x: x, y: y };
   }
 
-  const diameter = (Math.random() * (MAX_BUBBLE_SIZE - MIN_BUBBLE_SIZE)) + MIN_BUBBLE_SIZE;  
+  const timeOffset = Math.random() * 1500;  // 1.5 seconds of variance
+  const diameter = (Math.random() * (MAX_BUBBLE_SIZE - MIN_BUBBLE_SIZE)) + MIN_BUBBLE_SIZE;
   const coordinate = generateRandomCoordinates();  // center: { x: 0, y: 0 }
 
   // States
   const [isVisible, setIsVisible] = React.useState<boolean>(false);
-  const [color, setColor] = React.useState<string>(COLOR);  // generate random hex value
 
   // Animation values
   const size = React.useRef(new Animated.Value(0.3)).current;
   const opacity = React.useRef(new Animated.Value(0.9)).current;
 
-  /* 
+  /*
   // NOTE: not currently used - bubbles are not interactable at the moment
   const onBubblePress = () => {
-    // Stop the animation, then begin the loop again. 
+    // Stop the animation, then begin the loop again.
     // Prevents multiple simultaneous loops for the same bubble
     // This function is used because resetAnimation() does not work
-    
+
     setIsVisible(!isVisible);  // "permanently" pop the bubble
     opacityLoop();  // "pop" the bubble
 
@@ -47,51 +46,31 @@ const AudioBubble = ({ shouldBegin }: any) => {
   // Changes the size of the bubble, looping between 30% to 90% of its size
   const sizeLoop = () => {
     Animated.loop(
-      Animated.sequence([
-        Animated.delay(TIME_OFFSET),
-        Animated.timing(
-          size,
-          {
-            toValue: 0.9,
-            duration: 2000,
-            easing: Easing.linear,  // "bounciness" https://reactnative.dev/docs/easing
-            useNativeDriver: true,  // required
-          }
-        ),
-        Animated.timing(
-          size,
-          {
-            toValue: 0.3,
-            duration: 1,
-            useNativeDriver: true,
-          }
-        )
-      ])
+      Animated.timing(
+        size,
+        {
+          toValue: 0.9,
+          duration: 2000,
+          delay: timeOffset,
+          easing: Easing.linear,  // "bounciness" https://reactnative.dev/docs/easing
+          useNativeDriver: true,  // required
+        }
+      )
     ).start();
   }
 
   // Changes the opacity of the bubble, looping between 0% to 90% of its opacity
   const opacityLoop = () => {
     Animated.loop(
-      Animated.sequence([
-        Animated.delay(TIME_OFFSET),
-        Animated.timing(
-          opacity,
-          {
-            toValue: 0,
-            duration: 2000,
-            useNativeDriver: true,
-          }
-        ),
-        Animated.timing(
-          opacity,
-          {
-            toValue: 0.9,
-            duration: 1,
-            useNativeDriver: true,
-          }
-        )
-      ])
+      Animated.timing(
+        opacity,
+        {
+          toValue: 0,
+          duration: 2000,
+          delay: timeOffset,
+          useNativeDriver: true,
+        }
+      )
     ).start();
   }
 
@@ -102,14 +81,18 @@ const AudioBubble = ({ shouldBegin }: any) => {
       opacityLoop();
     }
 
+    return () => {
+      // TODO: stop animations and reset states?
+    }
+
   }, [shouldBegin])
 
   // animation transform
    // https://stackoverflow.com/questions/62064894/react-native-animated-you-must-specify-exactly-one-property-per-transform-objec
 
   const shadowStyle = {
-    shadowColor: 'black', 
-    shadowOpacity: 0.2, 
+    shadowColor: 'black',
+    shadowOpacity: 0.2,
     shadowRadius: 3,
     shadowOffset: { width: 3, height: 3 }
   }
@@ -123,14 +106,30 @@ const AudioBubble = ({ shouldBegin }: any) => {
     borderRadius: diameter / 2
   }
 
+  // The "bubble" itself, drawn with SVG
+  // The <Defs> defines the gradient properties to use,
+  // which are then assigned to the <Circle> `fill` attribute
+  // There are three "rings" of the SVG: white in the center, transparent, then white again
+  const SvgCircle = () => {
+    return (
+      <Svg width={bubbleSize.height} height={bubbleSize.height}>
+        <Defs>
+          <RadialGradient id="gradient">
+            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.5" />
+            <Stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.55" />
+          </RadialGradient>
+        </Defs>
+
+        <Circle cx = "50%" cy = "50%" r = "50%" fill="url(#gradient)" />
+      </Svg>
+    )
+  }
+
   return (
     <View style={[styles.container, { display: isVisible ? 'flex' : 'none' }]}>
-      <Animated.View style={[styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity, backgroundColor: `#${color}` } ]} >
-        <Pressable 
-          style={ ({pressed}) => [styles.bubblePressable, bubbleSize, { backgroundColor: pressed ? PRESSABLE_COLOR : 'transparent' }] }
-          hitSlop={5} 
-        >
-        </Pressable>
+      <Animated.View style={[ styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity } ]} >
+        <SvgCircle />
       </Animated.View>
     </View>
   )
@@ -139,9 +138,9 @@ const AudioBubble = ({ shouldBegin }: any) => {
 // shouldBegin is a generalized alias for isRecording
 const AudioBubbles = ({ shouldBegin }: any) => {
   // create array of size NUMBER_OF_BUBBLES to map through and generate each audio bubble
-  const mapArray = [...Array(NUMBER_OF_BUBBLES).keys()];  
+  const mapArray = [...Array(NUMBER_OF_BUBBLES).keys()];
 
-  // First container: Full screen, with flex of 1, solid background. 
+  // First container: Full screen, with flex of 1, solid background.
   // Second container: Absolute positioned at bottom of the screen where the record icon is.
   return (
     <View style={audioBubblesStyles.container}>
@@ -162,8 +161,7 @@ const AudioBubbles = ({ shouldBegin }: any) => {
 
 const audioBubblesStyles = StyleSheet.create({
   container: {
-    flex: 1, 
-    backgroundColor: 'transparent',
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -176,20 +174,14 @@ const audioBubblesStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  bubble: {
-    aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   // This overlaps each bubble to make the animation pressable.
-  bubblePressable: {
-    flex: 1, 
-    aspectRatio: 1,
-    borderColor: 'white',
-    borderWidth: 2, 
+  bubble: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   container: {
-    flex: 1
+    flex: 1,
   }
 })
 

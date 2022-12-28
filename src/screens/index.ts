@@ -15,5 +15,6 @@ import OnBoarding2 from './OnBoarding2';
 import OnBoarding3 from './OnBoarding3';
 import Pathways from './Pathways';
 import PathwayFull from './PathwayFull'
+import PathwaysPrompt from './PathwaysPrompt'
 
-export { Landing, Signup, Login, Home, Vistas, Settings, Feedback, Gallery, Player, Recording, Rating, Transcript, OnBoarding1, OnBoarding2, OnBoarding3, Pathways, PathwayFull };
+export { Landing, Signup, Login, Home, Vistas, Settings, Feedback, Gallery, Player, Recording, Rating, Transcript, OnBoarding1, OnBoarding2, OnBoarding3, Pathways, PathwayFull, PathwaysPrompt };

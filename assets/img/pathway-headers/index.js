@@ -1,11 +1,15 @@
 import procrastination_header from "./procrastination.png";
 import anxiety_header from "./anxiety.png";
-import depression_header from "./depression.png";
-import grief_loss_header from "./grief-loss.png";
+import sleep_header from "./sleep.png";
+import trauma_ptsd_header from "./trauma-ptsd.png";
+import self_esteem_header from "./self-esteem.png";
+import anger_header from "./anger.png";
 
 export {
   procrastination_header,
   anxiety_header,
-  depression_header,
-  grief_loss_header,
+  sleep_header,
+  trauma_ptsd_header,
+  self_esteem_header,
+  anger_header,
 }
