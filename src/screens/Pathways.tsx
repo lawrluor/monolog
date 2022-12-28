@@ -1,24 +1,43 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Text, Pressable, Alert } from 'react-native';
 import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
-import { dimensions, text, spacings, icons, colors, debug } from '../styles';
-import GoBack from '../components/GoBack';
+import { text, spacings, colors, debug } from '../styles';
 import { LinearGradient } from 'expo-linear-gradient';
 import PathwayCard from '../components/PathwayCard';
-import PathwayFull from './PathwayFull';
-import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
-import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
+import { pathwaysData } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
 
-const Pathways = ({ navigation }: any): JSX.Element => { 
+<<<<<<< HEAD
+const Pathways = ({ navigation }: any): JSX.Element => {
+=======
+const Pathways = ({ navigation }: any): JSX.Element => {
+  const { user, setUser } = React.useContext(UserContext);
+>>>>>>> 101313f (properly handling deleting user data from pathways)
 
   const navigateToFullPathway = (name: string) => {
     navigation.push('PathwayFull', { name: name })
   }
 
-  // TODO: add prompt params for recording prompt. navagate to prompt page
-  const navigateToRecord = (name: string) => {
-    navigation.navigate('Recording');
+  // If the user has already started the pathway, set their level, otherwise set their level to 1
+  const getCurrentLevel = (pathwayName: string): number => {
+    if (user?.pathways && pathwayName in user.pathways) {
+      return user?.pathways[pathwayName]['currentLevel'];
+    } else {
+      return 1;
+    }
+  }
+
+  const navigateToPrompt = async (pathwayName: string) => {
+    let updatedUser = { ...user, ...{ currentPathway: pathwayName } };
+    setUser(updatedUser);
+    const currentLevel = getCurrentLevel(pathwayName);
+    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
+  }
+
+  // Set button text to Begin/Continue pathway based on user's progress
+  const beginOrContinue = (pathwayName: string) => {
+    const currentLevel = getCurrentLevel(pathwayName);
+    return currentLevel > 1 ? "Continue Pathway" : "Begin Pathway";
   }
 
   return (

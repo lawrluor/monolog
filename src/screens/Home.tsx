@@ -16,13 +16,12 @@ import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
 import { comingSoonAlert, simpleAlert } from '../utils/customAlerts';
 import { getRecordingPermissions } from '../utils/permissions';
+import { INITIAL_USER_DATA } from '../utils/localStorageUtils';
 
 import VideosContext from '../context/VideosContext';
 import UserContext from '../context/UserContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
-import { readUserData } from '../utils/localStorageUtils';
-import SignInButton from '../components/SignInButton';
 
 const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
@@ -45,9 +44,14 @@ const Home = ({ navigation }: any): JSX.Element => {
   }
 
   const navigateToProfile = async () => {
-    console.log(await readUserData());
-    comingSoonAlert(() => {
-      console.log("uploading picture...");
+    // console.log(await readUserData());
+
+    // When user confirms they want to delete account,
+    // we delete the data in userContext, then go back to AuthLoading
+    // which handles auth state for us and should display Landing page.
+    editProfileAlert(() => {
+      setUser(INITIAL_USER_DATA);  // UserContext refreshes whenever user changes; force the refresh
+      navigation.navigate('AuthLoading')
     });
   }
 

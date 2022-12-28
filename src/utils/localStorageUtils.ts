@@ -16,6 +16,23 @@ export const THUMBNAIL_DIRECTORY = FileSystem.documentDirectory + 'thumbnails/';
 export const RATING_DIRECTORY = FileSystem.documentDirectory + 'rating/';
 export const VIDEO_DIRECTORY = FileSystem.documentDirectory + 'videos/';
 
+export const INITIAL_USER_DATA = {
+  'onboarded': false,
+  'cameraPermission': false,
+  'micPermission': false,
+  'speechToTextPermission': false,
+  'tutorialMode': true,
+  'firstName': "",
+  'lastName': "",
+  'email': "",
+  'gender': "",
+  'pronouns': "",
+  'age': "0",
+  'pathways': {},
+  'currentPathway': '',
+  'signupDateTime': Date.now()
+};
+
 export const readFile = async (uri: string):Promise<string> => {
   return await FileSystem.readAsStringAsync(uri)
     .then((content: string) => {
