@@ -25,7 +25,7 @@ import SignInButton from '../components/SignInButton';
 import { removeCurrentPathway, updateCurrentPathway } from '../utils/updatePathwaysUser';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = false;
+const TESTING = true;
 
 const Home = ({ navigation }: any): JSX.Element => {
   const { user } = React.useContext(UserContext);

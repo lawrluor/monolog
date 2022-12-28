@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { deleteVideoLog } from '../utils/localStorageUtils';
 import { getCurrentDate } from '../utils/dates';
+import { getLastRoute, getRoutesInStack } from '../utils/navigationUtils';
 
 import { icons, spacings, text } from '../styles';
 
@@ -124,20 +125,28 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
     )
   }
 
-  const resetNavigationToGallery = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Home' }]
-    });
+  // If navigating after making new recording (stack is: Rating -> Transcript -> Player),
+    // must pop twice to get back to Rating
+  // Otherwise if navigating from Gallery/other, pop once (stack is: Gallery -> Player)
+  // Yes, this is spaghetti code because VideoOverlay is used in both the above cases
+  const resetNavigation = async () => {
+    let routes = await getLastRoute(navigation, 2);
 
-    navigation.navigate('Home');
+    if (routes?.name === 'Rating') {
+      // Two routes ago we were at Rating; skip the Player route
+      navigation.goBack();
+      navigation.goBack();
+    } else {
+      // One route ago we were at TabNavigator/Gallery
+      navigation.goBack();  // simply go back as usual
+    }
   }
 
   // Do not show video overlay controls when TranscriptEditor modal is visible
   // This conditional render is handled by the boolean state modalShown
   return (
     <>
-      {modalShown ? <></> : <GoBack callback={resetNavigationToGallery}/> }
+      {modalShown ? <></> : <GoBack callback={resetNavigation} /> }
       {modalShown ? <></> : <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View> }
 
       <View style={styles.videoContainer}>
