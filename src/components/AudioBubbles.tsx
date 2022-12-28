@@ -7,19 +7,19 @@ import { dimensions } from '../styles';
 
 const MAX_BUBBLE_SIZE = 240;  // largest possible bubble
 const MIN_BUBBLE_SIZE = 120;  // smallest possible bubble
-const NUMBER_OF_BUBBLES = 10;  
+const NUMBER_OF_BUBBLES = 10;
 
 // An individual animated Audio Bubble, with its own individual display states
 const AudioBubble = ({ shouldBegin }: any) => {
   // Helper function: Math.random() to generate range (-0.5, 0.5) then scaled to screen width
   const generateRandomCoordinates = (): any => {
     const x = (Math.random() - 0.5) * dimensions.width;
-    const y = (Math.random() - 0.5) * dimensions.height / 1.5;  // 2/3 of max distance
-    return { x: x, y: y };  
+    const y = (Math.random() - 0.5) * (dimensions.height * 0.66);  // 2/3 of max distance
+    return { x: x, y: y };
   }
 
   const timeOffset = Math.random() * 1500;  // 1.5 seconds of variance
-  const diameter = (Math.random() * (MAX_BUBBLE_SIZE - MIN_BUBBLE_SIZE)) + MIN_BUBBLE_SIZE;  
+  const diameter = (Math.random() * (MAX_BUBBLE_SIZE - MIN_BUBBLE_SIZE)) + MIN_BUBBLE_SIZE;
   const coordinate = generateRandomCoordinates();  // center: { x: 0, y: 0 }
 
   // States
@@ -29,13 +29,13 @@ const AudioBubble = ({ shouldBegin }: any) => {
   const size = React.useRef(new Animated.Value(0.3)).current;
   const opacity = React.useRef(new Animated.Value(0.9)).current;
 
-  /* 
+  /*
   // NOTE: not currently used - bubbles are not interactable at the moment
   const onBubblePress = () => {
-    // Stop the animation, then begin the loop again. 
+    // Stop the animation, then begin the loop again.
     // Prevents multiple simultaneous loops for the same bubble
     // This function is used because resetAnimation() does not work
-    
+
     setIsVisible(!isVisible);  // "permanently" pop the bubble
     opacityLoop();  // "pop" the bubble
 
@@ -91,8 +91,8 @@ const AudioBubble = ({ shouldBegin }: any) => {
    // https://stackoverflow.com/questions/62064894/react-native-animated-you-must-specify-exactly-one-property-per-transform-objec
 
   const shadowStyle = {
-    shadowColor: 'black', 
-    shadowOpacity: 0.2, 
+    shadowColor: 'black',
+    shadowOpacity: 0.2,
     shadowRadius: 3,
     shadowOffset: { width: 3, height: 3 }
   }
@@ -107,7 +107,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
   }
 
   // The "bubble" itself, drawn with SVG
-  // The <Defs> defines the gradient properties to use, 
+  // The <Defs> defines the gradient properties to use,
   // which are then assigned to the <Circle> `fill` attribute
   // There are three "rings" of the SVG: white in the center, transparent, then white again
   const SvgCircle = () => {
@@ -138,9 +138,9 @@ const AudioBubble = ({ shouldBegin }: any) => {
 // shouldBegin is a generalized alias for isRecording
 const AudioBubbles = ({ shouldBegin }: any) => {
   // create array of size NUMBER_OF_BUBBLES to map through and generate each audio bubble
-  const mapArray = [...Array(NUMBER_OF_BUBBLES).keys()];  
+  const mapArray = [...Array(NUMBER_OF_BUBBLES).keys()];
 
-  // First container: Full screen, with flex of 1, solid background. 
+  // First container: Full screen, with flex of 1, solid background.
   // Second container: Absolute positioned at bottom of the screen where the record icon is.
   return (
     <View style={audioBubblesStyles.container}>
@@ -161,7 +161,7 @@ const AudioBubbles = ({ shouldBegin }: any) => {
 
 const audioBubblesStyles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -176,7 +176,7 @@ const audioBubblesStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   // This overlaps each bubble to make the animation pressable.
   bubble: {
-    flex: 1, 
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
