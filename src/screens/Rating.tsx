@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Image, StyleSheet, View, Text, Pressable } from 'react-native';
+import { Alert, StyleSheet, View, Text, Pressable } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -11,6 +11,7 @@ import VideosContext from '../context/VideosContext';
 import GoBack from '../components/GoBack';
 import SignInButton from '../components/SignInButton';
 import TutorialImageModal from '../components/TutorialImageModal';
+import { FullPageSpinner } from '../components/Spinner';
 
 import { containers, text, dimensions, spacings, colors, icons } from '../styles';
 
@@ -20,6 +21,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
   const emojis = ['😥','😐','🙂','😃','😍'];
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
   const [tutorialShown, setTutorialShown] = React.useState<boolean>(videosCount < 1);
+  const [tutorialLoading, setTutorialLoading] = React.useState<boolean>(true);
 
   // Temporary for testing
   route.params = { fileBaseName: 'test', finalResult: {}, isCameraOn: true}
@@ -83,42 +85,53 @@ const Rating = ({ route, navigation }): JSX.Element => {
   }
 
   return (
-    <TutorialImageModal shown={tutorialShown} setShown={setTutorialShown} imageUri={require('../../assets/img/tutorials/rating.jpg')}>
-      <LinearGradient
-          // Background Linear Gradient
-          colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-          style={styles.container}
-      >
-        <GoBack />
+    <TutorialImageModal
+      shown={tutorialShown}
+      setShown={setTutorialShown}
+      imageUri={require('../../assets/img/tutorials/rating.jpg')}
+      onLoadCallback={() => setTutorialLoading(false)}
+    >
+      {
+        tutorialLoading
+        ?
+        <FullPageSpinner></FullPageSpinner>
+        :
+        <LinearGradient
+            // Background Linear Gradient
+            colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+            style={styles.container}
+        >
+          <GoBack />
 
-        <View>
-          <View style={styles.titleContainer}>
-            <Text style={styles.subTitle}>...and really quickly,</Text>
-            <Text style={styles.title}>how are you feeling?</Text>
-          </View>
-
-          <View style={styles.ratingContainer}>
-            {emojis.map((elem, index) => (
-              <Pressable
-                key={elem}
-                onPress={() => setSelectedEmojiWrapper(index)}
-              >
-                <View style={elem===emojis[selectedEmojiIndex] ? styles.emojiSelectedBackground : styles.emojiBackground}>
-                  <Text style={styles.emojiText}>{elem}</Text>
-                </View>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.nextContainer}>
-          <Pressable onPress={submitRating} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-            <View>
-              <SignInButton text={"Next"} onPress={submitRating} background={colors.BACKGROUND} />
+          <View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.subTitle}>...and really quickly,</Text>
+              <Text style={styles.title}>how are you feeling?</Text>
             </View>
-          </Pressable>
-        </View>
-      </LinearGradient>
+
+            <View style={styles.ratingContainer}>
+              {emojis.map((elem, index) => (
+                <Pressable
+                  key={elem}
+                  onPress={() => setSelectedEmojiWrapper(index)}
+                >
+                  <View style={elem===emojis[selectedEmojiIndex] ? styles.emojiSelectedBackground : styles.emojiBackground}>
+                    <Text style={styles.emojiText}>{elem}</Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.nextContainer}>
+            <Pressable onPress={submitRating} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+              <View>
+                <SignInButton text={"Next"} onPress={submitRating} background={colors.BACKGROUND} />
+              </View>
+            </Pressable>
+          </View>
+        </LinearGradient>
+      }
     </TutorialImageModal>
   )
 }

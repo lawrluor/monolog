@@ -9,7 +9,7 @@ import SignInButton from '../components/SignInButton';
 import GoForward from '../components/GoForward';
 import UserContext from '../context/UserContext';
 import TutorialImageModal from '../components/TutorialImageModal';
-import { FullPageSpinner, Spinner } from '../components/Spinner';
+import { FullPageSpinner } from '../components/Spinner';
 
 const Pathways = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
