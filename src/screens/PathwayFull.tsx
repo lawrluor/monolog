@@ -11,8 +11,8 @@ import UserContext from '../context/UserContext';
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const { pathwayName } = route.params;
   const { user, setUser } = React.useContext(UserContext);
-  // Max number of prompts a pathway may contain
-  const MAX_LEVELS = 10
+  const MAX_LEVELS = 10 // Maximum number of prompts a pathway may have
+  //If the user has already started the pathway, set their level, otherwise set their level to 1
   const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
   const currentPathway = pathwaysMap.get(pathwayName);
 
@@ -50,6 +50,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
 
   // Set button text to Begin/Continue pathway based on user's progress
   const beginOrContinue = (pathwayName: string) => {
+    //If the user has already started the pathway, set their level, otherwise set their level to 1
     const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
     if (currentLevel > 1) {
       return "Continue Pathway"
@@ -71,7 +72,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
             {pathwayName} --- {user['pathways'][pathwayName]['timesCompleted']} stars
           </Text>
           <BodyText></BodyText>
-          <ProgressMap currentProgress={currentLevel} total={MAX_LEVELS}/>  
+          <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS}/>  
         </ScrollView>
         <View style={styles.recordButton}>
           <SignInButton background={colors.HIGHLIGHT}
