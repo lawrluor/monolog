@@ -51,8 +51,6 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
 
   // Set button text to Begin/Continue pathway based on user's progress
   const beginOrContinue = (pathwayName: string) => {
-    //If the user has already started the pathway, set their level, otherwise set their level to 1
-    // const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
     if (currentLevel > 1) {
       return "Continue Pathway"
     } else {
