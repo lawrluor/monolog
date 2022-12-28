@@ -9,21 +9,37 @@ import PathwayFull from './PathwayFull';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
+import GoForward from '../components/GoForward';
+import UserContext from '../context/UserContext';
 
 const Pathways = ({ navigation }: any): JSX.Element => { 
+  const { user, setUser } = React.useContext(UserContext);
 
-  const navigateToFullPathway = (name: string) => {
-    navigation.push('PathwayFull', { name: name })
+  const navigateToFullPathway = (pathwayName: string) => {
+    navigation.push('PathwayFull', { pathwayName: pathwayName })
   }
 
-  // TODO: add prompt params for recording prompt. navagate to prompt page
-  const navigateToRecord = (name: string) => {
-    navigation.navigate('Recording');
+  const navigateToPrompt = async (pathwayName: string) => {
+    let updatedUser = { ...user, ...{ currentPathway: pathwayName } }
+    setUser(updatedUser)
+    //If the user has already started the pathway, set their level, otherwise set their level to 1
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
+    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
+  }
+
+  // Set button text to Begin/Continue pathway based on user's progress
+  const beginOrContinue = (pathwayName: string) => {
+    //If the user has already started the pathway, set their level, otherwise set their level to 1
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    if (currentLevel > 1) {
+      return "Continue Pathway"
+    } else {
+      return "Begin Pathway"
+    }
   }
 
   return (
     <View style={styles.container}>
-      <GoBack />
       <SafeAreaTop/>
       <SafeAreaBottom transparent>
         <LinearGradient
@@ -41,20 +57,18 @@ const Pathways = ({ navigation }: any): JSX.Element => {
             {
               pathwaysData.map((item, index) => {
                 return (
-                  <PathwayCard name={item.name} key={`${item.name}_short`}>
+                  <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
+                    <View style={styles.forwardArrow}>
+                      <GoForward callback={() => { navigateToFullPathway(item.name) }} />
+                    </View>
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>
-                    <View style={styles.navigateButton }>
+                    <View style={ styles.navigateButton }>
                       <SignInButton background={colors.HIGHLIGHT}
-                        onPress={() => { navigateToFullPathway(item.name)}}
+                        onPress={() => navigateToPrompt(item.name)}
                         >
-                        <Text style={text.h4}> Full Desc </Text>
-                      </SignInButton>
-                      <SignInButton background={colors.HIGHLIGHT}
-                        onPress={() => navigateToRecord(item.name)}
-                        >
-                        <Text style={text.h4}> RECORDING </Text>
+                        <Text style={text.h4}> {beginOrContinue(item.name)} </Text>
                       </SignInButton>
                     </View>
                   </PathwayCard>
@@ -74,13 +88,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   featureDescription: {
-    marginBottom: spacings.SMALL,
-    marginLeft: spacings.SMALL,
+    margin: spacings.HUGE,
+    marginTop: spacings.SMALL,
+    color: colors.SECONDARY,
   },
   headerContainer: {
     flexDirection: 'row',
     paddingVertical: spacings.HUGE,
-    paddingHorizontal: spacings.HUGE,
+    // paddingHorizontal: spacings.MEDIUM,
     justifyContent: 'space-between',
     alignItems: 'flex-end'
   },
@@ -100,7 +115,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   title: {
-    ...text.h2
+    ...text.h2,
   },
   hidden: {
     display: 'none',
@@ -110,6 +125,14 @@ const styles = StyleSheet.create({
   },
   navigateButton: {
     alignSelf: 'center',
+  },
+  forwardArrow: {
+    // top:0,
+    // padding: spacings.HUGE,
+    // margin: spacings.HUGE,
+    position: 'absolute',
+    bottom: '122.5%',
+    left: '78%',
   },
 });
 

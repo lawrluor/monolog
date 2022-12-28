@@ -125,11 +125,15 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
     )
   }
 
+  // If navigating after making new recording (stack is: Rating -> Transcript -> Player),
+    // must pop twice to get back to Rating
+  // Otherwise if navigating from Gallery/other, pop once (stack is: Gallery -> Player)
+  // Yes, this is spaghetti code because VideoOverlay is used in both the above cases
   const resetNavigation = async () => {
     let routes = await getLastRoute(navigation, 2);
 
     if (routes?.name === 'Rating') {
-      // Two routes ago we were at Rating
+      // Two routes ago we were at Rating; skip the Player route
       navigation.goBack();
       navigation.goBack();
     } else {
@@ -142,12 +146,6 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   // This conditional render is handled by the boolean state modalShown
   return (
     <>
-      {/*
-        If navigating after making new recording (stack is: Rating -> Transcript -> Player),
-          must pop twice to get back to Rating
-        Otherwise if navigating from Gallery/other, pop once (stack is: Gallery -> Player)
-        Yes, this is spaghetti code because VideoOverlay is used in both the above cases
-      */}
       {modalShown ? <></> : <GoBack callback={resetNavigation} /> }
       {modalShown ? <></> : <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View> }
 

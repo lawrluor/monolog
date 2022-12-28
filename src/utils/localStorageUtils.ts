@@ -515,7 +515,7 @@ export const initVideoDataObject = async (filename: string) => {
     // isCameraOn means show video, defaults to true in ratings.ts
     // However, if this field doesn't exist (undefined, migrating from older versions),
     // this will be explicitly set to boolean false
-    "show_video": true ? ratingObject?.isCameraOn : false
+    "show_video": ratingObject?.isCameraOn ? ratingObject?.isCameraOn : true
   }
 
   return videoData;
