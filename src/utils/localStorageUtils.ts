@@ -518,8 +518,10 @@ export const initVideoDataObject = async (filename: string) => {
 
   let ratingObject = await createRatingFromFile(generateRatingUri(filename));
   let rating = ""
+  let showVideo = true  // default set to true.
   if (ratingObject) {
     rating = `${ratingObject.emoji}${ratingObject.index}`
+    showVideo = ratingObject.isCameraOn
   }
   let videoData = {
     "baseName": filename,
@@ -532,7 +534,7 @@ export const initVideoDataObject = async (filename: string) => {
     // isCameraOn means show video, defaults to true in ratings.ts
     // However, if this field doesn't exist (undefined, migrating from older versions),
     // this will be explicitly set to boolean false
-    "show_video": ratingObject?.isCameraOn ? ratingObject?.isCameraOn : true
+    "show_video": showVideo
   }
 
   return videoData;

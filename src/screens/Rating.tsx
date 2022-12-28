@@ -21,8 +21,6 @@ const Rating = ({ route, navigation }): JSX.Element => {
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
   const [tutorialShown, setTutorialShown] = React.useState<boolean>(videosCount < 1);
 
-  // Temporary for testing
-  route.params = { fileBaseName: 'test', finalResult: {}, isCameraOn: true}
   const { fileBaseName, finalResult, isCameraOn } = route.params;
 
   const updateMoodMap = async (emojiValue: number) => {
@@ -75,7 +73,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
 
   const navigateToTranscript = (selection: string) => {
     navigation.navigate('Transcript',
-        { selection, fileBaseName, finalResult, isCameraOn});
+        { selection, fileBaseName, finalResult, isCameraOn });
   }
 
   const setSelectedEmojiWrapper = (emojiIndex: number) => {
