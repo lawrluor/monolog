@@ -365,7 +365,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
           <View style={styles.cameraOnToggleContainer}>
             <Pressable onPress={toggleCameraOn} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-              {renderCameraToggleIcon(isCameraOn)}
+              {renderCameraToggleIcon()}
             </Pressable>
           </View>
         </View>

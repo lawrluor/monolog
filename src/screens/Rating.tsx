@@ -10,14 +10,21 @@ import VideosContext from '../context/VideosContext';
 
 import GoBack from '../components/GoBack';
 import SignInButton from '../components/SignInButton';
+import TutorialImageModal from '../components/TutorialImageModal';
+import { FullPageSpinner } from '../components/Spinner';
 
 import { containers, text, dimensions, spacings, colors, icons } from '../styles';
 
 const Rating = ({ route, navigation }): JSX.Element => {
-  const { moodData } = React.useContext(VideosContext);
+  const { moodData, videosCount } = React.useContext(VideosContext);
 
-  const [emojis, setEmojis] = React.useState(['😥','😐','🙂','😃', '😍']);
+  const emojis = ['😥','😐','🙂','😃','😍'];
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
+  const [tutorialShown, setTutorialShown] = React.useState<boolean>(videosCount < 1);
+  const [tutorialLoading, setTutorialLoading] = React.useState<boolean>(true);
+
+  // Temporary for testing
+  route.params = { fileBaseName: 'test', finalResult: {}, isCameraOn: true}
   const { fileBaseName, finalResult, isCameraOn } = route.params;
 
   const updateMoodMap = async (emojiValue: number) => {
@@ -78,41 +85,54 @@ const Rating = ({ route, navigation }): JSX.Element => {
   }
 
   return (
-    <LinearGradient
-        // Background Linear Gradient
-        colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-        style={styles.container}
+    <TutorialImageModal
+      shown={tutorialShown}
+      setShown={setTutorialShown}
+      imageUri={require('../../assets/img/tutorials/rating.jpg')}
+      onLoadCallback={() => setTutorialLoading(false)}
     >
-      <GoBack />
+      {
+        tutorialLoading
+        ?
+        <FullPageSpinner></FullPageSpinner>
+        :
+        <LinearGradient
+            // Background Linear Gradient
+            colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+            style={styles.container}
+        >
+          <GoBack />
 
-      <View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.subTitle}>...and really quickly,</Text>
-          <Text style={styles.title}>how are you feeling?</Text>
-        </View>
+          <View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.subTitle}>...and really quickly,</Text>
+              <Text style={styles.title}>how are you feeling?</Text>
+            </View>
 
-        <View style={styles.ratingContainer}>
-          {emojis.map((elem, index) => (
-            <Pressable
-              key={elem}
-              onPress={() => setSelectedEmojiWrapper(index)}
-            >
-              <View style={elem===emojis[selectedEmojiIndex] ? styles.emojiSelectedBackground : styles.emojiBackground}>
-                <Text style={styles.emojiText}>{elem}</Text>
+            <View style={styles.ratingContainer}>
+              {emojis.map((elem, index) => (
+                <Pressable
+                  key={elem}
+                  onPress={() => setSelectedEmojiWrapper(index)}
+                >
+                  <View style={elem===emojis[selectedEmojiIndex] ? styles.emojiSelectedBackground : styles.emojiBackground}>
+                    <Text style={styles.emojiText}>{elem}</Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.nextContainer}>
+            <Pressable onPress={submitRating} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+              <View>
+                <SignInButton text={"Next"} onPress={submitRating} background={colors.BACKGROUND} />
               </View>
             </Pressable>
-          ))}
-        </View>
-      </View>
-
-      <View style={styles.nextContainer}>
-        <Pressable onPress={submitRating} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-          <View>
-            <SignInButton text={"Next"} onPress={submitRating} background={colors.BACKGROUND} />
           </View>
-        </Pressable>
-      </View>
-    </LinearGradient>
+        </LinearGradient>
+      }
+    </TutorialImageModal>
   )
 }
 
@@ -164,17 +184,19 @@ const styles = StyleSheet.create({
   // A white, circular background the same size of the Icon, to serve as a background for it
   // hides overflow
   nextContainer: {
-
     position: 'absolute',
     width: "100%",
     alignItems: 'center',
     bottom: dimensions.height / 4,
-    zIndex: 100,
   },
   forwardIcon: {
     ...icons.LARGE,
     color: colors.BACKGROUND,
-    zIndex: 100
+  },
+  tutorialImage: {
+    width: dimensions.width,
+    height: dimensions.height,
+    position: 'absolute',
   }
 })
 

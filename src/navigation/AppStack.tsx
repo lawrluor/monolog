@@ -43,7 +43,7 @@ const TabNavigator = (): JSX.Element => {
   const [shouldDisplay, setShouldDisplay] = React.useState(true);
 
   // Constants for rendering TabNavigator conditionally
-  const INITIAL_TAB_ROUTE = "Home";
+  const INITIAL_TAB_ROUTE = "Rating";
   const navigation = useNavigation();
   const route = useRoute();
   const tabHiddenRoutes = ["Recording"];
@@ -112,7 +112,7 @@ const TabNavigator = (): JSX.Element => {
               iconName = focused ? 'S_with_3_dots' : 'S_with_3_dots';
               break;
             default:
-              iconName = "not_found"
+              iconName = 'feedback_outline';  // "not_found"
               break;
           }
           return <CustomIcon name={iconName} size={size} color={color} />;
