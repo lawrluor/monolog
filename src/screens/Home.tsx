@@ -23,6 +23,7 @@ import UserContext from '../context/UserContext';
 import { containers, icons, text, spacings, colors } from '../styles';
 import { readUserData } from '../utils/localStorageUtils';
 import SignInButton from '../components/SignInButton';
+import { removeCurrentPathway, updateCurrentPathway } from '../utils/updatePathwaysUser';
 
 const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
@@ -181,6 +182,7 @@ const Home = ({ navigation }: any): JSX.Element => {
                 <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
               </View>
             </Pressable>
+<<<<<<< HEAD
 
             <View style={[styles.featureContainer]}>
               <SignInButton
@@ -190,6 +192,8 @@ const Home = ({ navigation }: any): JSX.Element => {
                 <Text>PATHWAYS</Text>
               </SignInButton>
             </View>
+=======
+>>>>>>> a69175b (Pathways2 (#49))
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>
