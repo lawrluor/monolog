@@ -175,15 +175,6 @@ const Home = ({ navigation }: any): JSX.Element => {
                 <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
               </View>
             </Pressable>
-
-            <View style={[styles.featureContainer]}>
-              <SignInButton
-                background={colors.HIGHLIGHT}
-                onPress={navigateToPathways}
-              >
-                <Text>PATHWAYS</Text>
-              </SignInButton>
-            </View>
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>
