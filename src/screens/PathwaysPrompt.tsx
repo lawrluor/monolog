@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   promptNum: {
     ...text.h4,
-    color: "black",
+    color: "#7C7C7C",
     textAlign: 'center',
     margin: spacings.SMALL,
   }

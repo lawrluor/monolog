@@ -44,7 +44,8 @@ const ProgressMap = ({ currentProgress, total }: any): JSX.Element => {
 
 const styles = StyleSheet.create({
   progressMap: {
-    margin: spacings.MASSIVE,
+    marginTop: spacings.MASSIVE,
+    marginRight: spacings.MASSIVE,
     padding: spacings.HUGE,
   },
   mapPoint: {
