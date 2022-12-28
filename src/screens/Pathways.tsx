@@ -22,8 +22,20 @@ const Pathways = ({ navigation }: any): JSX.Element => {
   const navigateToPrompt = async (pathwayName: string) => {
     let updatedUser = { ...user, ...{ currentPathway: pathwayName } }
     setUser(updatedUser)
+    //If the user has already started the pathway, set their level, otherwise set their level to 1
     const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
     navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
+  }
+
+  // Set button text to Begin/Continue pathway based on user's progress
+  const beginOrContinue = (pathwayName: string) => {
+    //If the user has already started the pathway, set their level, otherwise set their level to 1
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    if (currentLevel > 1) {
+      return "Continue Pathway"
+    } else {
+      return "Begin Pathway"
+    }
   }
 
   return (
@@ -46,7 +58,9 @@ const Pathways = ({ navigation }: any): JSX.Element => {
               pathwaysData.map((item, index) => {
                 return (
                   <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
-                    <GoForward callback={() => { navigateToFullPathway(item.name) }} />
+                    <View style={styles.forwardArrow}>
+                      <GoForward callback={() => { navigateToFullPathway(item.name) }} />
+                    </View>
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>
@@ -54,7 +68,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                       <SignInButton background={colors.HIGHLIGHT}
                         onPress={() => navigateToPrompt(item.name)}
                         >
-                        <Text style={text.h4}> Start Pathway </Text>
+                        <Text style={text.h4}> {beginOrContinue(item.name)} </Text>
                       </SignInButton>
                     </View>
                   </PathwayCard>
@@ -81,7 +95,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     paddingVertical: spacings.HUGE,
-    paddingHorizontal: spacings.HUGE,
+    // paddingHorizontal: spacings.MEDIUM,
     justifyContent: 'space-between',
     alignItems: 'flex-end'
   },
@@ -101,7 +115,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   title: {
-    ...text.h2
+    ...text.h2,
   },
   hidden: {
     display: 'none',
@@ -113,8 +127,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   forwardArrow: {
-    top: spacings.HUGE,
-    right: 0,
+    // top:0,
+    // padding: spacings.HUGE,
+    // margin: spacings.HUGE,
+    position: 'absolute',
+    bottom: '122.5%',
+    left: '78%',
   },
 });
 

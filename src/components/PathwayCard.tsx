@@ -8,8 +8,7 @@ import UserContext from '../context/UserContext';
  * @param {string} pathwayName name of the pathway info to be displayed 
 */
 const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
-  // Max number of prompts a pathway may contain
-  const MAX_LEVELS = 10
+  const MAX_LEVELS = 10 // Max number of prompts a pathway may contain
   const { user, setUser } = React.useContext(UserContext);
 
   const getImageURI = (img) => {
@@ -36,8 +35,9 @@ const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
 
 const styles = StyleSheet.create({
   featureTitle: {
-    ...text.h3,
+    ...text.h4,
     margin: spacings.MEDIUM,
+    paddingLeft: spacings.SMALL,
     marginBottom: spacings.SMALL,
     color: colors.PRIMARY
   },
