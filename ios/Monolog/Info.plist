@@ -49,13 +49,13 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your camera</string>
+	<string>Allow $(PRODUCT_NAME) to access your camera to allow you to record video journal logs, which you will be able to view and edit later.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your microphone</string>
+	<string>Allow $(PRODUCT_NAME) to access your microphone to allow you to record video and audio journal logs, which you will be able to view and edit later.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to use your device's photo library to store video logs and video thumbnail images.</string>
+	<string>Allow $(PRODUCT_NAME) to use your device's photo library to store video logs and video thumbnail images for your video journals.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to securely recognize user speech to generate transcripts that you can edit later.</string>
+	<string>Allow $(PRODUCT_NAME) to securely recognize user speech to generate text transcripts that you can edit later.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
