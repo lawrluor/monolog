@@ -1,49 +1,85 @@
 import React from 'react';
-import { ScrollView, View, Text, Image, Pressable, StyleSheet, Alert } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, Alert } from 'react-native';
 import { dimensions, text, spacings, icons, colors, debug } from '../styles';
 import SignInButton from '../components/SignInButton';
 import GoBack from '../components/GoBack';
-import { LinearGradient } from 'expo-linear-gradient';
-import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
+import { pathwaysMap } from '../utils/pathwaysData'
 import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
+import ProgressMap from '../components/ProgressMap';
+import UserContext from '../context/UserContext';
 
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
+  const { pathwayName } = route.params;
+  const { user, setUser } = React.useContext(UserContext);
+  const MAX_LEVELS = 10 // Maximum number of prompts a pathway may have
+  //If the user has already started the pathway, set their level, otherwise set their level to 1
+  const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
+  const timesCompleted = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['timesCompleted'] : 0
+  const currentPathway = pathwaysMap.get(pathwayName);
 
   const getImageURI = (img) => {
     return Image.resolveAssetSource(img).uri
   }
-  const navigateToRecord = (name: string) => {
-    navigation.navigate('Recording');
+
+  const navigateToPrompt = async (pathwayName: string) => {
+    let updatedUser = { ...user, ...{ currentPathway: pathwayName } }
+    setUser(updatedUser)
+    // const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
+  }
+  // Given the long description for a pathway it parses the description
+  // to add headers where '<b>' tag is found in the text
+  const BodyText = () => {
+    const text = currentPathway.long_desc
+    let textArray = text.split("<b>")
+
+    return (
+      <View style={styles.description}>
+        {
+          textArray.map((item, index) => {
+            const bold = index % 2;
+            return (
+              <Text style={bold ? styles.bodyHeader : styles.bodyText}>
+                { item }
+              </Text>
+            )
+          })
+        }
+      </View>
+    )
   }
 
-  const { name } = route.params;
-  const currentPathway = pathwaysMap.get(name);
+  // Set button text to Begin/Continue pathway based on user's progress
+  const beginOrContinue = (pathwayName: string) => {
+    if (currentLevel > 1) {
+      return "Continue Pathway"
+    } else {
+      return "Begin Pathway"
+    }
+  }
+
   return (
     <View style={styles.container}>
       <GoBack />
       <SafeAreaTop/>
       <SafeAreaBottom transparent>
         <ScrollView
-          style={styles.bodyContainer}
-          contentContainerStyle={styles.scrollContentContainerStyle}
           showsVerticalScrollIndicator={false}
         >
           <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
-          <Text>
-            {name} --- # of times completed: {currentPathway.progress[0]}
+          <Text style={styles.title}>
+            {pathwayName} --- {timesCompleted} stars
           </Text>
-          <Text>
-            {currentPathway.long_desc}
-          </Text>
-          <Text>
-            Current progress: {currentPathway.progress[1]}
-          </Text>
-          <SignInButton background={colors.HIGHLIGHT}
-            onPress={() => { navigateToRecord(name)}}
-            >
-            <Text style={text.h4}> RECORDING </Text>
-          </SignInButton>
+          <BodyText></BodyText>
+          <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS}/>  
         </ScrollView>
+        <View style={styles.recordButton}>
+          <SignInButton background={colors.HIGHLIGHT}
+            onPress={() => { navigateToPrompt(pathwayName)}}
+            >
+            <Text style={text.h4}> {beginOrContinue(pathwayName)} </Text>
+          </SignInButton>
+        </View>
       </SafeAreaBottom>
     </View>
   );
@@ -66,18 +102,24 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end'
   },
     imageHeader: {
-    width: "100%",
+    // width: "100%",
     height: undefined,
-    aspectRatio: 1,
+    aspectRatio: 1.68,
+    flex: 1,
+    resizeMode: 'contain'
   },
   // This container size is dependent on the size of the brandImage below
   // This ensures that the image does not overflow the container
   // A padding on the brandHeader ensures adequate vertical spacing no matter the image size
-  bodyContainer: {
-    paddingHorizontal: spacings.HUGE,
+  bodyHeader: {
+    ...text.h3,
+    color: 'black',
+    marginTop: 10,
+    marginBottom: 10,
   },
-  scrollContentContainerStyle: {
-    paddingVertical: spacings.HUGE,
+  bodyText: {
+    ...text.h5,
+    color: 'black',
   },
   headerRightIconContainer: {
     ...debug,
@@ -86,8 +128,25 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   title: {
-    ...text.h2
+    ...text.h3,
+    margin: spacings.HUGE,
+    marginBottom: spacings.SMALL,
+    color: 'black',
   },
+  description: {
+    margin: spacings.HUGE,
+  },
+  recordButton: {
+    position: 'absolute',
+    bottom: spacings.HUGE,
+    left: '10%',
+    backgroundColor: 'transparent',
+    // paddingTop: '5%',
+    // paddingBottom: '5%',
+    // paddingLeft: '16%',
+    // paddingRight: '16%',
+    margin:spacings.HUGE,
+  }
 });
 
 export default PathwayFull;

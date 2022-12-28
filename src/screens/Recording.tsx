@@ -12,7 +12,7 @@ import UserContext from '../context/UserContext';
 import { checkRecordingPermissions } from '../utils/permissions';
 import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
 
-import { text, containers, icons, spacings, dimensions } from '../styles';
+import { text, containers, colors, icons, spacings, dimensions } from '../styles';
 
 import PulseAnimation from '../components/PulseAnimation';
 import GoBack from '../components/GoBack';
@@ -21,6 +21,7 @@ import CustomIcon from '../components/CustomIcon';
 import { FullPageSpinner } from '../components/Spinner';
 import AudioOverlay from '../components/AudioOverlay';
 import AudioBubbles from '../components/AudioBubbles';
+import SignInButton from '../components/SignInButton';
 
 const MAX_DURATION = 600;  // seconds
 
@@ -45,6 +46,11 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
+
+  navigation.addListener('beforeRemove', () => {
+    console.log("Going back is disabled on this screen.");
+    return
+  });
 
   // Setup: Get permissions for camera from user first
   React.useEffect(() => {
@@ -183,9 +189,9 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           }
         )
       }
-     } catch(err){
+    } catch(err){
         console.log(err);
-     }
+    }
   };
 
   // Currently unused, as opting for no direct "return to gallery" button
@@ -194,7 +200,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   }
 
   const navigateToRating = () => {
-    navigation.navigate('Rating', {
+      navigation.navigate('Rating', {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
       isCameraOn: isCameraOn,
@@ -269,17 +275,20 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const renderAudioRecordingScreen = () => {
     return (
       <AudioOverlay>
-        <View style={styles.captionContainer}>
-          <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
-        </View>
-        {isRecording
+        {
+          isRecording
           ?
           <>
             <AudioBubbles shouldBegin={isRecording} />
+
+            <View style={styles.captionContainer}>
+              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+            </View>
           </>
           :
-          <Text>Press the button to begin recording your audio log.</Text>
+          <SignInButton text={"Begin Recording"} onPress={startRecording} background={colors.BACKGROUND}></SignInButton>
         }
+
         <View style={styles.recordContainer}>
           {renderRecordIcon()}
         </View>
@@ -337,11 +346,17 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     )
   }
 
+  // Resets currentPathway when leaving recording screen
+  const backAndReset = async () => {
+    let updatedUser = { ...user, ...{ currentPathway: " " } }
+    setUser(updatedUser)
+    navigation.goBack()
+  }
   // TODO: Bugfix/unsure if necessary to check permission at this point.
   const renderCamera = () => {
     return (
       <>
-        <GoBack />
+        <GoBack callback={() => backAndReset()}/>
 
         <View style={styles.cameraToggleContainer}>
           <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
@@ -360,10 +375,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           ?
           <>
             <Camera
-            style={styles.cameraContainer}
-            type={type}
-            ref={cameraRef}
-            onCameraReady={() => setIsLoading(false) }
+              style={styles.cameraContainer}
+              type={type}
+              ref={cameraRef}
+              onCameraReady={() => setIsLoading(false) }
             >
               <View style={styles.captionContainer}>
                 <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
@@ -376,10 +391,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           </>
           :
           <Camera
-          style={styles.cameraContainer}
-          type={type}
-          ref={cameraRef}
-          onCameraReady={() => setIsLoading(false) }
+            style={styles.cameraContainer}
+            type={type}
+            ref={cameraRef}
+            onCameraReady={() => setIsLoading(false) }
           >
             {renderAudioRecordingScreen()}
           </Camera>

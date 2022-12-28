@@ -145,7 +145,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
 
   return (
     <>
-      <View style={[styles.container, { display: isLoading || !status.isLoaded ? 'none' : 'flex'}]}>
+      <View style={[styles.container, { display: isLoading || !status?.isLoaded ? 'none' : 'flex'}]}>
         <Pressable onPress={togglePlay}>
           {renderAudioOverlay(showVideo)}
           <Video
@@ -162,9 +162,9 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
       </View>
 
       {
-        isLoading || !status.isLoaded
+        isLoading || !(status?.isLoaded)
         ?
-          <FullPageSpinner size="large" />
+        <FullPageSpinner size="large" />
         :
         null
       }

@@ -6,7 +6,6 @@
 // TODO: consider refactoring/moving code handling local storage from other files to here.
 
 import * as FileSystem from 'expo-file-system';
-import { resolvePath } from 'react-native-reanimated/lib/types/lib/reanimated2/animation/styleAnimation';
 import { filteredWords, removePunctuation } from './textProcessing';
 import { createRatingFromFile } from './rating';
 
@@ -530,8 +529,10 @@ export const initVideoDataObject = async (filename: string) => {
     "transcript_uri": transcriptUri,
     "transcript_content": transcriptContent,
     "rating": rating,
-    // isCameraOn means show video, defaults to true (see ratings.ts)
-    "show_video": ratingObject.isCameraOn
+    // isCameraOn means show video, defaults to true in ratings.ts
+    // However, if this field doesn't exist (undefined, migrating from older versions),
+    // this will be explicitly set to boolean false
+    "show_video": ratingObject?.isCameraOn ? ratingObject?.isCameraOn : true
   }
 
   return videoData;
