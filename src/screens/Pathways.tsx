@@ -9,21 +9,25 @@ import PathwayFull from './PathwayFull';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/native';
 import { pathwaysData, pathwaysMap } from '../utils/pathwaysData'
 import SignInButton from '../components/SignInButton';
+import GoForward from '../components/GoForward';
+import UserContext from '../context/UserContext';
 
 const Pathways = ({ navigation }: any): JSX.Element => { 
+  const { user, setUser } = React.useContext(UserContext);
 
-  const navigateToFullPathway = (name: string) => {
-    navigation.push('PathwayFull', { name: name })
+  const navigateToFullPathway = (pathwayName: string) => {
+    navigation.push('PathwayFull', { pathwayName: pathwayName })
   }
 
-  // TODO: add prompt params for recording prompt. navagate to prompt page
-  const navigateToRecord = (name: string) => {
-    navigation.navigate('Recording');
+  const navigateToPrompt = async (pathwayName: string) => {
+    let updatedUser = { ...user, ...{ currentPathway: pathwayName } }
+    setUser(updatedUser)
+    const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
+    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
   }
 
   return (
     <View style={styles.container}>
-      <GoBack />
       <SafeAreaTop/>
       <SafeAreaBottom transparent>
         <LinearGradient
@@ -41,20 +45,16 @@ const Pathways = ({ navigation }: any): JSX.Element => {
             {
               pathwaysData.map((item, index) => {
                 return (
-                  <PathwayCard name={item.name} key={`${item.name}_short`}>
+                  <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
+                    <GoForward callback={() => { navigateToFullPathway(item.name) }} />
                     <Text style={[text.p, styles.featureDescription]}>
                       {item.short_desc}
                     </Text>
-                    <View style={styles.navigateButton }>
+                    <View style={ styles.navigateButton }>
                       <SignInButton background={colors.HIGHLIGHT}
-                        onPress={() => { navigateToFullPathway(item.name)}}
+                        onPress={() => navigateToPrompt(item.name)}
                         >
-                        <Text style={text.h4}> Full Desc </Text>
-                      </SignInButton>
-                      <SignInButton background={colors.HIGHLIGHT}
-                        onPress={() => navigateToRecord(item.name)}
-                        >
-                        <Text style={text.h4}> RECORDING </Text>
+                        <Text style={text.h4}> Start Pathway </Text>
                       </SignInButton>
                     </View>
                   </PathwayCard>
@@ -74,8 +74,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   featureDescription: {
-    marginBottom: spacings.SMALL,
-    marginLeft: spacings.SMALL,
+    margin: spacings.HUGE,
+    marginTop: spacings.SMALL,
+    color: colors.SECONDARY,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -110,6 +111,10 @@ const styles = StyleSheet.create({
   },
   navigateButton: {
     alignSelf: 'center',
+  },
+  forwardArrow: {
+    top: spacings.HUGE,
+    right: 0,
   },
 });
 

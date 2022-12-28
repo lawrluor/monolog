@@ -184,9 +184,9 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           }
         )
       }
-     } catch(err){
+    } catch(err){
         console.log(err);
-     }
+    }
   };
 
   // Currently unused, as opting for no direct "return to gallery" button
@@ -195,7 +195,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   }
 
   const navigateToRating = () => {
-    navigation.navigate('Rating', {
+      navigation.navigate('Rating', {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
       isCameraOn: isCameraOn,
@@ -341,11 +341,17 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     )
   }
 
+  // Resets currentPathway when leaving recording screen
+  const backAndReset = async () => {
+    let updatedUser = { ...user, ...{ currentPathway: " " } }
+    setUser(updatedUser)
+    navigation.goBack()
+  }
   // TODO: Bugfix/unsure if necessary to check permission at this point.
   const renderCamera = () => {
     return (
       <>
-        <GoBack />
+        <GoBack callback={() => backAndReset()}/>
 
         <View style={styles.cameraToggleContainer}>
           <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
