@@ -16,14 +16,12 @@ import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
 import { comingSoonAlert, editProfileAlert, simpleAlert } from '../utils/customAlerts';
 import { getRecordingPermissions } from '../utils/permissions';
+import { INITIAL_USER_DATA } from '../utils/localStorageUtils';
 
 import VideosContext from '../context/VideosContext';
 import UserContext from '../context/UserContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
-import { readUserData } from '../utils/localStorageUtils';
-import SignInButton from '../components/SignInButton';
-import { removeCurrentPathway, updateCurrentPathway } from '../utils/updatePathwaysUser';
 
 const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
@@ -52,7 +50,7 @@ const Home = ({ navigation }: any): JSX.Element => {
     // we delete the data in userContext, then go back to AuthLoading
     // which handles auth state for us and should display Landing page.
     editProfileAlert(() => {
-      setUser({});
+      setUser(INITIAL_USER_DATA);  // UserContext refreshes whenever user changes; force the refresh
       navigation.navigate('AuthLoading')
     });
   }
