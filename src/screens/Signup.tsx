@@ -104,7 +104,7 @@ const Signup = ({ route, navigation }): JSX.Element => {
 
         <View style={styles.buttonContainer}>
           {/* TODO (UX): Distinguish regular Sign Up from Google/Facebook signup using different background color */}
-          <SignInButton text="Sign Up" onPress={authenticate} background={colors.BACKGROUND}></SignInButton>
+          <SignInButton text={"Sign Up"} onPress={authenticate} background={colors.BACKGROUND}></SignInButton>
           <SignInButton text={"Sign Up With Google"} onPress={authenticate} background={colors.BACKGROUND}><AntDesign name="google" style={styles.socialIcon} /></SignInButton>
           <SignInButton text={"Sign Up With Facebook"} onPress={authenticate} background={colors.BACKGROUND}><AntDesign name="facebook-square" style={styles.socialIcon} /></SignInButton>
         </View>
