@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   featureDescription: {
     margin: spacings.HUGE,
-    marginTop: spacings.SMALL,
+    marginTop: '0pt',
     color: colors.SECONDARY,
   },
   headerContainer: {
@@ -127,9 +127,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   forwardArrow: {
-    // top:0,
-    // padding: spacings.HUGE,
-    // margin: spacings.HUGE,
     position: 'absolute',
     bottom: '122.5%',
     left: '78%',
