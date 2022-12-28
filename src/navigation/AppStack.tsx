@@ -109,7 +109,7 @@ const TabNavigator = (): JSX.Element => {
               iconName = focused ? 'vistas_filled' : 'vistas_outline';
               break;
             case "Pathways":
-              iconName = focused ? 'feedback_filled' : 'feedback_outline';  // TODO get custom pathways icons from Greg
+              iconName = focused ? 'S_with_3_dots' : 'S_with_3_dots';
               break;
             default:
               iconName = 'feedback_outline';  // "not_found"

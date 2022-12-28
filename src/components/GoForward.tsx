@@ -18,7 +18,7 @@ const GoForward = ({ callback }: Props, styleProp:Props) => {
 
   return (
     <TouchableOpacity style={styles.goForwardContainer} onPress={callback} hitSlop={spacings.hitSlopLarge}>
-      <CustomIcon style={styles.forwardIcon} name='forward_arrow' />
+      <CustomIcon style={styles.forwardIcon} name='forward_arrow_no_circle' />
     </TouchableOpacity>
   )
 }

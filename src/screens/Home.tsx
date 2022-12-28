@@ -182,18 +182,6 @@ const Home = ({ navigation }: any): JSX.Element => {
                 <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
               </View>
             </Pressable>
-<<<<<<< HEAD
-
-            <View style={[styles.featureContainer]}>
-              <SignInButton
-                background={colors.HIGHLIGHT}
-                onPress={navigateToPathways}
-              >
-                <Text>PATHWAYS</Text>
-              </SignInButton>
-            </View>
-=======
->>>>>>> a69175b (Pathways2 (#49))
           </ScrollView>
         </LinearGradient>
       </SafeAreaBottom>
