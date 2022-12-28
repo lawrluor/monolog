@@ -100,13 +100,13 @@ const TabNavigator = ({ setUser }): JSX.Element => {
               iconName = focused ? 'home_filled' : 'home_outline';
               break;
             case 'Gallery':
-              iconName = focused ? 'grid_rounded_filled' : 'grid_rounded_outline';
+              iconName = focused ? 'gallery_filled' : 'gallery_outline';
               break;
             case "Recording":
-              iconName = focused ? 'add_video' : 'add_video';
+              iconName = focused ? 'add_entry' : 'add_entry';
               break;
             case "Vistas":
-              iconName = focused ? 'eyeball_filled' : 'eyeball_outline';
+              iconName = focused ? 'vistas_filled' : 'vistas_outline';
               break;
             case "Pathways":
               iconName = focused ? 'feedback_filled' : 'feedback_outline';  // TODO get custom pathways icons from Greg
@@ -126,11 +126,11 @@ const TabNavigator = ({ setUser }): JSX.Element => {
       <Tab.Screen name="Gallery" component={Gallery} options={{ headerShown: false }} />
 
       {/* For unmount behavior: https://github.com/react-navigation/react-navigation/issues/6915#issuecomment-1038851130 */}
-      <Tab.Screen 
-        name="Recording" 
-        component={Recording} 
-        options={{ headerShown: false, unmountOnBlur: true }} 
-        listeners={({navigation}) => ({blur: () => navigation.setParams({screen: undefined})})} 
+      <Tab.Screen
+        name="Recording"
+        component={Recording}
+        options={{ headerShown: false, unmountOnBlur: true }}
+        listeners={({navigation}) => ({blur: () => navigation.setParams({screen: undefined})})}
       />
 
       <Tab.Screen name="Vistas" component={Vistas} options={{ headerShown: false }} />

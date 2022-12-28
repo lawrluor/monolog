@@ -10,6 +10,7 @@ import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
 import NewUserMessage from '../components/NewUserMessage';
+
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
 import { comingSoonAlert, simpleAlert } from '../utils/customAlerts';
