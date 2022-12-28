@@ -105,8 +105,7 @@ const Rating = ({ route, navigation }): JSX.Element => {
 
           <View>
             <View style={styles.titleContainer}>
-              <Text style={styles.subTitle}>...and really quickly,</Text>
-              <Text style={styles.title}>how are you feeling?</Text>
+              <Text style={styles.title}>How are you feeling?</Text>
             </View>
 
             <View style={styles.ratingContainer}>

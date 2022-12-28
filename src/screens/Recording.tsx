@@ -286,7 +286,12 @@ export const Recording = ({ navigation }: any): JSX.Element => {
             </View>
           </>
           :
-          <SignInButton text={"Begin Recording"} onPress={startRecording} background={colors.BACKGROUND}></SignInButton>
+          <View style={styles.featureContainer}>
+            <View style={{ padding: spacings.MEDIUM }}>
+              <Text style={styles.featureText}>Press the button below to begin your recording.</Text>
+            </View>
+            <SignInButton onPress={startRecording} background={colors.HIGHLIGHT}><Text style={text.h4}>Record</Text></SignInButton>
+          </View>
         }
 
         <View style={styles.recordContainer}>
@@ -524,6 +529,23 @@ const styles = StyleSheet.create({
   },
   numberButtonContainer: {
     marginHorizontal: spacings.LARGE,
+  },
+  featureContainer: {
+    backgroundColor: colors.BACKGROUND,
+    borderRadius: 20,
+    width: "75%",
+    marginBottom: spacings.HUGE,
+    padding: spacings.HUGE,
+    shadowColor: '#000000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.2,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  featureText: {
+    ...text.p,
+    color: colors.SECONDARY,
+    textAlign: 'center'
   }
 });
 
