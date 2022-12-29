@@ -84,7 +84,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
             {pathwayName}
           </Text>
           {renderGems()}
-          <BodyText></BodyText>
+          <BodyText />
           <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS}/>  
         </ScrollView>
         <View style={styles.recordButton}>

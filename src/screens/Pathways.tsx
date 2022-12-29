@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
   },
   featureDescription: {
     margin: spacings.HUGE,
-    marginTop: '0pt',
     color: colors.SECONDARY,
   },
   headerContainer: {
