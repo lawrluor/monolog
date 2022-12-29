@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     margin: spacings.MEDIUM,
     paddingLeft: spacings.SMALL,
     marginBottom: spacings.SMALL,
-    color: colors.PRIMARY
+    color: colors.PRIMARY,
   },
   featureContainer: {
     backgroundColor: colors.BACKGROUND,
@@ -62,10 +62,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain'
   },
   progressBar: {
-    position: 'absolute',
-    right: 10,
-    top: 210,
-    width: '55%'
+    position: 'relative',
+    left: '40%',
+    bottom: '9%',
+    width: '55%',
+    marginBottom: '-10%',
   }
 });
 

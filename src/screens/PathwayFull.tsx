@@ -7,6 +7,7 @@ import { pathwaysMap } from '../utils/pathwaysData'
 import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
 import ProgressMap from '../components/ProgressMap';
 import UserContext from '../context/UserContext';
+import CustomIcon from '../components/CustomIcon';
 
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const { pathwayName } = route.params;
@@ -48,6 +49,18 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
       </View>
     )
   }
+  // gemstone_unfilled
+  const renderGems = () => {
+    let gemArray = []
+    for (let gemI = 1; gemI <= 5; gemI++) {
+      if (gemI <= timesCompleted) {
+        gemArray.push(<CustomIcon name={'gemstone_unfilled'} style={styles.gemFilled}></CustomIcon>)
+      } else {
+        gemArray.push(<CustomIcon name={'gemstone_unfilled'} style={styles.gemUnfilled}></CustomIcon>)
+      }
+    }
+    return <Text style={styles.gemContainer}>{gemArray}</Text>
+  }
 
   // Set button text to Begin/Continue pathway based on user's progress
   const beginOrContinue = (pathwayName: string) => {
@@ -68,9 +81,10 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
         >
           <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
           <Text style={styles.title}>
-            {pathwayName} --- {timesCompleted} stars
+            {pathwayName}
           </Text>
-          <BodyText></BodyText>
+          {renderGems()}
+          <BodyText />
           <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS}/>  
         </ScrollView>
         <View style={styles.recordButton}>
@@ -141,11 +155,22 @@ const styles = StyleSheet.create({
     bottom: spacings.HUGE,
     left: '10%',
     backgroundColor: 'transparent',
-    // paddingTop: '5%',
-    // paddingBottom: '5%',
-    // paddingLeft: '16%',
-    // paddingRight: '16%',
     margin:spacings.HUGE,
+  },
+  gemFilled: {
+    ...icons.TINY,
+    color: colors.HIGHLIGHT,
+    margin: spacings.HUGE,
+  },
+  gemUnfilled: {
+    ...icons.TINY,
+    color: colors.SECONDARY,
+  },
+  gemContainer: {
+    flexDirection: 'row',
+    position: 'relative',
+    bottom: '7%',
+    left: '30%',
   }
 });
 
