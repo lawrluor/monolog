@@ -14,8 +14,8 @@ import { text, spacings, icons, colors } from '../styles';
 const NewUserMessage = ({ navigateCallback }: any) => {
   return (
     <View style={styles.featureContainer}>
+      <Text style={styles.featureTitle}>Vistas</Text>
       <View style={styles.newUserAlertTextContainer}>
-        <Text>Vistas</Text>
         <Text style={styles.newUserAlertText}>
           Your vistas will appear after your first log.
           Press the button below to get started!
@@ -44,6 +44,11 @@ const styles = StyleSheet.create({
     shadowColor: '#000000',
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.2,
+  },
+  featureTitle: {
+    ...text.h4,
+    marginBottom: spacings.SMALL,
+    color: colors.PRIMARY
   },
   newUserAlertTextContainer: {
     alignItems: 'center',
