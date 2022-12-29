@@ -275,15 +275,14 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const renderAudioRecordingScreen = () => {
     return (
       <AudioOverlay>
+        <View style={styles.captionContainer}>
+          <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+        </View>
         {
           isRecording
           ?
           <>
             <AudioBubbles shouldBegin={isRecording} />
-
-            <View style={styles.captionContainer}>
-              <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
-            </View>
           </>
           :
           <SignInButton text={"Begin Recording"} onPress={startRecording} background={colors.BACKGROUND}></SignInButton>
