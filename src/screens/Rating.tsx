@@ -15,7 +15,7 @@ import { FullPageSpinner } from '../components/Spinner';
 
 import { containers, text, dimensions, spacings, colors, icons } from '../styles';
 
-const Rating = ({ route, navigation }): JSX.Element => {
+const Rating = ({ route, navigation }: any): JSX.Element => {
   const { moodData, videosCount } = React.useContext(VideosContext);
 
   const emojis = ['😥','😐','🙂','😃','😍'];

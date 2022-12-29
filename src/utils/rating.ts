@@ -3,13 +3,13 @@
 // You can construct from a filename by reading from local storage or by passing
 // in required values.
 // Attributes are accessed with the '.' operator.
-import { getRating, readFile, writeFile } from '../utils/localStorageUtils';
+import { readFile, writeFile } from '../utils/localStorageUtils';
 
 // Tries to create a rating from a file.
 // Best effort to create backwards-compatible legacy rating object.
 // Returns null if we can't create one from file.
 export const createRatingFromFile = async (filename:string):
-    Promise<Rating> => {
+    Promise<Rating | undefined>  => {
   try {
     let content = await readFile(filename);
     if (content.length == 3) {
@@ -29,7 +29,7 @@ export const createRatingFromFile = async (filename:string):
 
 // Create Rating from video metadata, can't fail.
 export const createRatingFromMetadata = (
-    emoji:string, index:number, isCameraOn:boolean):Rating => {
+    emoji:string, index:number, isCameraOn:boolean): Rating => {
   return new Rating({
       emoji: emoji,
       index: index.toString(),
@@ -70,7 +70,7 @@ class Rating {
       });
     }
 
-    public writeRatingToFile = async (filename:string) : boolean => {
+    public writeRatingToFile = async (filename:string): Promise<boolean> => {
       return await writeFile(filename, this.toString());
     }
 }
