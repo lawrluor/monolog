@@ -2,10 +2,8 @@ import {
   procrastination_header,
   anxiety_header,
   sleep_header,
-  trauma_ptsd_header,
   self_esteem_header,
-  anger_header,
-} from '../../assets/img/pathway-headers'
+} from '../../assets/img/pathway-headers';
 
 export const pathwaysData = [
   {
@@ -15,22 +13,23 @@ export const pathwaysData = [
   },
   {
     name: "General Anxiety",
-    short_desc: "You are not your thoughts",
+    short_desc: "You are not your thoughts.",
     long_desc: "Learn more about chronic worrying and generalised anxiety disorder as well as suggested strategies for how you can manage your worrying and anxiety through this pathway.",
   },
   {
     name: "Depression",
-    short_desc: "Blues begone",
+    short_desc: "Blues begone.",
     long_desc: "With this pathway, you'll learn about some suggested strategies for how you can manage your mood and keep feelings of depression at bay.",
   },
   {
     name: "Social Anxiety",
-    short_desc: "Connect to yourself to better connect with others",
+    short_desc: "Connect to yourself to better connect with others.",
     long_desc: "Find out if you have symptoms of social anxiety and understand more about social anxiety - what it is, what causes it, and what keeps it going. By the end of this pathway, learn how to better manage or overcome social anxiety.",
-  },
-]
+  }
+];
 
 export const pathwaysMap = new Map();
+
   // progress => [# times completed, current prompt #, total prompts]
 pathwaysMap.set('Procrastination', {
   name: "Procrastination",
@@ -104,6 +103,6 @@ export const pathwaysPrompts = {
     "What can you influence about the situation (How you respond /Your response to others/Knowing who to turn to for help or advice)?",
     "What can you accept about the situation (Other people's responses or decisions/The ever-changing world around you)?",
     "After completing this exercise, how do you feel about the situation?",
-    "Is there anything in the “accept” field that you wish you could control or influence? If so, think about why you feel this way and write it below.",
+    'Is there anything in the "accept" field that you wish you could control or influence? If so, think about why you feel this way and write it below.',
   ]
 }
