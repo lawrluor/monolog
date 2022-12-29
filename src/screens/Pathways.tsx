@@ -72,7 +72,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                 {
                   pathwaysData.map((item, index) => {
                     return (
-                      <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
+                      <PathwayCard pathwayName={item.name} key={`${item.name}_short`} getCurrentLevel={getCurrentLevel}>
                         <View style={styles.forwardArrow}>
                           <GoForward callback={() => { navigateToFullPathway(item.name) }} />
                         </View>
