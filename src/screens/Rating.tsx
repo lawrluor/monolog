@@ -20,7 +20,11 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
 
   const emojis = ['😥','😐','🙂','😃','😍'];
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
-  const [tutorialShown, setTutorialShown] = React.useState<boolean>(videosCount < 1);
+
+  // Proxy for showing tutorial - if this is the first video, we haven't shown
+  // the tutorial. If it's not the first video we've recorded, we have shown the
+  // video.
+  const [tutorialShown, setTutorialShown] = React.useState<boolean>(videosCount >= 1);
   const [tutorialLoading, setTutorialLoading] = React.useState<boolean>(true);
 
   const { fileBaseName, finalResult, isCameraOn } = route.params;
@@ -90,7 +94,8 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
       onLoadCallback={() => setTutorialLoading(false)}
     >
       {
-        tutorialLoading
+        // If we have not shown the tutorial, wait for it to load.
+        !tutorialShown && tutorialLoading
         ?
         <FullPageSpinner></FullPageSpinner>
         :
