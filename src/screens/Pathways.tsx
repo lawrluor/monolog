@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Text } from 'react-native';
-
 import { LinearGradient } from 'expo-linear-gradient';
 
 import UserContext from '../context/UserContext';
