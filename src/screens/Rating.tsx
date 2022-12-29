@@ -21,9 +21,9 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
   const emojis = ['😥','😐','🙂','😃','😍'];
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
 
-  // Proxy for showing tutorial - if this is the first video, we haven't shown
-  // the tutorial. If it's not the first video we've recorded, we have shown the
-  // video.
+  // Proxy for showing tutorial: if we have recorded multiple videos, we have
+  // shown the tutorial. If this is the first video we've recorded, then we have
+  // not shown the tutorial.
   const [tutorialShown, setTutorialShown] = React.useState<boolean>(videosCount >= 1);
   const [tutorialLoading, setTutorialLoading] = React.useState<boolean>(true);
 
