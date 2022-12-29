@@ -55,10 +55,6 @@ const Home = ({ navigation }: any): JSX.Element => {
     });
   }
 
-  const navigateToPathways = async () => {
-    navigation.navigate('Pathways');
-  }
-
   const renderVistasSummaryHeader = (videosCount: number) => {
     if (videosCount >= VIDEOS_THRESHOLD) {
       return (
