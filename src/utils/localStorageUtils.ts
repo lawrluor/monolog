@@ -209,8 +209,9 @@ export const createUserDataDirectory = async () => {
 }
 
 export const deleteUserData = async () => {
-  await FileSystem.deleteAsync(USER_DATA_DIRECTORY);
+  let result = await FileSystem.deleteAsync(USER_DATA_DIRECTORY);
   console.log("deleted user data");
+  return result;
 }
 
 export const readUserData = async () => {
@@ -385,40 +386,41 @@ export const processAllWordsFromTranscripts = async (allWordsByTranscript: strin
 }
 
 export const deleteAllTranscripts = async () => {
-  // await getTranscripts(FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY));
-  await FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY)
+  let result = await FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY)
   console.log("Deleted all transcripts");
+  return result;
 }
 
 export const deleteAllRatings = async () => {
-  await FileSystem.deleteAsync(RATING_DIRECTORY);
+  let result = await FileSystem.deleteAsync(RATING_DIRECTORY);
   console.log("Deleted all ratings");
+  return result;
 }
 
-// Deletes all videos with optional parameter of deleting X number of videos
-export const deleteAllVideos = async (numberOfVideosToDelete=0) => {
-  await FileSystem.readDirectoryAsync(VIDEO_DIRECTORY)
-    .then(async (files) => {
-      // default is 0, so delete all videos by default
-      let numberOfVideos = Math.max(0, files.length - numberOfVideosToDelete);
-      for (let i=0; i<numberOfVideos; i++) {
-        await FileSystem.deleteAsync(VIDEO_DIRECTORY + files[i]);
-      }
+export const deleteAllVideos = async () => {
+  return await FileSystem.readDirectoryAsync(VIDEO_DIRECTORY)
+    .then(async (files: any) => {
+      files.forEach((file: any) => {
+        deleteVideoLog(file);  // await FileSystem.deleteAsync(VIDEO_DIRECTORY + files[i]);
+      })
+
+      console.log("Deleted all videos");
     })
     .catch((err) => console.log("[ERROR] VideosContext: deleteAllVideos", err));
 }
 
 export const deleteAllThumbnails = async () => {
-  await FileSystem.deleteAsync(THUMBNAIL_DIRECTORY);
+  let result = await FileSystem.deleteAsync(THUMBNAIL_DIRECTORY);
   console.log("Deleted all thumbnails");
+  return result;
 }
 
 export const deleteAllData = async () => {
   try {
     let promises = [
+      deleteAllVideos(),
       deleteAllRatings(),
       deleteAllTranscripts(),
-      deleteAllVideos(),
       deleteAllThumbnails(),
       deleteUserData()
     ]
