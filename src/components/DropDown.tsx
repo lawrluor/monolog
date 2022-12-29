@@ -24,7 +24,7 @@ const DropDown = ({ title, options, selectedValue, setSelectedValue }: any): JSX
 
 const styles = StyleSheet.create({
   pickerTitle: {
-    ...text.h4,
+    ...text.h3,
   },
   picker: {
     height: 140,
@@ -33,8 +33,9 @@ const styles = StyleSheet.create({
   // Note: The highlight color on the selected item cannot be changed (easily) yet.
   // Could have a flag on if item is selected, dynamically assign style as variable in the component
   pickerItem: {
-    ...text.h4,
+    ...text.h3,
     height: 140,
+    // padding: 20  Unsure how to make the highlight region taller/larger
   },
 });
 

@@ -67,7 +67,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                 showsVerticalScrollIndicator={false}
               >
                 <View style={styles.headerContainer}>
-                  <Text style={styles.title}>Pathways</Text>
+                  <Text style={styles.title}>Current Pathways</Text>
                 </View>
                 {
                   pathwaysData.map((item, index) => {

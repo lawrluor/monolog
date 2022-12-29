@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     borderColor: colors.BACKGROUND,
     backgroundColor: colors.BACKGROUND,
     width: sizes.SCREEN_WIDTH_66,
-    borderRadius: sizes.HUGE / 2,
+    borderRadius: 15,
     padding: spacings.LARGE,
     shadowColor: '#000000',
     shadowOffset: { width: 5, height: 5},

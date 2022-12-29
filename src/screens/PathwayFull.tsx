@@ -1,6 +1,6 @@
 import React from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, Alert } from 'react-native';
-import { dimensions, text, spacings, icons, colors, debug } from '../styles';
+import { ScrollView, View, Text, Image, StyleSheet } from 'react-native';
+import { text, spacings, icons, colors, debug } from '../styles';
 import SignInButton from '../components/SignInButton';
 import GoBack from '../components/GoBack';
 import { pathwaysMap } from '../utils/pathwaysData'
@@ -49,17 +49,25 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
       </View>
     )
   }
+
   // gemstone_unfilled
   const renderGems = () => {
-    let gemArray = []
-    for (let gemI = 1; gemI <= 5; gemI++) {
-      if (gemI <= timesCompleted) {
-        gemArray.push(<CustomIcon name={'gemstone_unfilled'} style={styles.gemFilled}></CustomIcon>)
-      } else {
-        gemArray.push(<CustomIcon name={'gemstone_unfilled'} style={styles.gemUnfilled}></CustomIcon>)
-      }
-    }
-    return <Text style={styles.gemContainer}>{gemArray}</Text>
+    let arr = [1,2,3,4,5];
+    const gems = arr.map((x) => {
+      return (
+        <View style={styles.gemIcon}>
+          {
+            x <= timesCompleted
+            ?
+            <CustomIcon name={'gemstone_unfilled'} style={styles.gemFilled}></CustomIcon>
+            :
+            <CustomIcon name={'gemstone_unfilled'} style={styles.gemUnfilled}></CustomIcon>
+          }
+        </View>
+      );
+    });
+
+    return <View style={styles.gemContainer}>{gems}</View>
   }
 
   // Set button text to Begin/Continue pathway based on user's progress
@@ -74,19 +82,19 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   return (
     <View style={styles.container}>
       <GoBack />
-      <SafeAreaTop/>
-      <SafeAreaBottom transparent>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-        >
+
+        <ScrollView showsVerticalScrollIndicator={false} >
           <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
-          <Text style={styles.title}>
-            {pathwayName}
-          </Text>
-          {renderGems()}
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{pathwayName}</Text>
+            {renderGems()}
+          </View>
+
           <BodyText />
-          <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS}/>  
+
+          <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS}/>
         </ScrollView>
+
         <View style={styles.recordButton}>
           <SignInButton background={colors.HIGHLIGHT}
             onPress={() => { navigateToPrompt(pathwayName)}}
@@ -94,7 +102,6 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
             <Text style={text.h4}> {beginOrContinue(pathwayName)} </Text>
           </SignInButton>
         </View>
-      </SafeAreaBottom>
     </View>
   );
 }
@@ -127,13 +134,12 @@ const styles = StyleSheet.create({
   // A padding on the brandHeader ensures adequate vertical spacing no matter the image size
   bodyHeader: {
     ...text.h3,
-    color: 'black',
-    marginTop: 10,
-    marginBottom: 10,
+    color: colors.PRIMARY,
+    marginVertical: spacings.MEDIUM,
   },
   bodyText: {
     ...text.h5,
-    color: 'black',
+    color: colors.PRIMARY,
   },
   headerRightIconContainer: {
     ...debug,
@@ -142,13 +148,12 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   title: {
-    ...text.h3,
-    margin: spacings.HUGE,
-    marginBottom: spacings.SMALL,
-    color: 'black',
+    ...text.h4,
+    color: colors.PRIMARY,
   },
   description: {
     margin: spacings.HUGE,
+    color: colors.PRIMARY
   },
   recordButton: {
     position: 'absolute',
@@ -157,10 +162,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     margin:spacings.HUGE,
   },
+  gemIcon: {
+    marginHorizontal: spacings.TINY
+  },
   gemFilled: {
     ...icons.TINY,
     color: colors.HIGHLIGHT,
-    margin: spacings.HUGE,
   },
   gemUnfilled: {
     ...icons.TINY,
@@ -168,9 +175,13 @@ const styles = StyleSheet.create({
   },
   gemContainer: {
     flexDirection: 'row',
-    position: 'relative',
-    bottom: '7%',
-    left: '30%',
+    marginLeft: spacings.MEDIUM
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: spacings.HUGE,
+    marginTop: spacings.HUGE
   }
 });
 

@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   forwardIconGrey: {
     ...icons.TINY,
-    color: colors.PRIMARY
+    color: colors.SECONDARY
   },
   forwardIconWhite: {
     ...icons.TINY,
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
   lockIcon: {
     ...icons.TINY,
-    color: colors.PRIMARY,
+    color: colors.SECONDARY,
   }
 })
 

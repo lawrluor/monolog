@@ -11,12 +11,12 @@ export const pathwaysData = [
   {
     name: "Procrastination",
     short_desc: "A prompt today, keeps the procrastination away.",
-    long_desc: `Procrastination often follows a cycle. By identifying and understanding the steps within this cycle, you can learn how to better manage your emotions around procrastination and improve on your habits for the future.`,
+    long_desc: "Procrastination often follows a cycle. By identifying and understanding the steps within this cycle, you can learn how to better manage your emotions around procrastination and improve on your habits for the future.",
   },
   {
     name: "General Anxiety",
     short_desc: "You are not your thoughts",
-    long_desc: "Learn more about chronic worrying and generalised anxiety disorder as well as suggested strategies for how you can manage your worrying and anxiety through this pathway",
+    long_desc: "Learn more about chronic worrying and generalised anxiety disorder as well as suggested strategies for how you can manage your worrying and anxiety through this pathway.",
   },
   {
     name: "Depression",
