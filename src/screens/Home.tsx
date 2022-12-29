@@ -22,6 +22,7 @@ import VideosContext from '../context/VideosContext';
 import UserContext from '../context/UserContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
+import SignInButton from '../components/SignInButton';
 
 const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
@@ -55,25 +56,36 @@ const Home = ({ navigation }: any): JSX.Element => {
     });
   }
 
-  const renderVistasSummaryHeader = (videosCount: number) => {
-    if (videosCount >= VIDEOS_THRESHOLD) {
-      return (
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Vistas Summary</Text>
+  const renderPathwaysWidget = () => {
+    return (
+      <View style={styles.featureContainer}>
+        <Text style={styles.featureTitle}>Pathways</Text>
 
-          <Pressable onPress={navigateToVistas} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}, { 'flexDirection': 'row', 'alignItems': 'center' }] }>
-            <Text style={text.h4}>See all</Text>
-            <Ionicons name='chevron-forward' style={styles.forwardIconWhite} />
-          </Pressable>
+        <View style={{ marginVertical: spacings.SMALL, alignItems: 'center' }}>
+          <SignInButton background={colors.HIGHLIGHT}><Text style={text.h4}>View Pathways</Text></SignInButton>
         </View>
-      )
-    }
+      </View>
+    )
+  }
+
+  // The Vistas summary header is always rendered.
+  const renderVistasSummaryHeader = () => {
+    return (
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Vistas Summary</Text>
+
+        <Pressable onPress={navigateToVistas} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}, { 'flexDirection': 'row', 'alignItems': 'center' }] }>
+          <Text style={text.h4}>See all</Text>
+          <Ionicons name='chevron-forward' style={styles.forwardIconWhite} />
+        </Pressable>
+      </View>
+    )
   }
 
   const renderWordChartSummary = (videosCount: number) => {
     if (videosCount >= VIDEOS_THRESHOLD) {
       return (
-        <View style={[styles.featureContainer]}>
+        <View style={styles.featureContainer}>
           <WordChart defaultNumOfWords={5} abridged navigation={navigation} />
         </View>
       )
@@ -95,7 +107,7 @@ const Home = ({ navigation }: any): JSX.Element => {
   const renderMoodChartSummary = (videosCount: number) => {
     if (videosCount >= VIDEOS_THRESHOLD) {
       return (
-        <View style={[styles.featureContainer]}>
+        <View style={styles.featureContainer}>
           <MoodChart abridged />
         </View>
       )
@@ -162,11 +174,12 @@ const Home = ({ navigation }: any): JSX.Element => {
             contentContainerStyle={styles.scrollContentContainerStyle}
             showsVerticalScrollIndicator={false}
           >
-            {renderVistasSummaryHeader(videosCount)}
-            {alertVisible && (videosCount < VIDEOS_THRESHOLD)
-              ? <NewUserMessage navigateCallback={navigateToRecord} />
-              : null
+            {renderVistasSummaryHeader()}
+            {
+              (alertVisible && (videosCount < VIDEOS_THRESHOLD))
+              && <NewUserMessage navigateCallback={navigateToRecord} />
             }
+            {renderPathwaysWidget()}
             {renderWordChartSummary(videosCount)}
             {renderMoodChartSummary(videosCount)}
 

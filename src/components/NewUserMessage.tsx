@@ -15,6 +15,7 @@ const NewUserMessage = ({ navigateCallback }: any) => {
   return (
     <View style={styles.featureContainer}>
       <View style={styles.newUserAlertTextContainer}>
+        <Text>Vistas</Text>
         <Text style={styles.newUserAlertText}>
           Your vistas will appear after your first log.
           Press the button below to get started!
@@ -22,21 +23,13 @@ const NewUserMessage = ({ navigateCallback }: any) => {
       </View>
 
       <View style={styles.newUserAlertButtonContainer}>
-        <SignInButton 
+        <SignInButton
           background={colors.HIGHLIGHT}
           onPress={navigateCallback}
-        > 
+        >
           <Text style={text.h4}>Record</Text>
         </SignInButton>
       </View>
-
-      {/* <Pressable 
-        onPress={() => shouldDisplayCallback(false)} 
-        hitSlop={spacings.hitSlopLarge}
-        style={ ({pressed}) => [styles.closeButtonContainer, {opacity: pressed ? 0.3 : 1}] }
-      >
-        <Ionicons style={styles.closeButton} name="close" />
-      </Pressable> */}
     </View>
   )
 }
