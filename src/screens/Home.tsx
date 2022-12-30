@@ -1,8 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Text, Pressable } from 'react-native';
-
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+
+import VideosContext from '../context/VideosContext';
+import UserContext from '../context/UserContext';
 
 import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
@@ -17,9 +19,6 @@ import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import { comingSoonAlert, editProfileAlert, simpleAlert } from '../utils/customAlerts';
 import { getRecordingPermissions } from '../utils/permissions';
 import { INITIAL_USER_DATA } from '../utils/localStorageUtils';
-
-import VideosContext from '../context/VideosContext';
-import UserContext from '../context/UserContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
 
@@ -37,9 +36,9 @@ const Home = ({ navigation }: any): JSX.Element => {
   const [tutorial1ShouldShow, setTutorial1ShouldShow] = React.useState<boolean>(false);
   const [tutorial2ShouldShow, setTutorial2ShouldShow] = React.useState<boolean>(false);
   const [tutorial3ShouldShow, setTutorial3ShouldShow] = React.useState<boolean>(false);
+  const [imagesLoading, setImagesLoading] = React.useState<boolean>(true);
 
   let imagesLoadingState = [true, true, true];
-  const [imagesLoading, setImagesLoading] = React.useState<boolean>(true);
 
   const navigateToVistas = () => {
     navigation.navigate('Vistas');
