@@ -15,6 +15,7 @@ import { FullPageSpinner } from '../components/Spinner';
 import PathwayCard from '../components/PathwayCard';
 
 import { text, spacings, colors, debug } from '../styles';
+import { getImagesByDeviceSize } from '../utils/images';
 
 const Pathways = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
@@ -57,7 +58,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
     <TutorialImageModal
       shouldShow={tutorialShouldShow}
       setShouldShow={setTutorialShouldShow}
-      imageUri={require('../../assets/img/tutorials/pathways.jpg')}
+      imageUri={getImagesByDeviceSize('pathways')}
       onLoadCallback={imagesLoaded}
     >
       {
