@@ -28,7 +28,7 @@ export const UserProvider: React.FC = ({children}) => {
   React.useEffect(() => {
     const wrapper = async () => {
       if (user && user!=={} && Object.keys(user).length > 0) {
-        console.log("Writing updated non-empty user to db: ", user.email);
+        // console.log("Writing updated non-empty user to db: ", user?.email);
         writeUserData(user);
         setIsLoading(false);
       }

@@ -29,7 +29,7 @@ const App = (): JSX.Element => {
   const setConsoleLogging = () => {
     // Disable all console.log statements if not in Dev mode
     // See https://stackoverflow.com/questions/38939917/removing-console-log-from-react-native-app
-  
+
     if (!__DEV__) {
       console.log = () => {};
     }
@@ -50,25 +50,17 @@ const App = (): JSX.Element => {
     }
   }, []);
 
-  // React.useEffect(() => {
-  //   console.log("states: inTimeout, isLoaded, fontsLoaded", inTimeout, isLoaded, fontsLoaded);
-  // })
-
   // App Setup
-  // TODO: should move all directory creating to here?
   React.useEffect(() => {
     const setup = async () => {
       setConsoleLogging();
-
-      let setupFinished = await createAllDirectories();
-      console.log("setupFinished", setupFinished);
+      await createAllDirectories();
       setIsLoaded(true);
     }
 
     setup();
   }, [])
 
-  // if debugging, set debug borders on all elements
   return (
     <UserProvider>
         {

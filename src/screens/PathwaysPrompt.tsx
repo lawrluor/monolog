@@ -17,14 +17,14 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
 
   let pathwaysPromptsData = JSON.stringify(pathwaysPrompts);
   pathwaysPromptsData = JSON.parse(pathwaysPromptsData);
-  const prompt = pathwaysPromptsData[pathway][level-1];
+  const prompt = pathwaysPromptsData[pathway][level];
 
   const navigateToRecording = () => {
     navigation.navigate('Recording');
   }
 
   const backAndReset = async () => {
-    let updatedUser = { ...user, ...{ currentPathway: "" } };
+    let updatedUser = { ...user, ...{ currentPathway: " " } };
     setUser(updatedUser);
     navigation.goBack();
   }
@@ -37,7 +37,7 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
       <GoBack callback={backAndReset}/>
 
       <View style={styles.featureContainer}>
-        <Text style={styles.promptNum}>Prompt #{level}</Text>
+        <Text style={styles.promptNum}>Prompt #{level + 1}</Text>
         <Text style={styles.prompt}>{prompt}</Text>
 
         <SignInButton background={colors.HIGHLIGHT} onPress={navigateToRecording}>

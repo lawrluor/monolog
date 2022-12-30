@@ -64,7 +64,7 @@ const Home = ({ navigation }: any): JSX.Element => {
         <Text style={styles.featureTitle}>Pathways</Text>
 
         <View style={{ marginVertical: spacings.SMALL, alignItems: 'center' }}>
-          <SignInButton background={colors.HIGHLIGHT}><Text style={text.h4}>View Pathways</Text></SignInButton>
+          <SignInButton onPress={() => navigation.navigate('Pathways') } background={colors.HIGHLIGHT}><Text style={text.h4}>View Pathways</Text></SignInButton>
         </View>
       </View>
     )

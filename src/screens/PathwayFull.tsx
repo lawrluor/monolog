@@ -29,7 +29,7 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const navigateToPrompt = async (pathwayName: string) => {
     let updatedUser = { ...user, ...{ currentPathway: pathwayName } };
     setUser(updatedUser);
-    navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
+    navigation.push('PathwaysPrompt', { pathway: pathwayName, level: currentLevel });
   }
 
   // Given the long description for a pathway it parses the description

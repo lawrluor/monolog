@@ -398,6 +398,12 @@ export const deleteAllRatings = async () => {
 }
 
 export const deleteAllVideos = async () => {
+  let result = await FileSystem.deleteAsync(VIDEO_DIRECTORY);
+  console.log("Deleted all videos");
+  return result;
+
+  // Before, we were querying each video file and deleting each thumbnail, transcript, etc
+  // associated with it. Now, we simply delete the video directory itself, which is much cleaner
   return await FileSystem.readDirectoryAsync(VIDEO_DIRECTORY)
     .then(async (files: any) => {
       files.forEach((file: any) => {
