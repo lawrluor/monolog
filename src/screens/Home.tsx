@@ -11,7 +11,8 @@ import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
 import NewUserMessage from '../components/NewUserMessage';
 import TutorialImageModal from '../components/TutorialImageModal';
-
+import SignInButton from '../components/SignInButton';
+import { FullPageSpinner } from '../components/Spinner';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
 import { comingSoonAlert, editProfileAlert, simpleAlert } from '../utils/customAlerts';
@@ -22,7 +23,6 @@ import VideosContext from '../context/VideosContext';
 import UserContext from '../context/UserContext';
 
 import { containers, icons, text, spacings, colors } from '../styles';
-import SignInButton from '../components/SignInButton';
 
 const VIDEOS_THRESHOLD = 1;
 const TESTING = false;
@@ -33,8 +33,13 @@ const Home = ({ navigation }: any): JSX.Element => {
 
   // Optionally used to allow for closing alert/promo messages in Home
   const [alertVisible, setAlertVisible] = React.useState<boolean>(false);
-  const [tutorial1Shown, setTutorial1Shown] = React.useState<boolean>(videosCount < 1);
-  const [tutorial2Shown, setTutorial2Shown] = React.useState<boolean>(videosCount < 1);
+
+  // Kind of spaghetti logic for displaying tutorial Images
+  // We want to set the initial state to True if using the onCallbackLoad, but initial state to False otherwise
+  const [tutorial1Shown, setTutorial1Shown] = React.useState<boolean>(videosCount >= 1);
+  const [tutorial2Shown, setTutorial2Shown] = React.useState<boolean>(videosCount >= 1);
+  const [tutorial3Shown, setTutorial3Shown] = React.useState<boolean>(videosCount >= 1);
+  const [imagesLoading, setImagesLoading] = React.useState<Array<boolean>>([true, true, true]);
 
   const navigateToVistas = () => {
     navigation.navigate('Vistas');
@@ -45,18 +50,16 @@ const Home = ({ navigation }: any): JSX.Element => {
   }
 
   const navigateToProfile = async () => {
-    // console.log(await readUserData());
-
     // When user confirms they want to delete account,
     // we delete the data in userContext, then go back to AuthLoading
     // which handles auth state for us and should display Landing page.
     editProfileAlert(() => {
       setUser(INITIAL_USER_DATA);  // UserContext refreshes whenever user changes; force the refresh
-      navigation.navigate('AuthLoading')
+      navigation.navigate('AuthLoading');
     });
   }
 
-  const renderPathwaysWidget = () => {
+  const renderPathwaysWidget = (): JSX.Element => {
     return (
       <View style={styles.featureContainer}>
         <Text style={styles.featureTitle}>Pathways</Text>
@@ -126,6 +129,21 @@ const Home = ({ navigation }: any): JSX.Element => {
     }
   }
 
+  const onImageLoadCallback = (index: number) => {
+    let updatedLoadingStates = [...imagesLoading];
+    updatedLoadingStates[index] = false;
+    console.log('@@@', updatedLoadingStates);
+    setImagesLoading(updatedLoadingStates);
+  }
+
+  const allImagesLoaded = () => {
+    // If all vals in array are false, then done loading.
+    let result = !imagesLoading.every((val: boolean) => val === false);
+    console.log(result);
+    return result;
+  }
+
+
   // Async wrapper for getting permissions
   React.useEffect(() => {
     getRecordingPermissions();
@@ -141,57 +159,67 @@ const Home = ({ navigation }: any): JSX.Element => {
   // They each have their separate state for being shown or not shown.
   // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShown state toggles.
   return (
-    <TutorialImageModal shown={tutorial1Shown} setShown={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')}>
-    <TutorialImageModal shown={tutorial2Shown} setShown={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home3.jpg')}>
-      <SafeAreaTop />
+    <TutorialImageModal shouldShow={tutorial3Shown} setShouldShow={setTutorial3Shown} imageUri={require('../../assets/img/tutorials/home3.jpg')} onLoadCallback={() => onImageLoadCallback(2)}>
+    <TutorialImageModal shouldShow={tutorial2Shown} setShouldShow={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')} onLoadCallback={() => onImageLoadCallback(1)}>
+    <TutorialImageModal shouldShow={tutorial1Shown} setShouldShow={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home1.jpg')} onLoadCallback={() => onImageLoadCallback(0)}>
+      {
+        isLoading || allImagesLoaded()
+        ?
+        <FullPageSpinner></FullPageSpinner>
+        :
+        <>
+          <SafeAreaTop />
 
-      <SafeAreaBottom>
-        <LinearGradient
-          colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-          style={styles.container}
-        >
-          <View style={styles.headerContainer}>
-            { TESTING ? <DeleteAll /> : null }
+          <SafeAreaBottom>
+            <LinearGradient
+              colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+              style={styles.container}
+            >
+              <View style={styles.headerContainer}>
+                { TESTING ? <DeleteAll /> : null }
 
-            <View>
-              <Text style={styles.subTitle}>Welcome,</Text>
-              <Text style={styles.profileTitle}>{user?.firstName || "Journaler!"}</Text>
-            </View>
+                <View>
+                  <Text style={styles.subTitle}>Welcome,</Text>
+                  <Text style={styles.profileTitle}>{user?.firstName || "Journaler!"}</Text>
+                </View>
 
-            <View>
-              <Pressable onPress={navigateToProfile} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-                <CustomIcon name='avatar' style={styles.profileIcon} />
-              </Pressable>
-            </View>
-          </View>
-
-          <View style={{ paddingHorizontal: spacings.HUGE }}>
-            <Divider color={colors.BACKGROUND} />
-          </View>
-
-          <ScrollView
-            style={styles.bodyContainer}
-            contentContainerStyle={styles.scrollContentContainerStyle}
-            showsVerticalScrollIndicator={false}
-          >
-            {renderVistasSummaryHeader()}
-            {
-              (alertVisible && (videosCount < VIDEOS_THRESHOLD))
-              && <NewUserMessage navigateCallback={navigateToRecord} />
-            }
-            {renderPathwaysWidget()}
-            {renderWordChartSummary(videosCount)}
-            {renderMoodChartSummary(videosCount)}
-
-            <Pressable onPress={() => comingSoonAlert(null)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-              <View style={[styles.featureContainer, styles.socialContainer]}>
-                <Text style={styles.featureTitle}>Social</Text>
-                <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
+                <View>
+                  <Pressable onPress={navigateToProfile} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+                    <CustomIcon name='avatar' style={styles.profileIcon} />
+                  </Pressable>
+                </View>
               </View>
-            </Pressable>
-          </ScrollView>
-        </LinearGradient>
-      </SafeAreaBottom>
+
+              <View style={{ paddingHorizontal: spacings.HUGE }}>
+                <Divider color={colors.BACKGROUND} />
+              </View>
+
+              <ScrollView
+                style={styles.bodyContainer}
+                contentContainerStyle={styles.scrollContentContainerStyle}
+                showsVerticalScrollIndicator={false}
+              >
+                {renderVistasSummaryHeader()}
+                {
+                  (alertVisible && (videosCount < VIDEOS_THRESHOLD))
+                  && <NewUserMessage navigateCallback={navigateToRecord} />
+                }
+                {renderPathwaysWidget()}
+                {renderWordChartSummary(videosCount)}
+                {renderMoodChartSummary(videosCount)}
+
+                <Pressable onPress={() => comingSoonAlert(null)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+                  <View style={[styles.featureContainer, styles.socialContainer]}>
+                    <Text style={styles.featureTitle}>Social</Text>
+                    <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
+                  </View>
+                </Pressable>
+              </ScrollView>
+            </LinearGradient>
+          </SafeAreaBottom>
+        </>
+      }
+    </TutorialImageModal>
     </TutorialImageModal>
     </TutorialImageModal>
   )

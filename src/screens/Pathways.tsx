@@ -48,8 +48,8 @@ const Pathways = ({ navigation }: any): JSX.Element => {
 
   return (
     <TutorialImageModal
-      shown={tutorialShown}
-      setShown={setTutorialShown}
+      shouldShow={tutorialShown}
+      setShouldShow={setTutorialShown}
       imageUri={require('../../assets/img/tutorials/pathways.jpg')}
       onLoadCallback={() => setIsLoading(false)}
     >

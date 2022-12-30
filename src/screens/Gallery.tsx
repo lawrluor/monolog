@@ -1,19 +1,21 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, Text, Pressable } from 'react-native';
 
+import VideosContext from '../context/VideosContext';
+import UserContext from '../context/UserContext';
+
 import CustomIcon from '../components/CustomIcon';
 import VideoList from '../components/VideoList';
 import { SearchEntry } from '../components/TextEntry';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
-import { FullPageSpinner } from '../components/Spinner';
 
-import { comingSoonAlert } from '../utils/customAlerts';
-
-import VideosContext from '../context/VideosContext';
+import { editProfileAlert } from '../utils/customAlerts';
+import { INITIAL_USER_DATA } from '../utils/localStorageUtils';
 
 import { dimensions, text, spacings, icons, colors, debug } from '../styles';
 
-const Gallery = ({ navigation }):  JSX.Element => {
+const Gallery = ({ navigation }: any):  JSX.Element => {
+  const { setUser } = React.useContext(UserContext);
   const { videosData, isLoading, submitQuery } = React.useContext(VideosContext);
   const [ modalShown, setModalShown ] = React.useState(false);
   const [ searchQuery, setSearchQuery ] = React.useState(false);
@@ -43,10 +45,13 @@ const Gallery = ({ navigation }):  JSX.Element => {
     // }
   }
 
-  // TODO: add profile page and navigation
-  const navigateToProfile = () => {
-    comingSoonAlert(() => {
-      console.log("uploading picture...");
+  const navigateToProfile = async () => {
+    // When user confirms they want to delete account,
+    // we delete the data in userContext, then go back to AuthLoading
+    // which handles auth state for us and should display Landing page.
+    editProfileAlert(() => {
+      setUser(INITIAL_USER_DATA);  // UserContext refreshes whenever user changes; force the refresh
+      navigation.navigate('AuthLoading');
     });
   }
 

@@ -4,7 +4,7 @@ import { Pressable, Image, StyleSheet } from 'react-native';
 import { dimensions } from '../styles';
 
 // Always render this on top of other elements, hence zIndex style
-const TutorialImageModal = ({ children, shown, setShown, imageUri, onLoadCallback=null }: any) => {
+const TutorialImageModal = ({ children, shouldShow, setShouldShow, imageUri, onLoadCallback=null }: any) => {
 	// If we care about image loading speed, the parent component passes a callback to be
 		// called after the image finishes loading, which will update the parent component's loading state
 	// NOTE: We are not using traditional conditional rendering here and instead toggling display style
@@ -14,8 +14,8 @@ const TutorialImageModal = ({ children, shown, setShown, imageUri, onLoadCallbac
 	if (onLoadCallback) {
 		return (
 			<>
-				<Pressable style={{ zIndex: 999, display: shown ? 'none' : 'flex' }} onPress={() => setShown(!shown)}>
-					<Image style={styles.tutorialImage} source={ imageUri } onLoad={onLoadCallback}/>
+				<Pressable style={{ zIndex: 999, display: shouldShow ? 'none' : 'flex' }} onPress={() => setShouldShow(!shouldShow)}>
+					<Image style={styles.tutorialImage} source={imageUri} onLoad={onLoadCallback}/>
 				</Pressable>
 
 				{children}
@@ -25,9 +25,9 @@ const TutorialImageModal = ({ children, shown, setShown, imageUri, onLoadCallbac
 		return (
 			<>
 			{
-				shown
+				shouldShow
 				&&
-				<Pressable style={{ zIndex: 999 }} onPress={() => setShown(!shown)}>
+				<Pressable style={{ zIndex: 999 }} onPress={() => setShouldShow(!shouldShow)}>
 					<Image style={styles.tutorialImage} source={ imageUri }/>
 				</Pressable>
 			}
