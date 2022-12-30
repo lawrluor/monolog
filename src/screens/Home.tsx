@@ -161,9 +161,9 @@ const Home = ({ navigation }: any): JSX.Element => {
   // They each have their separate state for being shown or not shown.
   // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShouldShow state toggles.
   return (
-    <TutorialImageModal shouldShow={tutorial3ShouldShow} setShouldShow={setTutorial3ShouldShow} imageUri={getImagesByDeviceSize()['home1']} onLoadCallback={() => onImageLoadCallback(2)}>
-    <TutorialImageModal shouldShow={tutorial2ShouldShow} setShouldShow={setTutorial2ShouldShow} imageUri={getImagesByDeviceSize()['home2']} onLoadCallback={() => onImageLoadCallback(1)}>
-    <TutorialImageModal shouldShow={tutorial1ShouldShow} setShouldShow={setTutorial1ShouldShow} imageUri={getImagesByDeviceSize()['home3']} onLoadCallback={() => onImageLoadCallback(0)}>
+    <TutorialImageModal shouldShow={tutorial3ShouldShow} setShouldShow={setTutorial3ShouldShow} imageUri={getImagesByDeviceSize('home1')} onLoadCallback={() => onImageLoadCallback(2)}>
+    <TutorialImageModal shouldShow={tutorial2ShouldShow} setShouldShow={setTutorial2ShouldShow} imageUri={getImagesByDeviceSize('home2')} onLoadCallback={() => onImageLoadCallback(1)}>
+    <TutorialImageModal shouldShow={tutorial1ShouldShow} setShouldShow={setTutorial1ShouldShow} imageUri={getImagesByDeviceSize('home3')} onLoadCallback={() => onImageLoadCallback(0)}>
       {
         imagesLoading && tutorial1ShouldShow
         ?

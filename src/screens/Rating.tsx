@@ -87,7 +87,7 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
     <TutorialImageModal
       shouldShow={shouldShowTutorial}
       setShouldShow={setShouldShowTutorial}
-      imageUri={getImagesByDeviceSize()['rating']}
+      imageUri={getImagesByDeviceSize('rating')}
       onLoadCallback={() => setTutorialLoading(false)}
     >
       {

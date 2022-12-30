@@ -417,7 +417,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   // onLoadCallback={() => onImageLoadCallback(2)
   return (
-    <TutorialImageModal shouldShow={tutorialShouldShow} setShouldShow={setTutorialShouldShow} imageUri={getImagesByDeviceSize()['recording']}>
+    <TutorialImageModal shouldShow={tutorialShouldShow} setShouldShow={setTutorialShouldShow} imageUri={getImagesByDeviceSize('recording')}>
       <View style={[styles.container, { display: isLoading ? 'none' : 'flex' }]}>
         {renderCamera()}
       </View>
