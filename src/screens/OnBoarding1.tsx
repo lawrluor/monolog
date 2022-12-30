@@ -82,6 +82,7 @@ const OnBoarding1 = (): JSX.Element => {
   // NOTE: clears all states,
   // so wouldn't work super well for more than 2 onboarding screens without additional tweaking
   const handleFormSkip = () => {
+    console.log("test")
     clearTextStates();
     renderNextOnboardingScreen();
   }
@@ -98,6 +99,7 @@ const OnBoarding1 = (): JSX.Element => {
   }
 
   const renderNextOnboardingScreen = () => {
+    console.log('rendering next onBoarding')
     setErrorMessage("");
     if (screenNumber < LAST_SCREEN) {
       setScreenNumber(screenNumber + 1);
@@ -233,13 +235,13 @@ const OnBoarding1 = (): JSX.Element => {
       return (
         <View style={styles.iconsContainer}>
           <View style={[styles.circle, styles.circleSelected]}></View>
-          <Pressable onPress={handleFormSubmit} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }><View style={styles.circle}></View></Pressable>
+          <Pressable onPress={handleFormSubmit} hitSlop={spacings.hitSlopMedium} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }><View style={styles.circle}></View></Pressable>
         </View>
       )
     } else {
       return (
         <View style={styles.iconsContainer}>
-          <Pressable onPress={moveToPreviousOnboardingScreen} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }><View style={styles.circle}></View></Pressable>
+          <Pressable onPress={moveToPreviousOnboardingScreen} hitSlop={spacings.hitSlopMedium} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }><View style={styles.circle}></View></Pressable>
           <View style={[styles.circle, styles.circleSelected]}></View>
         </View>
       )
@@ -315,7 +317,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    padding: spacings.HUGE,
+    margin: spacings.MEDIUM
   },
   circle: {
     backgroundColor: 'transparent',
