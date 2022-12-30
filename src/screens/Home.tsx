@@ -38,8 +38,8 @@ const Home = ({ navigation }: any): JSX.Element => {
   const [tutorial1Shown, setTutorial1Shown] = React.useState<boolean>(videosCount < 1);
   const [tutorial2Shown, setTutorial2Shown] = React.useState<boolean>(videosCount < 1);
   const [tutorial3Shown, setTutorial3Shown] = React.useState<boolean>(videosCount < 1);
-  const [imagesLoading, setImagesLoading] = React.useState<Array<boolean>>([true, true, true]);
-  const [imagesAreLoaded, setImagesAreLoaded] = React.useState<boolean>(false);
+  let imagesLoadingState = [true, true, true]
+  const [imagesLoading, setImagesLoading] = React.useState<boolean>(true);
 
   const navigateToVistas = () => {
     navigation.navigate('Vistas');
@@ -130,17 +130,8 @@ const Home = ({ navigation }: any): JSX.Element => {
   }
 
   const onImageLoadCallback = (index: number) => {
-    let updatedLoadingStates = [...imagesLoading];
-    updatedLoadingStates[index] = false;
-    console.log('@@@', updatedLoadingStates);
-    setImagesLoading(updatedLoadingStates);
-  }
-
-  const allImagesLoaded = () => {
-    // If all vals in array are false, then done loading.
-    let result = !imagesLoading.every((val: boolean) => val===false);
-    console.log('@@@', result, imagesLoading);
-    return result;
+    imagesLoadingState[index] = false;
+    setImagesLoading(imagesLoadingState.some((val: boolean) => val===true));
   }
 
   // Async wrapper for getting permissions
@@ -154,25 +145,19 @@ const Home = ({ navigation }: any): JSX.Element => {
     };
   }, [videosCount, isLoading])
 
-  React.useEffect(() => {
-    if (allImagesLoaded() === true)
-      setImagesAreLoaded(allImagesLoaded());
-  }, [imagesLoading]);
-
   // There are two TutorialImageModals that appear on the home screen for new users.
   // They each have their separate state for being shown or not shown.
   // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShown state toggles.
   return (
     <>
+      <TutorialImageModal shouldShow={tutorial3Shown} setShouldShow={setTutorial3Shown} imageUri={require('../../assets/img/tutorials/home3.jpg')} onLoadCallback={() => onImageLoadCallback(2)}>
+      <TutorialImageModal shouldShow={tutorial2Shown} setShouldShow={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')} onLoadCallback={() => onImageLoadCallback(1)}>
+      <TutorialImageModal shouldShow={tutorial1Shown} setShouldShow={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home1.jpg')} onLoadCallback={() => onImageLoadCallback(0)}>
       {
-        !imagesAreLoaded
+        imagesLoading
         ?
         <FullPageSpinner></FullPageSpinner>
         :
-        <TutorialImageModal shouldShow={tutorial3Shown} setShouldShow={setTutorial3Shown} imageUri={require('../../assets/img/tutorials/home3.jpg')} onLoadCallback={() => onImageLoadCallback(2)}>
-        <TutorialImageModal shouldShow={tutorial2Shown} setShouldShow={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')} onLoadCallback={() => onImageLoadCallback(1)}>
-        <TutorialImageModal shouldShow={tutorial1Shown} setShouldShow={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home1.jpg')} onLoadCallback={() => onImageLoadCallback(0)}>
-
         <>
           <SafeAreaTop />
 
@@ -224,10 +209,10 @@ const Home = ({ navigation }: any): JSX.Element => {
 
 
         </>
-        </TutorialImageModal>
-        </TutorialImageModal>
-        </TutorialImageModal>
       }
+   </TutorialImageModal>
+   </TutorialImageModal>
+   </TutorialImageModal>
 </>
   )
 }
