@@ -31,7 +31,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
     if (user?.pathways && pathwayName in user.pathways) {
       return user?.pathways[pathwayName]['currentLevel'];
     } else {
-      return 1;
+      return 0;
     }
   }
 
@@ -63,7 +63,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
       {
         tutorialShouldShow && isLoading
         ?
-        <FullPageSpinner></FullPageSpinner>
+        <FullPageSpinner size="large"></FullPageSpinner>
         :
         <View style={styles.container}>
           <SafeAreaTop/>
@@ -84,18 +84,18 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                 {
                   pathwaysData.map((item) => {
                     return (
-                      <PathwayCard pathwayName={item.name} key={`${item.name}_short`} getCurrentLevel={getCurrentLevel}>
+                      <PathwayCard pathwayName={item.name} key={`${item.name}_short`}>
                         <View style={styles.forwardArrow}>
-                          <GoForward callback={() => { navigateToFullPathway(item.name) }} />
+                          <GoForward callback={() => navigateToFullPathway(item.name)} />
                         </View>
-                        <Text style={[text.p, styles.featureDescription]}>
-                          {item.short_desc}
-                        </Text>
+
+                        <Text style={[text.p, styles.featureDescription]}>{item.short_desc}</Text>
+
                         <View style={ styles.navigateButton }>
                           <SignInButton background={colors.HIGHLIGHT}
                             onPress={() => navigateToPrompt(item.name)}
                           >
-                            <Text style={text.h4}> {beginOrContinue(item.name)} </Text>
+                            <Text style={text.h4}>{beginOrContinue(item.name)}</Text>
                           </SignInButton>
                         </View>
                       </PathwayCard>

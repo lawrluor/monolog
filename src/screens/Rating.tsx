@@ -93,7 +93,7 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
         // If we have not shown the tutorial, wait for it to load.
         shouldShowTutorial && tutorialLoading
         ?
-        <FullPageSpinner></FullPageSpinner>
+        <FullPageSpinner size="large"></FullPageSpinner>
         :
         <LinearGradient
             // Background Linear Gradient

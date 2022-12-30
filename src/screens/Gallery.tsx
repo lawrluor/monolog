@@ -16,7 +16,7 @@ import { dimensions, text, spacings, icons, colors, debug } from '../styles';
 
 const Gallery = ({ navigation }: any):  JSX.Element => {
   const { setUser } = React.useContext(UserContext);
-  const { videosData, isLoading, submitQuery } = React.useContext(VideosContext);
+  const { videosData, isLoading, toggleVideosRefresh, submitQuery } = React.useContext(VideosContext);
   const [ modalShown, setModalShown ] = React.useState(false);
   const [ searchQuery, setSearchQuery ] = React.useState(false);
 
@@ -50,7 +50,8 @@ const Gallery = ({ navigation }: any):  JSX.Element => {
     // we delete the data in userContext, then go back to AuthLoading
     // which handles auth state for us and should display Landing page.
     editProfileAlert(() => {
-      setUser(INITIAL_USER_DATA);  // UserContext refreshes whenever user changes; force the refresh
+      setUser(INITIAL_USER_DATA);  // Refresh UserContext
+      toggleVideosRefresh(false);  // Refresh VideosContext
       navigation.navigate('AuthLoading');
     });
   }
@@ -223,6 +224,7 @@ const styles = StyleSheet.create({
   profileIcon: {
     ...icons.SMALL,
     color: colors.BACKGROUND,
+    marginLeft: spacings.SMALL
   },
   noResultsText: {
     color: colors.SECONDARY
