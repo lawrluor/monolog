@@ -36,9 +36,9 @@ const Home = ({ navigation }: any): JSX.Element => {
 
   // Kind of spaghetti logic for displaying tutorial Images
   // We want to set the initial state to True if using the onCallbackLoad, but initial state to False otherwise
-  const [tutorial1Shown, setTutorial1Shown] = React.useState<boolean>(videosCount >= 1);
-  const [tutorial2Shown, setTutorial2Shown] = React.useState<boolean>(videosCount >= 1);
-  const [tutorial3Shown, setTutorial3Shown] = React.useState<boolean>(videosCount >= 1);
+  const [tutorial1Shown, setTutorial1Shown] = React.useState<boolean>(videosCount < 1);
+  const [tutorial2Shown, setTutorial2Shown] = React.useState<boolean>(videosCount < 1);
+  const [tutorial3Shown, setTutorial3Shown] = React.useState<boolean>(videosCount < 1);
   const [imagesLoading, setImagesLoading] = React.useState<Array<boolean>>([true, true, true]);
 
   const navigateToVistas = () => {
@@ -139,7 +139,7 @@ const Home = ({ navigation }: any): JSX.Element => {
   const allImagesLoaded = () => {
     // If all vals in array are false, then done loading.
     let result = !imagesLoading.every((val: boolean) => val === false);
-    console.log(result);
+    console.log('@@@', result, imagesLoading);
     return result;
   }
 

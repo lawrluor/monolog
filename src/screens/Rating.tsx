@@ -20,7 +20,7 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
 
   const emojis = ['😥','😐','🙂','😃','😍'];
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
-  const [tutorialShown, setTutorialShown] = React.useState<boolean>(videosCount < 1);
+  const [shouldShowTutorial, setShouldShowTutorial] = React.useState<boolean>(videosCount < 1);
   const [tutorialLoading, setTutorialLoading] = React.useState<boolean>(true);
 
   const { fileBaseName, finalResult, isCameraOn } = route.params;
@@ -84,8 +84,8 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
 
   return (
     <TutorialImageModal
-      shown={tutorialShown}
-      setShown={setTutorialShown}
+      shouldShow={shouldShowTutorial}
+      setShouldShow={setShouldShowTutorial}
       imageUri={require('../../assets/img/tutorials/rating.jpg')}
       onLoadCallback={() => setTutorialLoading(false)}
     >

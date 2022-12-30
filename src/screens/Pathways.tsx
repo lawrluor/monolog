@@ -3,6 +3,7 @@ import { StyleSheet, View, ScrollView, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import UserContext from '../context/UserContext';
+import VideosContext from '../context/VideosContext';
 
 import { pathwaysData } from '../utils/pathwaysData';
 
@@ -17,8 +18,10 @@ import { text, spacings, colors, debug } from '../styles';
 
 const Pathways = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
+  const { videosCount } = React.useContext(VideosContext);
+  console.log(videosCount, 'sadfasdfs')
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-  const [tutorialShown, setTutorialShown] = React.useState<boolean>(false);
+  const [tutorialShouldShow, setTutorialShouldShow] = React.useState<boolean>(videosCount < 1);
 
   const navigateToFullPathway = (pathwayName: string) => {
     navigation.push('PathwayFull', { pathwayName: pathwayName })
@@ -46,15 +49,20 @@ const Pathways = ({ navigation }: any): JSX.Element => {
     return currentLevel > 1 ? "Continue Pathway" : "Begin Pathway";
   }
 
+  const imagesLoaded = () => {
+    console.log("pathways images loaded")
+    setIsLoading(false);
+  }
+
   return (
     <TutorialImageModal
-      shouldShow={tutorialShown}
-      setShouldShow={setTutorialShown}
+      shouldShow={tutorialShouldShow}
+      setShouldShow={setTutorialShouldShow}
       imageUri={require('../../assets/img/tutorials/pathways.jpg')}
-      onLoadCallback={() => setIsLoading(false)}
+      onLoadCallback={imagesLoaded}
     >
       {
-        isLoading
+        tutorialShouldShow && isLoading
         ?
         <FullPageSpinner></FullPageSpinner>
         :
