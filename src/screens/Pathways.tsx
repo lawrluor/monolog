@@ -19,7 +19,6 @@ import { text, spacings, colors, debug } from '../styles';
 const Pathways = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
   const { videosCount } = React.useContext(VideosContext);
-  console.log(videosCount, 'sadfasdfs')
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [tutorialShouldShow, setTutorialShouldShow] = React.useState<boolean>(videosCount < 1);
 

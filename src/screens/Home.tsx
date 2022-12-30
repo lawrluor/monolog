@@ -138,7 +138,7 @@ const Home = ({ navigation }: any): JSX.Element => {
 
   const allImagesLoaded = () => {
     // If all vals in array are false, then done loading.
-    let result = !imagesLoading.every((val: boolean) => val === false);
+    let result = !imagesLoading.every((val: boolean) => val===false);
     console.log('@@@', result, imagesLoading);
     return result;
   }
@@ -163,7 +163,7 @@ const Home = ({ navigation }: any): JSX.Element => {
     <TutorialImageModal shouldShow={tutorial2Shown} setShouldShow={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')} onLoadCallback={() => onImageLoadCallback(1)}>
     <TutorialImageModal shouldShow={tutorial1Shown} setShouldShow={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home1.jpg')} onLoadCallback={() => onImageLoadCallback(0)}>
       {
-        isLoading || allImagesLoaded()
+        allImagesLoaded() || isLoading
         ?
         <FullPageSpinner></FullPageSpinner>
         :

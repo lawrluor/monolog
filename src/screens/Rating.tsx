@@ -90,7 +90,8 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
       onLoadCallback={() => setTutorialLoading(false)}
     >
       {
-        tutorialLoading
+        // If we have not shown the tutorial, wait for it to load.
+        shouldShowTutorial && tutorialLoading
         ?
         <FullPageSpinner></FullPageSpinner>
         :
