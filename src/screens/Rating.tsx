@@ -14,6 +14,7 @@ import TutorialImageModal from '../components/TutorialImageModal';
 import { FullPageSpinner } from '../components/Spinner';
 
 import { containers, text, dimensions, spacings, colors, icons } from '../styles';
+import { getImagesByDeviceSize } from '../utils/images';
 
 const Rating = ({ route, navigation }: any): JSX.Element => {
   const { moodData, videosCount } = React.useContext(VideosContext);
@@ -86,7 +87,7 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
     <TutorialImageModal
       shouldShow={shouldShowTutorial}
       setShouldShow={setShouldShowTutorial}
-      imageUri={require('../../assets/img/tutorials/rating.jpg')}
+      imageUri={getImagesByDeviceSize()['rating']}
       onLoadCallback={() => setTutorialLoading(false)}
     >
       {

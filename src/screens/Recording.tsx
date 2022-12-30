@@ -24,6 +24,7 @@ import AudioBubbles from '../components/AudioBubbles';
 import SignInButton from '../components/SignInButton';
 import TutorialImageModal from '../components/TutorialImageModal';
 import VideosContext from '../context/VideosContext';
+import { getImagesByDeviceSize } from '../utils/images';
 
 const MAX_DURATION = 600;  // seconds
 
@@ -416,7 +417,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   // onLoadCallback={() => onImageLoadCallback(2)
   return (
-    <TutorialImageModal shouldShow={tutorialShouldShow} setShouldShow={setTutorialShouldShow} imageUri={require('../../assets/img/tutorials/recording.jpg')}>
+    <TutorialImageModal shouldShow={tutorialShouldShow} setShouldShow={setTutorialShouldShow} imageUri={getImagesByDeviceSize()['recording']}>
       <View style={[styles.container, { display: isLoading ? 'none' : 'flex' }]}>
         {renderCamera()}
       </View>
