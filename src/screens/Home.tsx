@@ -24,7 +24,6 @@ import UserContext from '../context/UserContext';
 import { containers, icons, text, spacings, colors } from '../styles';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = false;
 
 const Home = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
@@ -35,10 +34,11 @@ const Home = ({ navigation }: any): JSX.Element => {
 
   // Kind of spaghetti logic for displaying tutorial Images
   // We want to set the initial state to True if using the onCallbackLoad, but initial state to False otherwise
-  const [tutorial1Shown, setTutorial1Shown] = React.useState<boolean>(videosCount < 1);
-  const [tutorial2Shown, setTutorial2Shown] = React.useState<boolean>(videosCount < 1);
-  const [tutorial3Shown, setTutorial3Shown] = React.useState<boolean>(videosCount < 1);
-  let imagesLoadingState = [true, true, true]
+  const [tutorial1ShouldShow, setTutorial1ShouldShow] = React.useState<boolean>(false);
+  const [tutorial2ShouldShow, setTutorial2ShouldShow] = React.useState<boolean>(false);
+  const [tutorial3ShouldShow, setTutorial3ShouldShow] = React.useState<boolean>(false);
+
+  let imagesLoadingState = [true, true, true];
   const [imagesLoading, setImagesLoading] = React.useState<boolean>(true);
 
   const navigateToVistas = () => {
@@ -132,6 +132,8 @@ const Home = ({ navigation }: any): JSX.Element => {
   const onImageLoadCallback = (index: number) => {
     imagesLoadingState[index] = false;
     setImagesLoading(imagesLoadingState.some((val: boolean) => val===true));
+    console.log('tutorial1', tutorial1ShouldShow);
+    console.log('imagesLoadingState', imagesLoadingState);
   }
 
   // Async wrapper for getting permissions
@@ -145,16 +147,24 @@ const Home = ({ navigation }: any): JSX.Element => {
     };
   }, [videosCount, isLoading])
 
+  React.useEffect(() => {
+    if (!isLoading) {
+      setTutorial1ShouldShow(videosCount < VIDEOS_THRESHOLD);
+      setTutorial2ShouldShow(videosCount < VIDEOS_THRESHOLD);
+      setTutorial3ShouldShow(videosCount < VIDEOS_THRESHOLD);
+    }
+  }, [isLoading]);
+
+
   // There are two TutorialImageModals that appear on the home screen for new users.
   // They each have their separate state for being shown or not shown.
-  // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShown state toggles.
+  // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShouldShow state toggles.
   return (
-    <>
-      <TutorialImageModal shouldShow={tutorial3Shown} setShouldShow={setTutorial3Shown} imageUri={require('../../assets/img/tutorials/home3.jpg')} onLoadCallback={() => onImageLoadCallback(2)}>
-      <TutorialImageModal shouldShow={tutorial2Shown} setShouldShow={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')} onLoadCallback={() => onImageLoadCallback(1)}>
-      <TutorialImageModal shouldShow={tutorial1Shown} setShouldShow={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home1.jpg')} onLoadCallback={() => onImageLoadCallback(0)}>
+    <TutorialImageModal shouldShow={tutorial3ShouldShow} setShouldShow={setTutorial3ShouldShow} imageUri={require('../../assets/img/tutorials/home3.jpg')} onLoadCallback={() => onImageLoadCallback(2)}>
+    <TutorialImageModal shouldShow={tutorial2ShouldShow} setShouldShow={setTutorial2ShouldShow} imageUri={require('../../assets/img/tutorials/home2.jpg')} onLoadCallback={() => onImageLoadCallback(1)}>
+    <TutorialImageModal shouldShow={tutorial1ShouldShow} setShouldShow={setTutorial1ShouldShow} imageUri={require('../../assets/img/tutorials/home1.jpg')} onLoadCallback={() => onImageLoadCallback(0)}>
       {
-        imagesLoading
+        imagesLoading && tutorial1ShouldShow
         ?
         <FullPageSpinner></FullPageSpinner>
         :
@@ -206,14 +216,11 @@ const Home = ({ navigation }: any): JSX.Element => {
               </ScrollView>
             </LinearGradient>
           </SafeAreaBottom>
-
-
         </>
       }
-   </TutorialImageModal>
-   </TutorialImageModal>
-   </TutorialImageModal>
-</>
+    </TutorialImageModal>
+    </TutorialImageModal>
+    </TutorialImageModal>
   )
 }
 
