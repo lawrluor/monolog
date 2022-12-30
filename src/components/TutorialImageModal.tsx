@@ -12,8 +12,6 @@ const TutorialImageModal = ({ children, shouldShow, setShouldShow, imageUri, onL
 		// This way, the image is still rendered but simply does not display, allowing the onLoad callback to fire
 		// and thereby changing the isLoading state in its parent component.
 	if (onLoadCallback) {
-		// , display: shouldShow ? 'flex' : 'none'
-		console.log('@@@ shouldShow', shouldShow)
 		return (
 			<>
 				<Pressable style={{ zIndex: 999, display: shouldShow ? 'flex' : 'none' }} onPress={() => setShouldShow(!shouldShow)}>
@@ -45,10 +43,7 @@ const styles = StyleSheet.create({
     width: dimensions.width,
     height: dimensions.height,
     position: 'absolute',
-  },
-	invisibleImage: {
-		opacity: 0
-	}
+  }
 })
 
 export default TutorialImageModal;

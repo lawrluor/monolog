@@ -154,7 +154,6 @@ export const VideosProvider:React.FC = ({ children }) => {
     if (!videos || !videos[0]) return 0;  // new users that have no videos will not have data loaded
 
     try {
-      console.log(JSON.stringify(videos));
       return videos[0]['data'][0]['list'].length;
     } catch(err) {
       console.log("[ERROR] VideosContext.tsx:getVideosCount", err);
@@ -169,7 +168,6 @@ export const VideosProvider:React.FC = ({ children }) => {
       setIsLoading(true);
       console.log("***refreshing videos***, query: ", query);
       let videos = await getVideosFromStorage(query);
-      console.log('test', videos);
       setVideosCount(getVideosCount(videos));
       setVideosData(videos);
       setIsLoading(false);

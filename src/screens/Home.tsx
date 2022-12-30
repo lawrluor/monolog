@@ -4,7 +4,6 @@ import { StyleSheet, View, ScrollView, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import DeleteAll from '../components/Delete';  // IN TESTING ONLY
 import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
@@ -40,6 +39,7 @@ const Home = ({ navigation }: any): JSX.Element => {
   const [tutorial2Shown, setTutorial2Shown] = React.useState<boolean>(videosCount < 1);
   const [tutorial3Shown, setTutorial3Shown] = React.useState<boolean>(videosCount < 1);
   const [imagesLoading, setImagesLoading] = React.useState<Array<boolean>>([true, true, true]);
+  const [imagesAreLoaded, setImagesAreLoaded] = React.useState<boolean>(false);
 
   const navigateToVistas = () => {
     navigation.navigate('Vistas');
@@ -143,7 +143,6 @@ const Home = ({ navigation }: any): JSX.Element => {
     return result;
   }
 
-
   // Async wrapper for getting permissions
   React.useEffect(() => {
     getRecordingPermissions();
@@ -155,18 +154,25 @@ const Home = ({ navigation }: any): JSX.Element => {
     };
   }, [videosCount, isLoading])
 
+  React.useEffect(() => {
+    if (allImagesLoaded() === true)
+      setImagesAreLoaded(allImagesLoaded());
+  }, [imagesLoading]);
+
   // There are two TutorialImageModals that appear on the home screen for new users.
   // They each have their separate state for being shown or not shown.
   // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShown state toggles.
   return (
-    <TutorialImageModal shouldShow={tutorial3Shown} setShouldShow={setTutorial3Shown} imageUri={require('../../assets/img/tutorials/home3.jpg')} onLoadCallback={() => onImageLoadCallback(2)}>
-    <TutorialImageModal shouldShow={tutorial2Shown} setShouldShow={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')} onLoadCallback={() => onImageLoadCallback(1)}>
-    <TutorialImageModal shouldShow={tutorial1Shown} setShouldShow={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home1.jpg')} onLoadCallback={() => onImageLoadCallback(0)}>
+    <>
       {
-        allImagesLoaded() || isLoading
+        !imagesAreLoaded
         ?
         <FullPageSpinner></FullPageSpinner>
         :
+        <TutorialImageModal shouldShow={tutorial3Shown} setShouldShow={setTutorial3Shown} imageUri={require('../../assets/img/tutorials/home3.jpg')} onLoadCallback={() => onImageLoadCallback(2)}>
+        <TutorialImageModal shouldShow={tutorial2Shown} setShouldShow={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')} onLoadCallback={() => onImageLoadCallback(1)}>
+        <TutorialImageModal shouldShow={tutorial1Shown} setShouldShow={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home1.jpg')} onLoadCallback={() => onImageLoadCallback(0)}>
+
         <>
           <SafeAreaTop />
 
@@ -176,8 +182,6 @@ const Home = ({ navigation }: any): JSX.Element => {
               style={styles.container}
             >
               <View style={styles.headerContainer}>
-                { TESTING ? <DeleteAll /> : null }
-
                 <View>
                   <Text style={styles.subTitle}>Welcome,</Text>
                   <Text style={styles.profileTitle}>{user?.firstName || "Journaler!"}</Text>
@@ -217,11 +221,14 @@ const Home = ({ navigation }: any): JSX.Element => {
               </ScrollView>
             </LinearGradient>
           </SafeAreaBottom>
+
+
         </>
+        </TutorialImageModal>
+        </TutorialImageModal>
+        </TutorialImageModal>
       }
-    </TutorialImageModal>
-    </TutorialImageModal>
-    </TutorialImageModal>
+</>
   )
 }
 
