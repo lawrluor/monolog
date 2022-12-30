@@ -190,7 +190,7 @@ const OnBoarding1 = (): JSX.Element => {
             <Text style={styles.title}>Hello!</Text>
 
             <View style={styles.subTitleContainer}>
-              <Text style={[styles.subTitle, {'textAlign': 'center'}]}>Before we start, we just have a few questions...</Text>
+              <Text style={[styles.subTitle, {'textAlign': 'center'}]}>Before we start, we just have a few optional questions...</Text>
             </View>
           </View>
         )

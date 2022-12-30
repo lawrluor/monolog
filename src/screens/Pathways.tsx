@@ -1,15 +1,19 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Pressable, Alert } from 'react-native';
-import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
-import { text, spacings, colors, debug } from '../styles';
+import { StyleSheet, View, ScrollView, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import PathwayCard from '../components/PathwayCard';
-import { pathwaysData } from '../utils/pathwaysData'
+
+import UserContext from '../context/UserContext';
+
+import { pathwaysData } from '../utils/pathwaysData';
+
+import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
 import SignInButton from '../components/SignInButton';
 import GoForward from '../components/GoForward';
-import UserContext from '../context/UserContext';
 import TutorialImageModal from '../components/TutorialImageModal';
 import { FullPageSpinner } from '../components/Spinner';
+import PathwayCard from '../components/PathwayCard';
+
+import { text, spacings, colors, debug } from '../styles';
 
 const Pathways = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
@@ -67,10 +71,11 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                 showsVerticalScrollIndicator={false}
               >
                 <View style={styles.headerContainer}>
-                  <Text style={styles.title}>Pathways</Text>
+                  <Text style={styles.title}>Current Pathways</Text>
                 </View>
+
                 {
-                  pathwaysData.map((item, index) => {
+                  pathwaysData.map((item) => {
                     return (
                       <PathwayCard pathwayName={item.name} key={`${item.name}_short`} getCurrentLevel={getCurrentLevel}>
                         <View style={styles.forwardArrow}>
@@ -82,7 +87,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
                         <View style={ styles.navigateButton }>
                           <SignInButton background={colors.HIGHLIGHT}
                             onPress={() => navigateToPrompt(item.name)}
-                            >
+                          >
                             <Text style={text.h4}> {beginOrContinue(item.name)} </Text>
                           </SignInButton>
                         </View>

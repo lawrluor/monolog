@@ -1,43 +1,47 @@
 import React from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, Alert } from 'react-native';
-import { dimensions, text, spacings, icons, colors, debug } from '../styles';
+import { ScrollView, View, Text, Image, StyleSheet } from 'react-native';
+
+import UserContext from '../context/UserContext';
+
 import SignInButton from '../components/SignInButton';
 import GoBack from '../components/GoBack';
-import { pathwaysMap } from '../utils/pathwaysData'
-import { SafeAreaBottom, SafeAreaTop } from '../components/SafeAreaContainer';
 import ProgressMap from '../components/ProgressMap';
-import UserContext from '../context/UserContext';
 import CustomIcon from '../components/CustomIcon';
+
+import { pathwaysMap } from '../utils/pathwaysData';
+
+import { text, spacings, icons, colors, debug } from '../styles';
 
 const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const { pathwayName } = route.params;
   const { user, setUser } = React.useContext(UserContext);
-  const MAX_LEVELS = 10 // Maximum number of prompts a pathway may have
+  const MAX_LEVELS = 10;  // Maximum number of prompts a pathway may have
+
   //If the user has already started the pathway, set their level, otherwise set their level to 1
   const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
   const timesCompleted = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['timesCompleted'] : 0
   const currentPathway = pathwaysMap.get(pathwayName);
 
-  const getImageURI = (img) => {
-    return Image.resolveAssetSource(img).uri
+  const getImageURI = (img: any) => {
+    return Image.resolveAssetSource(img).uri;
   }
 
   const navigateToPrompt = async (pathwayName: string) => {
-    let updatedUser = { ...user, ...{ currentPathway: pathwayName } }
-    setUser(updatedUser)
-    // const currentLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName] : 1
+    let updatedUser = { ...user, ...{ currentPathway: pathwayName } };
+    setUser(updatedUser);
     navigation.push('PathwaysPrompt', { pathway:pathwayName, level: currentLevel});
   }
+
   // Given the long description for a pathway it parses the description
   // to add headers where '<b>' tag is found in the text
   const BodyText = () => {
-    const text = currentPathway.long_desc
-    let textArray = text.split("<b>")
+    const text = currentPathway.long_desc;
+    let textArray = text.split("<b>");
 
     return (
       <View style={styles.description}>
         {
-          textArray.map((item, index) => {
+          textArray.map((item: any, index: number) => {
             const bold = index % 2;
             return (
               <Text style={bold ? styles.bodyHeader : styles.bodyText}>
@@ -49,52 +53,54 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
       </View>
     )
   }
-  // gemstone_unfilled
+
   const renderGems = () => {
-    let gemArray = []
-    for (let gemI = 1; gemI <= 5; gemI++) {
-      if (gemI <= timesCompleted) {
-        gemArray.push(<CustomIcon name={'gemstone_unfilled'} style={styles.gemFilled}></CustomIcon>)
-      } else {
-        gemArray.push(<CustomIcon name={'gemstone_unfilled'} style={styles.gemUnfilled}></CustomIcon>)
-      }
-    }
-    return <Text style={styles.gemContainer}>{gemArray}</Text>
+    let arr = [1,2,3,4,5];
+    const gems = arr.map((x) => {
+      return (
+        <View style={styles.gemIcon}>
+          {
+            x <= timesCompleted
+            ?
+            <CustomIcon name={'gemstone_unfilled'} style={styles.gemFilled}></CustomIcon>
+            :
+            <CustomIcon name={'gemstone_unfilled'} style={styles.gemUnfilled}></CustomIcon>
+          }
+        </View>
+      );
+    });
+
+    return <View style={styles.gemContainer}>{gems}</View>
   }
 
   // Set button text to Begin/Continue pathway based on user's progress
-  const beginOrContinue = (pathwayName: string) => {
-    if (currentLevel > 1) {
-      return "Continue Pathway"
-    } else {
-      return "Begin Pathway"
-    }
+  const beginOrContinue = () => {
+    return currentLevel > 1 ? "Continue Pathway" : "Begin Pathway";
   }
 
   return (
     <View style={styles.container}>
       <GoBack />
-      <SafeAreaTop/>
-      <SafeAreaBottom transparent>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-        >
-          <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
-          <Text style={styles.title}>
-            {pathwayName}
-          </Text>
+
+      <ScrollView showsVerticalScrollIndicator={false} >
+        <Image style={styles.imageHeader} source={{uri:getImageURI(currentPathway.image)}}/>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{pathwayName}</Text>
           {renderGems()}
-          <BodyText />
-          <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS}/>  
-        </ScrollView>
-        <View style={styles.recordButton}>
-          <SignInButton background={colors.HIGHLIGHT}
-            onPress={() => { navigateToPrompt(pathwayName)}}
-            >
-            <Text style={text.h4}> {beginOrContinue(pathwayName)} </Text>
-          </SignInButton>
         </View>
-      </SafeAreaBottom>
+
+        <BodyText />
+
+        <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS}/>
+      </ScrollView>
+
+      <View style={styles.recordButton}>
+        <SignInButton background={colors.HIGHLIGHT}
+          onPress={() => navigateToPrompt(pathwayName)}
+        >
+          <Text style={text.h4}>{beginOrContinue()}</Text>
+        </SignInButton>
+      </View>
     </View>
   );
 }
@@ -127,13 +133,12 @@ const styles = StyleSheet.create({
   // A padding on the brandHeader ensures adequate vertical spacing no matter the image size
   bodyHeader: {
     ...text.h3,
-    color: 'black',
-    marginTop: 10,
-    marginBottom: 10,
+    color: colors.PRIMARY,
+    marginVertical: spacings.MEDIUM,
   },
   bodyText: {
     ...text.h5,
-    color: 'black',
+    color: colors.PRIMARY,
   },
   headerRightIconContainer: {
     ...debug,
@@ -142,13 +147,13 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   title: {
-    ...text.h3,
-    margin: spacings.HUGE,
-    marginBottom: spacings.SMALL,
-    color: 'black',
+    ...text.h4,
+    color: colors.PRIMARY,
   },
   description: {
-    margin: spacings.HUGE,
+    marginHorizontal: spacings.HUGE,
+    marginTop: spacings.LARGE,
+    color: colors.PRIMARY
   },
   recordButton: {
     position: 'absolute',
@@ -157,10 +162,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     margin:spacings.HUGE,
   },
+  gemIcon: {
+    marginHorizontal: spacings.TINY
+  },
   gemFilled: {
     ...icons.TINY,
     color: colors.HIGHLIGHT,
-    margin: spacings.HUGE,
   },
   gemUnfilled: {
     ...icons.TINY,
@@ -168,9 +175,13 @@ const styles = StyleSheet.create({
   },
   gemContainer: {
     flexDirection: 'row',
-    position: 'relative',
-    bottom: '7%',
-    left: '30%',
+    marginLeft: spacings.MEDIUM
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: spacings.HUGE,
+    marginTop: spacings.HUGE
   }
 });
 

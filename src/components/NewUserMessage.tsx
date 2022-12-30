@@ -14,6 +14,7 @@ import { text, spacings, icons, colors } from '../styles';
 const NewUserMessage = ({ navigateCallback }: any) => {
   return (
     <View style={styles.featureContainer}>
+      <Text style={styles.featureTitle}>Vistas</Text>
       <View style={styles.newUserAlertTextContainer}>
         <Text style={styles.newUserAlertText}>
           Your vistas will appear after your first log.
@@ -22,21 +23,13 @@ const NewUserMessage = ({ navigateCallback }: any) => {
       </View>
 
       <View style={styles.newUserAlertButtonContainer}>
-        <SignInButton 
+        <SignInButton
           background={colors.HIGHLIGHT}
           onPress={navigateCallback}
-        > 
+        >
           <Text style={text.h4}>Record</Text>
         </SignInButton>
       </View>
-
-      {/* <Pressable 
-        onPress={() => shouldDisplayCallback(false)} 
-        hitSlop={spacings.hitSlopLarge}
-        style={ ({pressed}) => [styles.closeButtonContainer, {opacity: pressed ? 0.3 : 1}] }
-      >
-        <Ionicons style={styles.closeButton} name="close" />
-      </Pressable> */}
     </View>
   )
 }
@@ -51,6 +44,11 @@ const styles = StyleSheet.create({
     shadowColor: '#000000',
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.2,
+  },
+  featureTitle: {
+    ...text.h4,
+    marginBottom: spacings.SMALL,
+    color: colors.PRIMARY
   },
   newUserAlertTextContainer: {
     alignItems: 'center',
