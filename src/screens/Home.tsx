@@ -131,8 +131,8 @@ const Home = ({ navigation }: any): JSX.Element => {
   const onImageLoadCallback = (index: number) => {
     imagesLoadingState[index] = false;
     setImagesLoading(imagesLoadingState.some((val: boolean) => val===true));
-    console.log('tutorial1', tutorial1ShouldShow);
-    console.log('imagesLoadingState', imagesLoadingState);
+    // console.log('tutorial1', tutorial1ShouldShow);
+    // console.log('imagesLoadingState', imagesLoadingState);
   }
 
   // Async wrapper for getting permissions
@@ -165,7 +165,7 @@ const Home = ({ navigation }: any): JSX.Element => {
       {
         imagesLoading && tutorial1ShouldShow
         ?
-        <FullPageSpinner></FullPageSpinner>
+        <FullPageSpinner size='large'></FullPageSpinner>
         :
         <>
           <SafeAreaTop />
