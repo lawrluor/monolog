@@ -1,31 +1,28 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Text, Pressable } from 'react-native';
-
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import DeleteAll from '../components/Delete';  // IN TESTING ONLY
+import VideosContext from '../context/VideosContext';
+import UserContext from '../context/UserContext';
+
 import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
 import NewUserMessage from '../components/NewUserMessage';
 import TutorialImageModal from '../components/TutorialImageModal';
-
+import SignInButton from '../components/SignInButton';
+import { FullPageSpinner } from '../components/Spinner';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
 import { comingSoonAlert, editProfileAlert, simpleAlert } from '../utils/customAlerts';
 import { getRecordingPermissions } from '../utils/permissions';
 import { INITIAL_USER_DATA } from '../utils/localStorageUtils';
 
-import VideosContext from '../context/VideosContext';
-import UserContext from '../context/UserContext';
-
 import { containers, icons, text, spacings, colors } from '../styles';
-import SignInButton from '../components/SignInButton';
 
 const VIDEOS_THRESHOLD = 1;
-const TESTING = false;
 
 const Home = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
@@ -33,8 +30,15 @@ const Home = ({ navigation }: any): JSX.Element => {
 
   // Optionally used to allow for closing alert/promo messages in Home
   const [alertVisible, setAlertVisible] = React.useState<boolean>(false);
-  const [tutorial1Shown, setTutorial1Shown] = React.useState<boolean>(videosCount < 1);
-  const [tutorial2Shown, setTutorial2Shown] = React.useState<boolean>(videosCount < 1);
+
+  // Kind of spaghetti logic for displaying tutorial Images
+  // We want to set the initial state to True if using the onCallbackLoad, but initial state to False otherwise
+  const [tutorial1ShouldShow, setTutorial1ShouldShow] = React.useState<boolean>(false);
+  const [tutorial2ShouldShow, setTutorial2ShouldShow] = React.useState<boolean>(false);
+  const [tutorial3ShouldShow, setTutorial3ShouldShow] = React.useState<boolean>(false);
+  const [imagesLoading, setImagesLoading] = React.useState<boolean>(true);
+
+  let imagesLoadingState = [true, true, true];
 
   const navigateToVistas = () => {
     navigation.navigate('Vistas');
@@ -45,18 +49,16 @@ const Home = ({ navigation }: any): JSX.Element => {
   }
 
   const navigateToProfile = async () => {
-    // console.log(await readUserData());
-
     // When user confirms they want to delete account,
     // we delete the data in userContext, then go back to AuthLoading
     // which handles auth state for us and should display Landing page.
     editProfileAlert(() => {
       setUser(INITIAL_USER_DATA);  // UserContext refreshes whenever user changes; force the refresh
-      navigation.navigate('AuthLoading')
+      navigation.navigate('AuthLoading');
     });
   }
 
-  const renderPathwaysWidget = () => {
+  const renderPathwaysWidget = (): JSX.Element => {
     return (
       <View style={styles.featureContainer}>
         <Text style={styles.featureTitle}>Pathways</Text>
@@ -126,6 +128,13 @@ const Home = ({ navigation }: any): JSX.Element => {
     }
   }
 
+  const onImageLoadCallback = (index: number) => {
+    imagesLoadingState[index] = false;
+    setImagesLoading(imagesLoadingState.some((val: boolean) => val===true));
+    // console.log('tutorial1', tutorial1ShouldShow);
+    // console.log('imagesLoadingState', imagesLoadingState);
+  }
+
   // Async wrapper for getting permissions
   React.useEffect(() => {
     getRecordingPermissions();
@@ -137,61 +146,78 @@ const Home = ({ navigation }: any): JSX.Element => {
     };
   }, [videosCount, isLoading])
 
+  React.useEffect(() => {
+    if (!isLoading) {
+      setTutorial1ShouldShow(videosCount < VIDEOS_THRESHOLD);
+      setTutorial2ShouldShow(videosCount < VIDEOS_THRESHOLD);
+      setTutorial3ShouldShow(videosCount < VIDEOS_THRESHOLD);
+    }
+  }, [isLoading]);
+
+
   // There are two TutorialImageModals that appear on the home screen for new users.
   // They each have their separate state for being shown or not shown.
-  // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShown state toggles.
+  // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShouldShow state toggles.
   return (
-    <TutorialImageModal shown={tutorial1Shown} setShown={setTutorial1Shown} imageUri={require('../../assets/img/tutorials/home2.jpg')}>
-    <TutorialImageModal shown={tutorial2Shown} setShown={setTutorial2Shown} imageUri={require('../../assets/img/tutorials/home3.jpg')}>
-      <SafeAreaTop />
+    <TutorialImageModal shouldShow={tutorial3ShouldShow} setShouldShow={setTutorial3ShouldShow} imageUri={require('../../assets/img/tutorials/home3.jpg')} onLoadCallback={() => onImageLoadCallback(2)}>
+    <TutorialImageModal shouldShow={tutorial2ShouldShow} setShouldShow={setTutorial2ShouldShow} imageUri={require('../../assets/img/tutorials/home2.jpg')} onLoadCallback={() => onImageLoadCallback(1)}>
+    <TutorialImageModal shouldShow={tutorial1ShouldShow} setShouldShow={setTutorial1ShouldShow} imageUri={require('../../assets/img/tutorials/home1.jpg')} onLoadCallback={() => onImageLoadCallback(0)}>
+      {
+        imagesLoading && tutorial1ShouldShow
+        ?
+        <FullPageSpinner size='large'></FullPageSpinner>
+        :
+        <>
+          <SafeAreaTop />
 
-      <SafeAreaBottom>
-        <LinearGradient
-          colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-          style={styles.container}
-        >
-          <View style={styles.headerContainer}>
-            { TESTING ? <DeleteAll /> : null }
+          <SafeAreaBottom>
+            <LinearGradient
+              colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+              style={styles.container}
+            >
+              <View style={styles.headerContainer}>
+                <View>
+                  <Text style={styles.subTitle}>Welcome,</Text>
+                  <Text style={styles.profileTitle}>{user?.firstName || "Journaler!"}</Text>
+                </View>
 
-            <View>
-              <Text style={styles.subTitle}>Welcome,</Text>
-              <Text style={styles.profileTitle}>{user?.firstName || "Journaler!"}</Text>
-            </View>
-
-            <View>
-              <Pressable onPress={navigateToProfile} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-                <CustomIcon name='avatar' style={styles.profileIcon} />
-              </Pressable>
-            </View>
-          </View>
-
-          <View style={{ paddingHorizontal: spacings.HUGE }}>
-            <Divider color={colors.BACKGROUND} />
-          </View>
-
-          <ScrollView
-            style={styles.bodyContainer}
-            contentContainerStyle={styles.scrollContentContainerStyle}
-            showsVerticalScrollIndicator={false}
-          >
-            {renderVistasSummaryHeader()}
-            {
-              (alertVisible && (videosCount < VIDEOS_THRESHOLD))
-              && <NewUserMessage navigateCallback={navigateToRecord} />
-            }
-            {renderPathwaysWidget()}
-            {renderWordChartSummary(videosCount)}
-            {renderMoodChartSummary(videosCount)}
-
-            <Pressable onPress={() => comingSoonAlert(null)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-              <View style={[styles.featureContainer, styles.socialContainer]}>
-                <Text style={styles.featureTitle}>Social</Text>
-                <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
+                <View>
+                  <Pressable onPress={navigateToProfile} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+                    <CustomIcon name='avatar' style={styles.profileIcon} />
+                  </Pressable>
+                </View>
               </View>
-            </Pressable>
-          </ScrollView>
-        </LinearGradient>
-      </SafeAreaBottom>
+
+              <View style={{ paddingHorizontal: spacings.HUGE }}>
+                <Divider color={colors.BACKGROUND} />
+              </View>
+
+              <ScrollView
+                style={styles.bodyContainer}
+                contentContainerStyle={styles.scrollContentContainerStyle}
+                showsVerticalScrollIndicator={false}
+              >
+                {renderVistasSummaryHeader()}
+                {
+                  (alertVisible && (videosCount < VIDEOS_THRESHOLD))
+                  && <NewUserMessage navigateCallback={navigateToRecord} />
+                }
+                {renderPathwaysWidget()}
+                {renderWordChartSummary(videosCount)}
+                {renderMoodChartSummary(videosCount)}
+
+                <Pressable onPress={() => comingSoonAlert(null)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+                  <View style={[styles.featureContainer, styles.socialContainer]}>
+                    <Text style={styles.featureTitle}>Social</Text>
+                    <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
+                  </View>
+                </Pressable>
+              </ScrollView>
+            </LinearGradient>
+          </SafeAreaBottom>
+        </>
+      }
+    </TutorialImageModal>
     </TutorialImageModal>
     </TutorialImageModal>
   )

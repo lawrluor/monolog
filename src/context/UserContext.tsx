@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { writeUserData, readUserData, createAllDirectories } from '../utils/localStorageUtils';
+import { writeUserData, readUserData } from '../utils/localStorageUtils';
 
 const UserContext = React.createContext(undefined!);
 
@@ -15,14 +15,7 @@ export const UserProvider: React.FC = ({children}) => {
         let fetchedUser = await readUserData();
         setUser(fetchedUser);
       } catch (err) {
-        console.log(
-          "[ERROR] UserContext.tsx:fetchUserData", err,
-          "The user data directory has not been created yet, but is being created now."
-        );
-
-        // await createAllDirectories();
-        // let fetchedUser = await readUserData();
-        // setUser(fetchedUser);
+        console.log("[ERROR] UserContext.tsx:fetchUserData", err)
       }
 
       setIsLoading(false);
@@ -35,7 +28,7 @@ export const UserProvider: React.FC = ({children}) => {
   React.useEffect(() => {
     const wrapper = async () => {
       if (user && user!=={} && Object.keys(user).length > 0) {
-        console.log("Writing updated non-empty user to db: ", user);
+        console.log("Writing updated non-empty user to db: ", user.email);
         writeUserData(user);
         setIsLoading(false);
       }

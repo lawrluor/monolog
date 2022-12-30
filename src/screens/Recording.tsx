@@ -22,12 +22,15 @@ import { FullPageSpinner } from '../components/Spinner';
 import AudioOverlay from '../components/AudioOverlay';
 import AudioBubbles from '../components/AudioBubbles';
 import SignInButton from '../components/SignInButton';
+import TutorialImageModal from '../components/TutorialImageModal';
+import VideosContext from '../context/VideosContext';
 
 const MAX_DURATION = 600;  // seconds
 
 // NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording
 export const Recording = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
+  const { videosCount } = React.useContext(VideosContext);
 
   // TODO: experiment with adding loading states (carefully) to improve UX
   const cameraRef = React.useRef(null);
@@ -38,6 +41,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
   const [isCameraOn, setIsCameraOn] = React.useState<null | boolean>(true);
   const [videoStorePath, setVideoStorePath] = React.useState<string>('');
+  const [tutorialShouldShow, setTutorialShouldShow] = React.useState<boolean>(videosCount < 1);
 
   // TODO: camera always set to loaded already, so we will see the black camera loading screen
   // We need to debug this because when the state is set to true (production behavior).
@@ -46,11 +50,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   const timestamp = Math.floor(Date.now() / 1000);   // TODO: Make accurate to start button press
-
-  navigation.addListener('beforeRemove', () => {
-    console.log("Going back is disabled on this screen.");
-    return
-  });
 
   // Setup: Get permissions for camera from user first
   React.useEffect(() => {
@@ -281,9 +280,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         {
           isRecording
           ?
-          <>
-            <AudioBubbles shouldBegin={isRecording} />
-          </>
+          <AudioBubbles shouldBegin={isRecording} />
           :
           <View style={styles.featureContainer}>
             <View style={{ padding: spacings.MEDIUM }}>
@@ -324,8 +321,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   const renderCameraToggleIcon = () => {
     return (
-      <CustomIcon name={isCameraOn ? 'camera_on' : 'camera_off'}
-                  style={styles.cameraOnToggleIcon} />
+      <CustomIcon
+        name={isCameraOn ? 'camera_on' : 'camera_off'}
+        style={styles.cameraOnToggleIcon}
+      />
     )
   }
   const renderRecordIcon = () => {
@@ -353,9 +352,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Resets currentPathway when leaving recording screen
   const backAndReset = async () => {
     let updatedUser = { ...user, ...{ currentPathway: " " } }
-    setUser(updatedUser)
-    navigation.goBack()
+    setUser(updatedUser);
+    navigation.goBack();
   }
+
   // TODO: Bugfix/unsure if necessary to check permission at this point.
   const renderCamera = () => {
     return (
@@ -413,9 +413,11 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // It seems that the <Camera /> component and useRef needs to be loaded first
   // Therefore, we still load the Camera component, but hide the display until loaded
   // The callback onCameraReady on Camera component sets our loading state
+
+  // onLoadCallback={() => onImageLoadCallback(2)
   return (
-    <>
-      <View style={[styles.container, {display: isLoading ? 'none' : 'flex'}]}>
+    <TutorialImageModal shouldShow={tutorialShouldShow} setShouldShow={setTutorialShouldShow} imageUri={require('../../assets/img/tutorials/recording.jpg')}>
+      <View style={[styles.container, { display: isLoading ? 'none' : 'flex' }]}>
         {renderCamera()}
       </View>
 
@@ -426,7 +428,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         :
         null
       }
-    </>
+    </TutorialImageModal>
   )
 }
 
