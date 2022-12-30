@@ -26,7 +26,7 @@ const VIDEOS_THRESHOLD = 1;
 
 const Home = ({ navigation }: any): JSX.Element => {
   const { user, setUser } = React.useContext(UserContext);
-  const { videosCount, isLoading } = React.useContext(VideosContext);
+  const { videosCount, toggleVideosRefresh, isLoading } = React.useContext(VideosContext);
 
   // Optionally used to allow for closing alert/promo messages in Home
   const [alertVisible, setAlertVisible] = React.useState<boolean>(false);
@@ -53,7 +53,8 @@ const Home = ({ navigation }: any): JSX.Element => {
     // we delete the data in userContext, then go back to AuthLoading
     // which handles auth state for us and should display Landing page.
     editProfileAlert(() => {
-      setUser(INITIAL_USER_DATA);  // UserContext refreshes whenever user changes; force the refresh
+      setUser(INITIAL_USER_DATA);  // Refresh UserContext
+      toggleVideosRefresh(false);  // Refresh VideosContext
       navigation.navigate('AuthLoading');
     });
   }
