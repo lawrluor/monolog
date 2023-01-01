@@ -32,7 +32,7 @@ const Pathways = ({ navigation }: any): JSX.Element => {
     if (user?.pathways && pathwayName in user.pathways) {
       return user?.pathways[pathwayName]['currentLevel'];
     } else {
-      return 0;
+      return 1;
     }
   }
 

@@ -55,6 +55,10 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   }
 
   const renderGems = () => {
+    // do not display gems for new years resolution pathway
+    if (pathwayName === "New Year's Resolutions") {
+      return
+    }
     let arr = [1,2,3,4,5];
     const gems = arr.map((x) => {
       return (
@@ -77,6 +81,14 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
   const beginOrContinue = () => {
     return currentLevel > 1 ? "Continue Pathway" : "Begin Pathway";
   }
+  const renderProgressMap = () => {
+    if (pathwayName != "New Year's Resolutions") {
+      return <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS} />
+    } else {
+      return
+    }
+  }
+
 
   return (
     <View style={styles.container}>
@@ -90,8 +102,8 @@ const PathwayFull = ({ route, navigation }: any): JSX.Element => {
         </View>
 
         <BodyText />
-
-        <ProgressMap currentProgress={currentLevel-1} total={MAX_LEVELS}/>
+        {renderProgressMap()}
+        
       </ScrollView>
 
       <View style={styles.recordButton}>

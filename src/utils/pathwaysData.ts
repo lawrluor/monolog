@@ -3,9 +3,15 @@ import {
   anxiety_header,
   sleep_header,
   self_esteem_header,
+  new_years_header,
 } from '../../assets/img/pathway-headers';
 
 export const pathwaysData = [
+  {
+    name: "New Year's Resolutions",
+    short_desc: "New Year, new you.",
+    long_desc: "This Pathway is simple but effective. 365 prompts centering around daily check-ins to keep you on the right track towards your New Year's resolutions, keeping you inspired and focused on becoming your best self.",
+  },
   {
     name: "Procrastination",
     short_desc: "A prompt today, keeps the procrastination away.",
@@ -25,12 +31,10 @@ export const pathwaysData = [
     name: "Social Anxiety",
     short_desc: "Connect to yourself to better connect with others.",
     long_desc: "Find out if you have symptoms of social anxiety and understand more about social anxiety - what it is, what causes it, and what keeps it going. By the end of this pathway, learn how to better manage or overcome social anxiety.",
-  }
+  },
 ];
 
 export const pathwaysMap = new Map();
-
-  // progress => [# times completed, current prompt #, total prompts]
 pathwaysMap.set('Procrastination', {
   name: "Procrastination",
   short_desc: "A prompt today, keeps the procrastination away",
@@ -54,6 +58,12 @@ pathwaysMap.set('Social Anxiety', {
   short_desc: "Connect to yourself to better connect with others",
   long_desc: "Find out if you have symptoms of social anxiety and understand more about social anxiety - what it is, what causes it, and what keeps it going. By the end of this pathway, learn how to better manage or overcome social anxiety.",
   image: self_esteem_header,
+})
+pathwaysMap.set("New Year's Resolutions", {
+  name: "New Year's Resolutions",
+  short_desc: "New Year, new you.",
+  long_desc: "This Pathway is simple but effective. 365 prompts centering around daily check-ins to keep you on the right track towards your New Year's resolutions, keeping you inspired and focused on becoming your best self.",
+  image: new_years_header,
 })
 
 export const pathwaysPrompts = {
@@ -104,5 +114,9 @@ export const pathwaysPrompts = {
     "What can you accept about the situation (Other people's responses or decisions/The ever-changing world around you)?",
     "After completing this exercise, how do you feel about the situation?",
     'Is there anything in the "accept" field that you wish you could control or influence? If so, think about why you feel this way and write it below.',
+  ],
+  "New Year's Resolutions": [
+    "What are your resolutions for this new year and how do you plan to work towards them?",
+    "Progress Check-In: How are your resolutions going so far?"
   ]
 }

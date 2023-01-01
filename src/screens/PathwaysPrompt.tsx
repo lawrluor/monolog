@@ -17,7 +17,11 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
 
   let pathwaysPromptsData = JSON.stringify(pathwaysPrompts);
   pathwaysPromptsData = JSON.parse(pathwaysPromptsData);
-  const prompt = pathwaysPromptsData[pathway][level];
+  let prompt = pathwaysPromptsData[pathway][level - 1];
+  // Continue showing the second prompt for new years resolution pathway
+  if (pathway === "New Year's Resolutions" && level >= 1) {
+    prompt = pathwaysPromptsData[pathway][1]
+  }
 
   const navigateToRecording = () => {
     navigation.navigate('Recording');
@@ -37,7 +41,7 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
       <GoBack callback={backAndReset}/>
 
       <View style={styles.featureContainer}>
-        <Text style={styles.promptNum}>Prompt #{level + 1}</Text>
+        <Text style={styles.promptNum}>Prompt #{level}</Text>
         <Text style={styles.prompt}>{prompt}</Text>
 
         <SignInButton background={colors.HIGHLIGHT} onPress={navigateToRecording}>
