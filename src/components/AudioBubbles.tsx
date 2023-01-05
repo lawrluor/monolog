@@ -45,7 +45,6 @@ const AudioBubble = ({ shouldBegin }: any) => {
 
   // Changes the size of the bubble, looping between 30% to 90% of its size
   const sizeLoop = () => {
-    console.log("beginnning size loop")
     return Animated.loop(
       Animated.timing(
         size,

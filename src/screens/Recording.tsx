@@ -80,11 +80,6 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     }
   }, []);
 
-  // Listener on Camera state, simply debug for now
-  React.useEffect(() => {
-    console.log("camera not ready:", isLoading);
-  }, [isLoading]);
-
   // "Callback method" for when the final transcript is ready.
   // Note: isRecording must be false, meaning stopRecording() was explicitly called.
   // Otherwise, if isRecording is just null, means that we have not begun recording,
@@ -93,7 +88,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     if ((finalTranscript.length > 0) &&
         (videoStorePath.length > 0) &&
         (recordingFinished) &&
-        (isRecording === false)) {
+        (isRecording===false)) {
 
       // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
       // Now we can move to the next page with the final transcript result
@@ -224,6 +219,11 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // while stopRecording is called in any other event that the recording stops.
   const finishRecording = async () => {
     try {
+      // setIsLoading(true): To show loading screen while app wraps up recording
+      // NOTE: this will mean that the useEffect() that checks all loading states allows isLoading=true
+      // This is intended behavior but might be a bit confusing.
+      // Therefore, think of isLoading state more as showLoadingScreen or showLoader
+      setIsLoading(true);
       await stopRecording();
       setRecordingFinished(true);
 
@@ -419,17 +419,11 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // onLoadCallback={() => onImageLoadCallback(2)
   return (
     <TutorialImageModal shouldShow={tutorialShouldShow} setShouldShow={setTutorialShouldShow} imageUri={getImagesByDeviceSize('recording')}>
+      {isLoading && <FullPageSpinner size="large" />}
+
       <View style={[styles.container, { display: isLoading ? 'none' : 'flex' }]}>
         {renderCamera()}
       </View>
-
-      {
-        isLoading
-        ?
-        <FullPageSpinner size="large" />
-        :
-        null
-      }
     </TutorialImageModal>
   )
 }
