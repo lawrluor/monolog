@@ -3,7 +3,7 @@ import { StyleSheet, View, Image, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
-import { containers, dimensions, text, spacings, colors } from '../styles';
+import { dimensions, text, spacings, colors } from '../styles';
 
 import SignInButton from '../components/SignInButton';
 
