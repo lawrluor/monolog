@@ -132,14 +132,22 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
   // We render AudioOverlay if we should not show the video.
   const renderAudioOverlay = (showVideo: boolean) => {
     return (
-      showVideo ?
-        <></>
-        :
-        <View style={styles.audioOverlayContainer}>
-           <AudioOverlay>
-             <AudioBubbles shouldBegin={isPlaying} />
-           </AudioOverlay>
-         </View>
+      showVideo
+      ?
+      <></>
+      :
+      <View style={styles.audioOverlayContainer}>
+        <AudioOverlay>
+        {
+          isPlaying
+          ?
+          <AudioBubbles shouldBegin={isPlaying} />
+          :
+          <></>
+        }
+        </AudioOverlay>
+
+      </View>
     )
   }
 

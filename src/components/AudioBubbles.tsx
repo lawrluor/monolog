@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Animated, Easing, Pressable, StyleSheet } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Circle, Rect, Use } from "react-native-svg";
 
-
 import { dimensions } from '../styles';
 
 const MAX_BUBBLE_SIZE = 240;  // largest possible bubble
@@ -19,10 +18,11 @@ const AudioBubble = ({ shouldBegin }: any) => {
   }
 
   const timeOffset = Math.random() * 1500;  // 1.5 seconds of variance
-  const diameter = (Math.random() * (MAX_BUBBLE_SIZE - MIN_BUBBLE_SIZE)) + MIN_BUBBLE_SIZE;
-  const coordinate = generateRandomCoordinates();  // center: { x: 0, y: 0 }
 
   // States
+  // Need to coordinate, diameter, timeOffset as states rather than constant, to avoid calling functions again when other states reload
+  const [coordinate] = React.useState(generateRandomCoordinates());
+  const [diameter] = React.useState<number>(Math.random() * (MAX_BUBBLE_SIZE - MIN_BUBBLE_SIZE) + MIN_BUBBLE_SIZE);
   const [isVisible, setIsVisible] = React.useState<boolean>(false);
 
   // Animation values
@@ -45,7 +45,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
 
   // Changes the size of the bubble, looping between 30% to 90% of its size
   const sizeLoop = () => {
-    Animated.loop(
+    return Animated.loop(
       Animated.timing(
         size,
         {
@@ -61,7 +61,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
 
   // Changes the opacity of the bubble, looping between 0% to 90% of its opacity
   const opacityLoop = () => {
-    Animated.loop(
+    return Animated.loop(
       Animated.timing(
         opacity,
         {
@@ -83,9 +83,11 @@ const AudioBubble = ({ shouldBegin }: any) => {
 
     return () => {
       // TODO: stop animations and reset states?
+      size.stopAnimation();
+      opacity.stopAnimation();
     }
 
-  }, [shouldBegin])
+  }, [])
 
   // animation transform
    // https://stackoverflow.com/questions/62064894/react-native-animated-you-must-specify-exactly-one-property-per-transform-objec
