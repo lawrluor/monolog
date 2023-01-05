@@ -278,6 +278,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         <View style={styles.captionContainer}>
           <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
         </View>
+
         {
           isRecording
           ?
