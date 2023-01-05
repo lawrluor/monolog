@@ -27,7 +27,7 @@ const Landing = ({ navigation }: any): JSX.Element => {
           <View style={styles.titleContainer}>
             {/* <Text style={styles.title}>Monolog</Text> */}
             <Image style={styles.brandImage} source={require('../../assets/img/monolog_logo_full.png')} />
-            <Text style={styles.subTitle}>Think Out Loud.</Text>
+            <Text style={styles.subTitle}>Think Out Loud</Text>
           </View>
 
           <View style={styles.buttonContainer}>
