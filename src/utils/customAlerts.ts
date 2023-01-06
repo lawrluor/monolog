@@ -19,18 +19,30 @@ export const simpleAlert = (title, message, buttonText, callback) => {
   )
 }
 
+
+// NOTE: This function isn't being used yet.
 export const editProfileAlert = (callback=null) => {
   return Alert.alert(
     "Edit Profile",
-    "This feature is coming soon.",
+    "Edit your profile.",
     [
-      { text: "Delete Data", onPress: () => deleteDataAlert(callback), style: 'destructive' },
       { text: "OK" },
     ]
   )
 }
 
 export const deleteDataAlert = (callback=null) => {
+  return Alert.alert(
+    "Delete Data",
+    "Delete all your profile data and logs?",
+    [
+      { text: "Delete Data", onPress: () => deleteDataConfirmation(callback), style: 'destructive' },
+      { text: "Cancel" },
+    ]
+  )
+}
+
+export const deleteDataConfirmation = (callback=null) => {
   const deleteDataWrapper = async () => {
     await deleteAllData();
 

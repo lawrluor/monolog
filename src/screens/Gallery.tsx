@@ -9,7 +9,7 @@ import VideoList from '../components/VideoList';
 import { SearchEntry } from '../components/TextEntry';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
-import { editProfileAlert } from '../utils/customAlerts';
+import { deleteDataAlert } from '../utils/customAlerts';
 import { INITIAL_USER_DATA } from '../utils/localStorageUtils';
 
 import { dimensions, text, spacings, icons, colors, debug } from '../styles';
@@ -49,7 +49,7 @@ const Gallery = ({ navigation }: any):  JSX.Element => {
     // When user confirms they want to delete account,
     // we delete the data in userContext, then go back to AuthLoading
     // which handles auth state for us and should display Landing page.
-    editProfileAlert(() => {
+    deleteDataAlert(() => {
       setUser(INITIAL_USER_DATA);  // Refresh UserContext
       toggleVideosRefresh(false);  // Refresh VideosContext
       navigation.navigate('AuthLoading');

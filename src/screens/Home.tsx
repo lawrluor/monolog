@@ -16,7 +16,7 @@ import SignInButton from '../components/SignInButton';
 import { FullPageSpinner } from '../components/Spinner';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
-import { comingSoonAlert, editProfileAlert, simpleAlert } from '../utils/customAlerts';
+import { comingSoonAlert, deleteDataAlert, simpleAlert } from '../utils/customAlerts';
 import { getRecordingPermissions } from '../utils/permissions';
 import { INITIAL_USER_DATA } from '../utils/localStorageUtils';
 
@@ -53,7 +53,7 @@ const Home = ({ navigation }: any): JSX.Element => {
     // When user confirms they want to delete account,
     // we delete the data in userContext, then go back to AuthLoading
     // which handles auth state for us and should display Landing page.
-    editProfileAlert(() => {
+    deleteDataAlert(() => {
       setUser(INITIAL_USER_DATA);  // Refresh UserContext
       toggleVideosRefresh(false);  // Refresh VideosContext
       navigation.navigate('AuthLoading');
@@ -208,12 +208,13 @@ const Home = ({ navigation }: any): JSX.Element => {
                 {renderWordChartSummary(videosCount)}
                 {renderMoodChartSummary(videosCount)}
 
-                <Pressable onPress={() => comingSoonAlert(null)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+                {/* Social Button: Not used at the moment
+                 <Pressable onPress={() => comingSoonAlert(null)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
                   <View style={[styles.featureContainer, styles.socialContainer]}>
                     <Text style={styles.featureTitle}>Social</Text>
                     <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
                   </View>
-                </Pressable>
+                </Pressable> */}
               </ScrollView>
             </LinearGradient>
           </SafeAreaBottom>

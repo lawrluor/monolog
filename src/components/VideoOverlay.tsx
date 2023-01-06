@@ -34,8 +34,8 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
       "Warning",
       "This will delete the current video log and all its data. Are you sure you want to do this?",
       [
-        { text: "Continue", onPress: deleteLog },
-        { text: "Cancel"}
+        { text: "Continue", style: 'destructive', onPress: deleteLog },
+        { text: "Cancel" }
       ]
     )
   }
@@ -102,6 +102,17 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
     )
   }
 
+  const renderRating = () => {
+    return <Text style={styles.emojiText}>{videoData.rating.substring(0, 2) || '❔'}</Text>
+
+    // In the future, use Pressable to allow us to press to change the Rating emoji
+    return (
+      <Pressable onPress={changeRating} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+        <Text style={styles.emojiText}>{videoData.rating.substring(0, 2) || '❔'}</Text>
+      </Pressable>
+    )
+  }
+
   const renderButtonsContainer = () => {
     return (
       <View style={styles.buttonsContainer}>
@@ -116,10 +127,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
         </View>
 
         <View style={styles.button}>
-
-          <Pressable onPress={changeRating} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-            <Text style={styles.emojiText}>{videoData.rating.substring(0, 2) || '❔'}</Text>
-          </Pressable>
+          {renderRating()}
         </View>
       </View>
     )
