@@ -1,19 +1,57 @@
 // Currently, we are using Expo FileSystem to handle local storage.
 // This util file holds reusable code for:
   // creating local file directories
-  // writing new local files 
+  // writing new local files
   // retrieving local files
 // TODO: consider refactoring/moving code handling local storage from other files to here.
 
 import * as FileSystem from 'expo-file-system';
-import { resolvePath } from 'react-native-reanimated/lib/types/lib/reanimated2/animation/styleAnimation';
 import { filteredWords, removePunctuation } from './textProcessing';
+import { createRatingFromFile } from './rating';
 
 export const USER_DATA_DIRECTORY = FileSystem.documentDirectory + 'userData/';
 export const TRANSCRIPT_DIRECTORY = FileSystem.documentDirectory + 'transcripts/';
 export const THUMBNAIL_DIRECTORY = FileSystem.documentDirectory + 'thumbnails/';
 export const RATING_DIRECTORY = FileSystem.documentDirectory + 'rating/';
 export const VIDEO_DIRECTORY = FileSystem.documentDirectory + 'videos/';
+
+export const INITIAL_USER_DATA = {
+  'onboarded': false,
+  'cameraPermission': false,
+  'micPermission': false,
+  'speechToTextPermission': false,
+  'tutorialMode': true,
+  'firstName': "",
+  'lastName': "",
+  'email': "",
+  'gender': "",
+  'pronouns': "",
+  'age': "0",
+  'pathways': {},
+  'currentPathway': '',
+  'signupDateTime': Date.now()
+};
+
+export const readFile = async (uri: string):Promise<string> => {
+  return await FileSystem.readAsStringAsync(uri)
+    .then((content: string) => {
+      return content;
+    })
+    .catch((err: any) => {
+      console.log("[ERROR]: localStorageUtils.tsx:readFile", err);
+      return "";
+    });
+}
+
+export const writeFile =
+    async (uri: string, content:string):Promise<boolean> => {
+  return await FileSystem.writeAsStringAsync(uri, content)
+    .then(() => { return true })
+    .catch((err) => {
+      console.log("[ERROR] localStorageUtils:writeFile:", err);
+      return false;
+    });
+}
 
 export const checkVideoDirectory = async () => {
   let result = await FileSystem.getInfoAsync(VIDEO_DIRECTORY).then(
@@ -32,7 +70,7 @@ export const createVideoDirectory = async () => {
   try {
     let directoryAlreadyExists = await checkVideoDirectory();
     // No need to create directory, already exists, so return early
-    if (directoryAlreadyExists) return Promise.resolve(true); 
+    if (directoryAlreadyExists) return true;
 
     FileSystem.makeDirectoryAsync(VIDEO_DIRECTORY)
       .then(() => { return Promise.resolve(true) })
@@ -63,7 +101,7 @@ export const checkTranscriptDirectory = async () => {
 
 export const createTranscriptDirectory = async () => {
   try {
-    let directoryExists = await checkTranscriptDirectory(); 
+    let directoryExists = await checkTranscriptDirectory();
     if (directoryExists) return Promise.resolve(true);  // return early
 
     return await FileSystem.makeDirectoryAsync(TRANSCRIPT_DIRECTORY)
@@ -105,25 +143,25 @@ export const createThumbnailDirectory = async () => {
   }
 }
 
-export const checkDirectoryExists = async (directory: string) => {
+export const checkFileExists = async (filename: string) => {
   try {
-    return await FileSystem.getInfoAsync(directory)
+    return await FileSystem.getInfoAsync(filename)
       .then(({ exists, _ }) => {
         return Promise.resolve(exists);
       }).catch((err: any) => {
-        console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${directory}):`, err);
+        console.log(`[ERROR] localStorageUtils:checkFileExists(${filename}):`, err);
         return Promise.reject(false);
       });
   } catch (err: any) {
-    console.log(`[ERROR] localStorageUtils:checkDirectoryExists(${directory}):`, err);
+    console.log(`[ERROR] localStorageUtils:checkFileExists(${filename}):`, err);
     return Promise.reject(false);
   }
 }
 
 export const createDirectory = async (directory: string) => {
   try {
-    let directoryExists = await checkDirectoryExists(directory);
-    if (directoryExists) return Promise.resolve(true);
+    let directoryExists = await checkFileExists(directory);
+    if (directoryExists) return true;
 
     return await FileSystem.makeDirectoryAsync(directory)
       .then(() => { return Promise.resolve(true) })
@@ -153,9 +191,9 @@ export const checkUserDataDirectory = async () => {
       console.log("[ERROR] localStorageUtils:checkUserDataDirectory: ", error, "This is probably because it doesn't exist yet.");
       return false;
     });
-  
+
   // TODO: can also use resolve/reject instead of back-passing a variable up and returning at end
-  return directoryExists; 
+  return directoryExists;
 }
 
 // Create User data directory if not already existing.
@@ -171,15 +209,16 @@ export const createUserDataDirectory = async () => {
 }
 
 export const deleteUserData = async () => {
-  await FileSystem.deleteAsync(USER_DATA_DIRECTORY);
+  let result = await FileSystem.deleteAsync(USER_DATA_DIRECTORY);
   console.log("deleted user data");
+  return result;
 }
 
 export const readUserData = async () => {
   let data: any = {};
 
   if (!await checkUserDataDirectory()) return data;
-  
+
   // Can be used for convenience, but fails when user data directory not yet created
   const readDataFromFile = async () => {
     let fileContent = await FileSystem.readAsStringAsync(`${USER_DATA_DIRECTORY}user`);
@@ -212,7 +251,7 @@ export const readUserData = async () => {
   // or empty object if it doesn't find one
   // This prevents error 'undefined is not an object' such as `undefined.firstName`
   // TODO: Note how often this happens? Unless empty object is ok upon initialization?
-  return await readDataFromFile();  
+  return await readDataFromFile();
 }
 
 // Writes to the user data directory
@@ -220,14 +259,14 @@ export const readUserData = async () => {
 export const writeUserData = async (data: any) => {
   let success = false;
   if (!await checkUserDataDirectory()) return false;
-  
+
   success = await FileSystem.writeAsStringAsync(`${USER_DATA_DIRECTORY}user`, JSON.stringify(data))
     .then(() => { return true })
     .catch((err) => {
       console.log("[ERROR] localStorageUtils:writeUserData:", err);
       return false;
     });
-  
+
   success = true;
   return success;
 
@@ -235,7 +274,7 @@ export const writeUserData = async (data: any) => {
 
 // Get all transcripts from local storage, then print out file names.
 // Transcript filename format: {14 digit timestamp}.txt
-// Takes one callback function `func` to be called on each file. 
+// Takes one callback function `func` to be called on each file.
 // This callback function defaults to an empty func (i.e. does nothing)
 // TODO: do we need this level of abstraction? why not compose the function now and generalize later?
   // Can we fulfill the async requirements without making it generic (pass any func)?
@@ -256,18 +295,18 @@ export const getTranscripts = async (func: any=() => {}) => {
       console.log("[ERROR]: localStorageUtils: getTranscripts:", err);
     });
 
-  results = await Promise.all(results); 
+  results = await Promise.all(results);
   return results
 }
 
 // Returns a list of strings containing all words ever spoken across all transcripts
-// This serves as a "bucket" of strings to be processed by processAllWordsFromTranscripts 
+// This serves as a "bucket" of strings to be processed by processAllWordsFromTranscripts
 // At this point, there is no ordering nor sorting of words
 // Optional parameter `numberOfTopWordsOnly` to cutoff return numberOfTopWordsOnly words
 export const getAllWordsFromTranscripts = async (numberOfTopWordsOnly: number=50) => {
   // NOTE: because this function is called in VideosContext
-  // and VideosContext is triggered BEFORE App.tsx, 
-  // we must first create the Video directory on initial load instead of waiting 
+  // and VideosContext is triggered BEFORE App.tsx,
+  // we must first create the Video directory on initial load instead of waiting
   // for App.tsx to create it first.
   // TODO: Double check this
   // await createDirectory(TRANSCRIPT_DIRECTORY);
@@ -278,11 +317,11 @@ export const getAllWordsFromTranscripts = async (numberOfTopWordsOnly: number=50
 
 // Processes the list of strings from getAllWordsFromTranscripts
 // returns word chart data in the correct format with correct counts.
-// Optional param numberOfTopWordsOnly can slice the data, 
+// Optional param numberOfTopWordsOnly can slice the data,
 // but for now we are sending ALL the data and having individual components slice the top words.
-export const processAllWordsFromTranscripts = async (allWordsByTranscript: string[], numberOfTopWordsOnly: number=0) => {  
+export const processAllWordsFromTranscripts = async (allWordsByTranscript: string[], numberOfTopWordsOnly: number=0) => {
   // Helper function to generate object for a single word in the correct format for WordChart
-  const initWordChartItemData = (count: number, currentWord: string) => {    
+  const initWordChartItemData = (count: number, currentWord: string) => {
     return {
       'word': currentWord,
       'count': count
@@ -305,7 +344,7 @@ export const processAllWordsFromTranscripts = async (allWordsByTranscript: strin
       // This is because each call would have generated a shallow copy of the object
       // THEN assigned the whole obj with obj.count + 1
       if (wordsByCount[currentWord]) {
-        wordsByCount[currentWord].count += 1; 
+        wordsByCount[currentWord].count += 1;
         // can't recalculate the overall ratio because we don't know how many words exist yet
         // even if we calculate with just the length of just the total words, will not be accurate
         // Therefore, we have to do another pass/map/loop later
@@ -327,19 +366,19 @@ export const processAllWordsFromTranscripts = async (allWordsByTranscript: strin
   const calculateWeightedRatio = (count: number): number => {
     let allWordCountsOnly: number[] = Object.keys(wordsByCount).map((key: string) => wordsByCount[key].count );
     let min = Math.min(...allWordCountsOnly);  // Must destructure array first
-    let max = Math.max(...allWordCountsOnly); 
+    let max = Math.max(...allWordCountsOnly);
     let weightedPercentage = 0.1 + (0.8 * (count - min) / (max - min));  // Keep between 10% and 80% of bar width
     return weightedPercentage
   }
 
   wordsByCount = Object.keys(wordsByCount)
                   .sort((a: string, b: string) => wordsByCount[b].count - wordsByCount[a].count)
-                  .map((key: string) => { 
-                    wordsByCount[key].value = 
-                      (totalWordCount > 200) 
-                      ? calculateWeightedRatio(wordsByCount[key].count) 
+                  .map((key: string) => {
+                    wordsByCount[key].value =
+                      (totalWordCount > 200)
+                      ? calculateWeightedRatio(wordsByCount[key].count)
                       : calculateSimpleRatio(wordsByCount[key].count);
-                      
+
                     return wordsByCount[key];
                   });
 
@@ -347,40 +386,47 @@ export const processAllWordsFromTranscripts = async (allWordsByTranscript: strin
 }
 
 export const deleteAllTranscripts = async () => {
-  // await getTranscripts(FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY));
-  await FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY)
+  let result = await FileSystem.deleteAsync(TRANSCRIPT_DIRECTORY)
   console.log("Deleted all transcripts");
+  return result;
 }
 
 export const deleteAllRatings = async () => {
-  await FileSystem.deleteAsync(RATING_DIRECTORY);
+  let result = await FileSystem.deleteAsync(RATING_DIRECTORY);
   console.log("Deleted all ratings");
+  return result;
 }
 
-// Deletes all videos with optional parameter of deleting X number of videos
-export const deleteAllVideos = async (numberOfVideosToDelete=0) => {
-  await FileSystem.readDirectoryAsync(VIDEO_DIRECTORY)
-    .then(async (files) => {
-      // default is 0, so delete all videos by default
-      let numberOfVideos = Math.max(0, files.length - numberOfVideosToDelete);  
-      for (let i=0; i<numberOfVideos; i++) {
-        await FileSystem.deleteAsync(VIDEO_DIRECTORY + files[i]);
-      }
+export const deleteAllVideos = async () => {
+  let result = await FileSystem.deleteAsync(VIDEO_DIRECTORY);
+  console.log("Deleted all videos");
+  return result;
+
+  // Before, we were querying each video file and deleting each thumbnail, transcript, etc
+  // associated with it. Now, we simply delete the video directory itself, which is much cleaner
+  return await FileSystem.readDirectoryAsync(VIDEO_DIRECTORY)
+    .then(async (files: any) => {
+      files.forEach((file: any) => {
+        deleteVideoLog(file);  // await FileSystem.deleteAsync(VIDEO_DIRECTORY + files[i]);
+      })
+
+      console.log("Deleted all videos");
     })
     .catch((err) => console.log("[ERROR] VideosContext: deleteAllVideos", err));
 }
 
 export const deleteAllThumbnails = async () => {
-  await FileSystem.deleteAsync(THUMBNAIL_DIRECTORY);
+  let result = await FileSystem.deleteAsync(THUMBNAIL_DIRECTORY);
   console.log("Deleted all thumbnails");
+  return result;
 }
 
 export const deleteAllData = async () => {
   try {
     let promises = [
+      deleteAllVideos(),
       deleteAllRatings(),
       deleteAllTranscripts(),
-      deleteAllVideos(),
       deleteAllThumbnails(),
       deleteUserData()
     ]
@@ -396,7 +442,7 @@ export const deleteAllData = async () => {
 export const deleteVideoLog = async (filename: string) => {
   try {
     let promises = [
-      FileSystem.deleteAsync(`${VIDEO_DIRECTORY}${filename}.mov`), 
+      FileSystem.deleteAsync(`${VIDEO_DIRECTORY}${filename}.mov`),
       FileSystem.deleteAsync(`${THUMBNAIL_DIRECTORY}${filename}.jpg`),
       FileSystem.deleteAsync(`${TRANSCRIPT_DIRECTORY}${filename}.txt`),
       FileSystem.deleteAsync(`${RATING_DIRECTORY}${filename}.txt`)
@@ -435,9 +481,8 @@ export const getTranscriptContent = async (transcriptUri: string) => {
 
 export const getRating = async (uri: string) => {
   let rating: string = "";
-  let ratingFullUri = `${RATING_DIRECTORY}${uri}.txt`;
 
-  rating = await FileSystem.readAsStringAsync(ratingFullUri)
+  rating = await FileSystem.readAsStringAsync(uri)
     .then((content: string) => {
       return content;
     })
@@ -449,14 +494,14 @@ export const getRating = async (uri: string) => {
   return rating;
 }
 
-export const writeFinalTranscript = async (transcriptUri: string, text: string) => {  
+export const writeFinalTranscript = async (transcriptUri: string, text: string) => {
   try {
     FileSystem.writeAsStringAsync(transcriptUri, text);  // No return value
     return true;
   } catch(err: any) {
     console.log("[ERROR] Transcript:FileSystem.writeAsStringAsync:", err);
     return false;
-  }  
+  }
 }
 
 export const generateThumbnailUri = (filename: string) => {
@@ -478,8 +523,14 @@ export const generateRatingUri = (filename: string) => {
 export const initVideoDataObject = async (filename: string) => {
   let transcriptUri = generateTranscriptUri(filename);
   let transcriptContent = await getTranscriptContent(transcriptUri);
-  let rating = await getRating(filename);
 
+  let ratingObject = await createRatingFromFile(generateRatingUri(filename));
+  let rating = ""
+  let showVideo = true  // default set to true.
+  if (ratingObject) {
+    rating = `${ratingObject.emoji}${ratingObject.index}`
+    showVideo = ratingObject.isCameraOn
+  }
   let videoData = {
     "baseName": filename,
     "name": generateVideoUri(filename),
@@ -487,7 +538,11 @@ export const initVideoDataObject = async (filename: string) => {
     "thumbnail_uri": generateThumbnailUri(filename),
     "transcript_uri": transcriptUri,
     "transcript_content": transcriptContent,
-    "rating": rating
+    "rating": rating,
+    // isCameraOn means show video, defaults to true in ratings.ts
+    // However, if this field doesn't exist (undefined, migrating from older versions),
+    // this will be explicitly set to boolean false
+    "show_video": showVideo
   }
 
   return videoData;

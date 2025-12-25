@@ -18,7 +18,7 @@ type Props = {
 }
 
 // This component is a modal with text that pops up when when the full transcript should be revealed.
-// Essentially, it is the transcript part itself that has been factored out, and is editable 
+// Essentially, it is the transcript part itself that has been factored out, and is editable
 // Its props include modalShown and setModalShown, which come from the parent VideoPlayer component.
 // and can set this to be visible or not visible depending on if the `show transcript` icon is pressed.
 const TranscriptEditor = ({ setModalShown, modalShown, textContentFromRecording, transcriptUri, date }: Props) => {
@@ -34,8 +34,8 @@ const TranscriptEditor = ({ setModalShown, modalShown, textContentFromRecording,
   const [isLoading, setIsLoading] = React.useState<boolean>(true);  // Ensure transcript fetched first
 
   // Get and set transcript content from local storage OR passed from Recording->Rating
-  // If this is a new recording, the transcript file doesn't exist yet, so no contents from file 
-  // Therefore, we use the textContent prop, which passes the newly created transcript 
+  // If this is a new recording, the transcript file doesn't exist yet, so no contents from file
+  // Therefore, we use the textContent prop, which passes the newly created transcript
   // text content from the Recording.
   // Else, simply set the transcript content to that which it reads from transcript file
   const setTranscriptContent = async () => {
@@ -63,12 +63,12 @@ const TranscriptEditor = ({ setModalShown, modalShown, textContentFromRecording,
       'keyboardDidHide',
       () => setEditMade(true)
     );
-    
+
     return () => {
       keyboardDidHideListener.remove();
     };
   }, []);
-  
+
   React.useEffect(() => {
     // Only show save messages if changes have been made
     // console.log(`\nCached: ${cachedStartingText}\nEdited: ${text}`);
@@ -93,7 +93,7 @@ const TranscriptEditor = ({ setModalShown, modalShown, textContentFromRecording,
           {"text": "OK"}
         ]
       );
-      
+
       console.log("transcript write success, refreshing videos:", transcriptWriteSuccess);
       setTranscriptContent();
       setEditMade(false);
@@ -106,22 +106,22 @@ const TranscriptEditor = ({ setModalShown, modalShown, textContentFromRecording,
     setTextIsEditable(true);
 
     // See: https://codedaily.io/tutorials/Focus-on-the-Next-TextInput-when-Next-Keyboard-Button-is-Pressed-in-React-Native
-    textRef.current.focus();  
+    textRef.current.focus();
   }
 
   return (
     modalShown
     ?
- 
+
       <Pressable style={styles.modalOutside} onPress={modalPressCallback}>
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           style={styles.textContainer}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <ScrollView showsVerticalScrollIndicator={false}>
               <View style={styles.modalDown}>
                 <Pressable onPress={() => setModalShown(!modalShown)} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-                  <CustomIcon name={'down_arrow_head'} style={styles.iconActions} />
+                  <CustomIcon name={'swipe_down_transcript'} style={styles.iconActions} />
                 </Pressable>
               </View>
 
@@ -172,17 +172,17 @@ const styles = StyleSheet.create({
   },
   // This is an additional modal that appears above the transcript editor modal
   // This modal is the full height of the screen, while the transcript one is ~70%
-  // This exists so that pressing anywhere OUTSIDE the transcript modal 
+  // This exists so that pressing anywhere OUTSIDE the transcript modal
   // will actually press this modal, which will toggle the modalShown state and hide the editor
   modalOutside: {
     height: dimensions.height
   },
   editTextPressable: {
     // DEBUG: Setting flex: 1 isn't enough to get this component to fill up its parent (textContainer)
-    // Workaround: We increase the height to its parent's height, so that 
+    // Workaround: We increase the height to its parent's height, so that
     // long-pressing anywhere in the modal will allow us to edit the transcript text
     // flex: 1,
-    height: dimensions.height - (200 + spacings.LARGE)  
+    height: dimensions.height - (200 + spacings.LARGE)
   },
   iconActions: {
     ...icons.MEDIUM,

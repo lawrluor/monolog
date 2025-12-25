@@ -15,10 +15,7 @@ export const UserProvider: React.FC = ({children}) => {
         let fetchedUser = await readUserData();
         setUser(fetchedUser);
       } catch (err) {
-        console.log(
-          "[ERROR] UserContext.tsx:fetchUserData", err, 
-          "This error is probably because the user data directory has not been created yet, and is intended behavior."
-        );
+        console.log("[ERROR] UserContext.tsx:fetchUserData", err)
       }
 
       setIsLoading(false);
@@ -31,7 +28,7 @@ export const UserProvider: React.FC = ({children}) => {
   React.useEffect(() => {
     const wrapper = async () => {
       if (user && user!=={} && Object.keys(user).length > 0) {
-        console.log("Writing updated non-empty user to db: ", user);
+        // console.log("Writing updated non-empty user to db: ", user?.email);
         writeUserData(user);
         setIsLoading(false);
       }

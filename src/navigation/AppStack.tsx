@@ -4,7 +4,7 @@ import {useNavigation, useRoute, getFocusedRouteNameFromRoute} from '@react-navi
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Settings, Feedback } from '../screens';
+import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Pathways, PathwayFull, PathwaysPrompt } from '../screens';
 
 import CustomIcon from '../components/CustomIcon';
 
@@ -18,6 +18,9 @@ type StackNavigatorParams = {
   "Player": undefined,
   "Rating": undefined,
   "Transcript": undefined,
+  "Pathways": undefined,
+  "PathwayFull": undefined,
+  "PathwaysPrompt" : undefined,
   "TabNavigator": undefined
 }
 
@@ -27,6 +30,7 @@ type TabNavigatorParams = {
   "Home": undefined,
   "Vistas": undefined,
   "Settings": undefined,
+  "Pathways": undefined,
   "Feedback": undefined
 }
 
@@ -35,11 +39,11 @@ const Tab = createBottomTabNavigator<TabNavigatorParams>();
 
 // A bottom tab navigator to hold important screens that can be accessed directly from most other screens
 // For styling, see https://reactnavigation.org/docs/tab-based-navigation#customizing-the-appearance
-const TabNavigator = ({ setUser }): JSX.Element => {
+const TabNavigator = (): JSX.Element => {
   const [shouldDisplay, setShouldDisplay] = React.useState(true);
 
   // Constants for rendering TabNavigator conditionally
-  const INITIAL_TAB_ROUTE = "Home";
+  const INITIAL_TAB_ROUTE = "Rating";
   const navigation = useNavigation();
   const route = useRoute();
   const tabHiddenRoutes = ["Recording"];
@@ -96,19 +100,19 @@ const TabNavigator = ({ setUser }): JSX.Element => {
               iconName = focused ? 'home_filled' : 'home_outline';
               break;
             case 'Gallery':
-              iconName = focused ? 'grid_rounded_filled' : 'grid_rounded_outline';
+              iconName = focused ? 'gallery_filled' : 'gallery_outline';
               break;
             case "Recording":
-              iconName = focused ? 'add_video' : 'add_video';
+              iconName = focused ? 'add_entry' : 'add_entry';
               break;
             case "Vistas":
-              iconName = focused ? 'eyeball_filled' : 'eyeball_outline';
+              iconName = focused ? 'vistas_filled' : 'vistas_outline';
               break;
-            case "Feedback":
-              iconName = focused ? 'feedback_outline' : 'feedback_outline';  // TODO get custom Feedback icons from Greg
+            case "Pathways":
+              iconName = focused ? 'S_with_3_dots' : 'S_with_3_dots';
               break;
             default:
-              iconName = "not_found"
+              iconName = 'feedback_outline';  // "not_found"
               break;
           }
           return <CustomIcon name={iconName} size={size} color={color} />;
@@ -122,15 +126,15 @@ const TabNavigator = ({ setUser }): JSX.Element => {
       <Tab.Screen name="Gallery" component={Gallery} options={{ headerShown: false }} />
 
       {/* For unmount behavior: https://github.com/react-navigation/react-navigation/issues/6915#issuecomment-1038851130 */}
-      <Tab.Screen 
-        name="Recording" 
-        component={Recording} 
-        options={{ headerShown: false, unmountOnBlur: true }} 
-        listeners={({navigation}) => ({blur: () => navigation.setParams({screen: undefined})})} 
+      <Tab.Screen
+        name="Recording"
+        component={Recording}
+        options={{ headerShown: false, unmountOnBlur: true }}
+        listeners={({navigation}) => ({blur: () => navigation.setParams({screen: undefined})})}
       />
 
       <Tab.Screen name="Vistas" component={Vistas} options={{ headerShown: false }} />
-      <Tab.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
+      <Tab.Screen name="Pathways" component={Pathways} options={{ headerShown: false }} />
     </Tab.Navigator>
   )
 }
@@ -141,15 +145,16 @@ const TabNavigator = ({ setUser }): JSX.Element => {
 // NOTE: we are using native-stack, which offers better performance but is less customizable.
 // Consider changing to just default Stack for separately animated screens, for example
 // Also see https://github.com/software-mansion/react-native-screens/issues/380 for better navigation UX
-const AppNavigator = ({ setUser }): JSX.Element => {
+const AppNavigator = (): JSX.Element => {
   return (
     <Stack.Navigator initialRouteName="TabNavigator" screenOptions={{ animation: 'none' }}>
-      <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
-      <Stack.Group screenOptions={{ animation: 'fade' }}>
-        <Stack.Screen name="Player" component={Player} options={{ headerShown: false }}/>
-      </Stack.Group>
-      <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
-      <Stack.Screen name="Transcript" component={Transcript} options={{ headerShown: false }} />
+      <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false  }} />
+      <Stack.Screen name="Player" component={Player} options={{ headerShown: false, gestureEnabled: false }}/>
+      <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false, gestureEnabled: false }} />
+      <Stack.Screen name="Transcript" component={Transcript} options={{ headerShown: false, gestureEnabled: false }} />
+      <Stack.Screen name="Pathways" component={Pathways} options={{ headerShown: false }} />
+      <Stack.Screen name="PathwayFull" component={PathwayFull} options={{ headerShown: false }} />
+      <Stack.Screen name="PathwaysPrompt" component={PathwaysPrompt} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }

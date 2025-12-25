@@ -3,11 +3,11 @@ import { StyleSheet, View, Image, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
-import { containers, dimensions, text, spacings, colors } from '../styles';
+import { dimensions, text, spacings, colors } from '../styles';
 
 import SignInButton from '../components/SignInButton';
 
-const Landing = ({ navigation }: any): JSX.Element => { 
+const Landing = ({ navigation }: any): JSX.Element => {
   const beginOnboarding = () => {
     navigation.navigate('OnBoarding1');
   }
@@ -26,23 +26,23 @@ const Landing = ({ navigation }: any): JSX.Element => {
         <View style={styles.formContainer}>
           <View style={styles.titleContainer}>
             {/* <Text style={styles.title}>Monolog</Text> */}
-            <Image style={styles.brandImage} source={require('../../assets/img/monist_logo_full.png')} />
-            <Text style={styles.subTitle}>Improve your mental fitness one journal entry at a time.</Text>
+            <Image style={styles.brandImage} source={require('../../assets/img/monolog_logo_full.png')} />
+            <Text style={styles.subTitle}>Think Out Loud</Text>
           </View>
 
           <View style={styles.buttonContainer}>
             <SignInButton text={"Get started"} onPress={beginOnboarding} background={colors.BACKGROUND}></SignInButton>
           </View>
 
-          {/* Disable Login Path for Alpha Release 
+          {/* Disable Login Path for Alpha Release
           <View style={styles.forgotPasswordContainer}>
             <Text style={styles.forgotPassword}>Already a member? </Text>
             <Pressable onPress={navigateToLogin} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
               <Text style={styles.linkText}>Sign In</Text>
             </Pressable>
-          </View> 
+          </View>
           */}
-        </View> 
+        </View>
       </LinearGradient>
       </SafeAreaBottom>
     </>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     padding: spacings.MEDIUM
   },
   fieldContainer: {
-    
+
     padding: spacings.MEDIUM
   },
   fieldLabel: {
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     width: dimensions.width,
     height: dimensions.height / 12,
     resizeMode: 'contain',
-    
+
   },
 })
 

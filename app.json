@@ -1,15 +1,13 @@
 {
   "expo": {
-    "name": "Monist",
-    "slug": "monist",
-    "version": "1.0.4",
+    "name": "Monolog",
+    "slug": "monolog",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
-    
     "splash": {
-      "image": "./assets/img/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "transparent"
+      "backgroundColor": "#000000"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -29,15 +27,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.monist.monist"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.monolog.monolog"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.monist.monist"
+      "package": "com.monolog.monolog"
     },
     "web": {
       "favicon": "./assets/img/favicon.png"

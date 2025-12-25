@@ -32,7 +32,7 @@ const FullPageSpinner = ({ size }) => {
     // Run on mount
     const timeout = setTimeout(():void => {
       console.log("[DEBUG] Timeout began")
-      setMessage('Please make sure you have the latest version of the app and that you have allowed all permissions that the app requests. If you\'re having trouble, please try reloading the app. If that doesn\'t help, feel free to reach out to monist@monist.me with a bug report. You can also opt to delete your data using the button below and reload the app. If that still doesn\'t resolve your issues, please delete and reinstall the app. You will lose your saved logs, however.');
+      setMessage('Please make sure you have the latest version of the app and that you have allowed all permissions that the app requests. Please note that the app may not work as expected on Mac or iPad devices. If you\'re still having trouble, please try closing and re-opening the app. You can also opt to delete your data using the button below and reload the app. If that still doesn\'t resolve your issues, please delete and reinstall the app. You will lose your saved logs, however. For further questions, feel free to reach out to usemonolog@gmail.com with a bug report.');
     }, 5000);
 
     // Unmount cleanup, clear timeout if component unmounted
@@ -52,20 +52,20 @@ const FullPageSpinner = ({ size }) => {
     >
       <ActivityIndicator size={size} />
       {
-        message 
-        ? 
+        message
+        ?
         <>
           <GoBack />
-          
+
           <View style={{ marginVertical: spacings.LARGE }}>
-            <Text style={styles.messageText}>{message}</Text> 
+            <Text style={styles.messageText}>{message}</Text>
           </View>
 
           <View style={{ marginVertical: spacings.LARGE }}>
             <ActionButton callback={deleteDataAlert} text={"Delete Data"}/>
           </View>
         </>
-        : 
+        :
         null
       }
     </LinearGradient>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: dimensions.width,
-    height: dimensions.height, 
+    height: dimensions.height,
     position: 'absolute'
   },
   messageText: {

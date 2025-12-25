@@ -9,17 +9,27 @@ import CustomIcon from './CustomIcon';
 
 // A container with clickable text to navigate back
 type Props = {
-  text?: string,
   callback?: any
 }
 
+// This component can take an optional callback function
+// But by default, will simply call navigation.goBack()
+// If going back is not possible, this component will not be returned at all
 const GoBack = ({ callback }: Props) => {
   const navigation = useNavigation();
 
+  const navigateBack = () => {
+    navigation.goBack();
+  }
+
   return (
-    <TouchableOpacity style={styles.goBackContainer} onPress={callback ? callback : () => navigation.goBack()} hitSlop={spacings.hitSlopLarge}>
-      <CustomIcon style={styles.backIcon} name='back_arrow' />
+    navigation.canGoBack()
+    ?
+    <TouchableOpacity style={styles.goBackContainer} onPress={callback ? callback : navigateBack} hitSlop={spacings.hitSlopLarge}>
+      <CustomIcon style={styles.backIcon} name='back_arrow_no_circle' />
     </TouchableOpacity>
+    :
+    null
   )
 }
 
