@@ -25,12 +25,14 @@ During recording, the app uses speech-to-text technology to generate a transcrip
 
 ## Vistas
 
-![App Demo](assets/img/appStore/monist_gif.gif)
-
 After logging three video entries, the user gains access to **Vistas**: Monolog’s analytics and insights feature.
 
 * **Word Chart:** Keeps track of how many times you mention a word or phrase in your entries, and displays these frequent words back to you, prompting the user to acknowledge repeating stressors.
 * **Mood Tracker:** Tallies how you’re feeling after each entry, displaying a graph of your highs and lows from the past week.
+
+<p align="center">
+  <img src="assets/img/appStore/monist_gif.gif" width="80%" height="80%" />
+</p>
 
 ## Privacy
 
