@@ -2,10 +2,24 @@ import React from 'react';
 
 import { writeUserData, readUserData } from '../utils/localStorageUtils';
 
-const UserContext = React.createContext(undefined!);
+type User = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  pronouns: string;
+}
 
-export const UserProvider: React.FC = ({children}) => {
-  const [user, setUser] = React.useState({});
+type UserContextValue = {
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  isLoading: boolean;
+};
+
+const UserContext = React.createContext<UserContextValue | undefined>(undefined);
+
+export const UserProvider: React.FC = ({ children }) => {
+  const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   // 1. First, fetch user from local db, just do this once
@@ -27,8 +41,7 @@ export const UserProvider: React.FC = ({children}) => {
   // 2. Whenever user is updated, write it to local database
   React.useEffect(() => {
     const wrapper = async () => {
-      if (user && user!=={} && Object.keys(user).length > 0) {
-        // console.log("Writing updated non-empty user to db: ", user?.email);
+      if (user) {
         writeUserData(user);
         setIsLoading(false);
       }
