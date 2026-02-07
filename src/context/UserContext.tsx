@@ -8,6 +8,7 @@ type User = {
   lastName: string;
   gender: string;
   pronouns: string;
+  onboarded?: boolean;
 }
 
 type UserContextValue = {

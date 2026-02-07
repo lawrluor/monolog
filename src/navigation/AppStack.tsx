@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {useNavigation, useRoute, getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import { useNavigation, useRoute, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -20,7 +20,7 @@ type StackNavigatorParams = {
   "Transcript": undefined,
   "Pathways": undefined,
   "PathwayFull": undefined,
-  "PathwaysPrompt" : undefined,
+  "PathwaysPrompt": undefined,
   "TabNavigator": undefined
 }
 
@@ -39,7 +39,7 @@ const Tab = createBottomTabNavigator<TabNavigatorParams>();
 
 // A bottom tab navigator to hold important screens that can be accessed directly from most other screens
 // For styling, see https://reactnavigation.org/docs/tab-based-navigation#customizing-the-appearance
-const TabNavigator = (): JSX.Element => {
+const TabNavigator = () => {
   const [shouldDisplay, setShouldDisplay] = React.useState(true);
 
   // Constants for rendering TabNavigator conditionally
@@ -63,7 +63,7 @@ const TabNavigator = (): JSX.Element => {
   // Reference: https://stackoverflow.com/a/65529902
   // Read more: https://reactnavigation.org/docs/screen-options-resolution/#setting-parent-screen-options-based-on-child-navigators-state
   React.useLayoutEffect(() => {
-    if (tabHiddenRoutes.includes(routeName)){
+    if (tabHiddenRoutes.includes(routeName)) {
       setShouldDisplay(false);
     } else {
       setShouldDisplay(true);
@@ -130,7 +130,7 @@ const TabNavigator = (): JSX.Element => {
         name="Recording"
         component={Recording}
         options={{ headerShown: false, unmountOnBlur: true }}
-        listeners={({navigation}) => ({blur: () => navigation.setParams({screen: undefined})})}
+        listeners={({ navigation }) => ({ blur: () => navigation.setParams({ screen: undefined }) })}
       />
 
       <Tab.Screen name="Vistas" component={Vistas} options={{ headerShown: false }} />
@@ -145,11 +145,11 @@ const TabNavigator = (): JSX.Element => {
 // NOTE: we are using native-stack, which offers better performance but is less customizable.
 // Consider changing to just default Stack for separately animated screens, for example
 // Also see https://github.com/software-mansion/react-native-screens/issues/380 for better navigation UX
-const AppNavigator = (): JSX.Element => {
+const AppNavigator = () => {
   return (
     <Stack.Navigator initialRouteName="TabNavigator" screenOptions={{ animation: 'none' }}>
-      <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false  }} />
-      <Stack.Screen name="Player" component={Player} options={{ headerShown: false, gestureEnabled: false }}/>
+      <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Player" component={Player} options={{ headerShown: false, gestureEnabled: false }} />
       <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false, gestureEnabled: false }} />
       <Stack.Screen name="Transcript" component={Transcript} options={{ headerShown: false, gestureEnabled: false }} />
       <Stack.Screen name="Pathways" component={Pathways} options={{ headerShown: false }} />

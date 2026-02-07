@@ -1,13 +1,16 @@
 import React from 'react';
-import { FullPageSpinner } from '../components/Spinner';
 
 import UserContext from '../context/UserContext';
+
+import { FullPageSpinner } from '../components/Spinner';
 
 // Initial screen in the mainNavigator, which App loads
 // HANDLES: reading user from Context and checking if user exists/logged in,
 // then forwarding to either AppStack or AuthStack
 const AuthLoading = ({ navigation }: any) => {
-  const { user } = React.useContext(UserContext);
+  const userContext = React.useContext(UserContext);
+  if (!userContext) throw new Error('AuthLoading must be used within a UserProvider');
+  const { user } = userContext;
 
   const authenticate = async () => {
     if (user && user?.onboarded) {
@@ -33,9 +36,7 @@ const AuthLoading = ({ navigation }: any) => {
     authenticate();
   }, [user]);
 
-  return (
-    <FullPageSpinner size="large" />
-  );
+  return <FullPageSpinner size="large" />
 }
 
 export default AuthLoading;
