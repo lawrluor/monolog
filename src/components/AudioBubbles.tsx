@@ -82,11 +82,9 @@ const AudioBubble = ({ shouldBegin }: { shouldBegin: boolean }) => {
     }
 
     return () => {
-      // TODO: stop animations and reset states?
       size.stopAnimation();
       opacity.stopAnimation();
     }
-
   }, [])
 
   // animation transform
