@@ -1,35 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
 
 import { spacings, icons, colors } from '../styles';
-
 import CustomIcon from './CustomIcon';
 
-// A container with clickable text to navigate back
 type Props = {
-  text?: string,
-  callback?: any
+  callback?: () => void;
 }
 
-const GoForward = ({ callback }: Props, styleProp:Props) => {
-  const navigation = useNavigation();
-
+// A container with clickable text to navigate forward
+const GoForward = ({ callback }: Props) => {
   return (
     <TouchableOpacity style={styles.goForwardContainer} onPress={callback} hitSlop={spacings.hitSlopLarge}>
       <CustomIcon style={styles.forwardIcon} name='forward_arrow_no_circle' />
-    </TouchableOpacity>
-  )
-}
-
-// Optional: Text-based rather than icon based
-const GoForwardText = ({ text, callback }: Props) => {
-  const navigation = useNavigation();
-
-  return (
-    <TouchableOpacity style={styles.goForwardContainer} onPress={callback} hitSlop={spacings.hitSlopLarge}>
-      <Text style={styles.goForwardText}>{text || "Forward"}</Text>
     </TouchableOpacity>
   )
 }

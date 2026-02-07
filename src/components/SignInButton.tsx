@@ -5,14 +5,14 @@ import { colors, text, spacings, dimensions, sizes } from '../styles';
 
 type Props = {
   text?: string,
-  background: string, 
-  onPress: () => void;  // TODO: how to interpret the many different return values of a function passed to a button?
+  background: string,
+  onPress: () => void;
   children: any
 }
 
-const SignInButton = ({ children, text, background, onPress }: Props): JSX.Element => {
+const SignInButton = ({ children, text, background, onPress }: Props) => {
   return (
-    <Pressable onPress={onPress} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+    <Pressable onPress={onPress} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
       <View style={[styles.container, { backgroundColor: background }]}>
         {children}
         <Text style={styles.text}>{text}</Text>
@@ -21,12 +21,12 @@ const SignInButton = ({ children, text, background, onPress }: Props): JSX.Eleme
   )
 }
 
-export const ActionButton = ({ callback, text }: any) => {
+export const ActionButton = ({ callback, text }: { callback: () => void; text: string }) => {
   return (
-    <SignInButton 
+    <SignInButton
       background={colors.HIGHLIGHT}
       onPress={callback}
-    > 
+    >
       <Text style={[styles.text, { color: colors.BACKGROUND }]}>{text}</Text>
     </SignInButton>
   )
@@ -44,9 +44,9 @@ const styles = StyleSheet.create({
     width: sizes.SCREEN_WIDTH_66,
     aspectRatio: 5 / 1,
     padding: spacings.TINY,
-    margin: spacings.SMALL, 
+    margin: spacings.SMALL,
     shadowColor: '#000000',
-    shadowOffset: { width: 5, height: 5},
+    shadowOffset: { width: 5, height: 5 },
     shadowOpacity: 0.2
   },
   text: {

@@ -1,22 +1,27 @@
 import React from 'react';
-
-import { Picker } from '@react-native-picker/picker';
-
 import { StyleSheet, Text } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 import { text } from '../styles';
 
-const DropDown = ({ title, options, selectedValue, setSelectedValue }: any): JSX.Element => {
+type Props = {
+  title: string;
+  options: string[];
+  selectedValue: string;
+  setSelectedValue: (itemValue: string) => void;
+}
+
+const DropDown = ({ title, options, selectedValue, setSelectedValue }: Props) => {
   return (
     <>
       <Text style={styles.pickerTitle}>{title}</Text>
       <Picker
         selectedValue={selectedValue}
-        onValueChange={(itemValue):void => setSelectedValue(itemValue)}
+        onValueChange={(itemValue) => setSelectedValue(itemValue)}
         style={styles.picker}
         itemStyle={styles.pickerItem}
       >
-        {options.map((option: any, key: number) => <Picker.Item key={key} label={option.label} value={option.value} />)}
+        {options.map((option: any, idx: number) => <Picker.Item key={idx} label={option.label} value={option.value} />)}
       </Picker>
     </>
   )

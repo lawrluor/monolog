@@ -3,8 +3,8 @@ import { Animated } from 'react-native';
 
 // See: https://reactnativeforyou.com/react-native-animation-tutorials-how-to-create-looping-animations-in-react-native/
 // Reference: https://reactnative.dev/docs/animated#sequence
-const PulseAnimation = ({ children }: any) => {
-  const pulseAnimation = React.useRef(new Animated.Value(1)).current  // Initial value for opacity: 0
+const PulseAnimation = ({ children }: { children: React.ReactNode }) => {
+  const pulseAnimation = React.useRef(new Animated.Value(1)).current;
 
   React.useEffect(() => {
     Animated.loop(

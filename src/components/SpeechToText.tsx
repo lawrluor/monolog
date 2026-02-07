@@ -1,54 +1,62 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import Voice from '@react-native-voice/voice';
+import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 
 import VideoCaption from './VideoCaption';
 
 import UserContext from '../context/UserContext';
 
+type Props = {
+  isRecording: boolean;
+  getTranscriptResult: (result: string[]) => void;
+}
+
 // TODO: Inherit stop/start state from parent (Recording) which toggles these states too.
-const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element => {
-  const { user, setUser } = React.useContext(UserContext);
+const SpeechToText = ({ isRecording, getTranscriptResult }: Props) => {
+  const userContext = React.useContext(UserContext);
+  if (!userContext) throw new Error("UserContext must be used within a provider");
+
+  const { user, setUser } = userContext;
 
   const [result, setResult] = React.useState('');
-  const [textWithTimestamps, setTextWithTimestamps] = React.useState({});  // Not currently used
+  const [textWithTimestamps, setTextWithTimestamps] = React.useState(new Map());
   const [recordingStartTime, setRecordingStartTime] = React.useState(0);
   const [isLoading, setLoading] = React.useState(false);
 
-  const onSpeechRecognizedHandler = (e: any) => {
+  const onSpeechRecognizedHandler = () => {
     // console.log("SpeechToText.tsx: speech recognized", e);
   }
 
-  const onSpeechStartHandler = (e: any) => {
+  const onSpeechStartHandler = () => {
     // console.log("SpeechToText.tsx: speech start handler", e);
   }
-  const onSpeechEndHandler = (e: any) => {
+
+  const onSpeechEndHandler = () => {
     setLoading(false);
-    console.log("SpeechToText.tsx: speech stop handler", e);
   }
 
-  const onSpeechResultsHandler = (e: any) => {
-    let text = e.value[0];
+  const onSpeechResultsHandler = (e: SpeechResultsEvent) => {
+    let text = e?.value?.[0] ?? '';
     updateText(text);
-    // console.log("SpeechToText.tsx: speech result handler", e);
   }
 
   const startRecording = async () => {
     setRecordingStartTime(Date.now());
     setLoading(true);
     try {
-      await Voice.start('en-US', {EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 3000});
+      await Voice.start('en-US', { EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 3000 });
     } catch (error) {
       console.log("SpeechToText.tsx: error while starting", error);
     }
   }
-  
+
   // Wrapper for stopRecording, then navigate, to allow us to use the logic separately.
   // Called when the user would want to FINISH the recording process, then move on.
   const finishRecording = async () => {
     await stopRecording();
-    getTranscriptResult(result.split(' '));  // updates parent state in Recording before it navigates to Rating
+    const resultAsString = result.split(' ');
+    getTranscriptResult(resultAsString);  // updates parent state in Recording before it navigates to Rating
   }
 
   const stopRecording = async () => {
@@ -63,26 +71,17 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
   // TODO: finish storing the text with timestamps object
   const updateText = (newText: string) => {
     const timeAtUpdate = Date.now() - recordingStartTime;
-    
-    let stateCopy = textWithTimestamps;
-    stateCopy[`${timeAtUpdate}`] = newText;
-    setTextWithTimestamps(stateCopy);
-    
-    // console.log(textWithTimestamps);
-    // {
-    //   '1645040443963': 'But yeah I feel like yeah you don\'t you ',
-    //   '1645040444062': 'But yeah I feel like yeah you don\'t you shouldn\'t',
-    //   '1645040444321': 'But yeah I feel like yeah you don\'t you shouldn\'t just',
-    // }
 
-    // console.log('result', result);
+    let stateCopy = new Map(textWithTimestamps);
+    stateCopy.set(String(timeAtUpdate), newText);
+    setTextWithTimestamps(stateCopy);
     setResult(newText);
   }
 
   // Setup: Links the respective user-defined handler functions to call when specific Voice events occur.
   React.useEffect(() => {
     setLoading(true);
-    Voice.onSpeechStart = onSpeechStartHandler; 
+    Voice.onSpeechStart = onSpeechStartHandler;
     Voice.onSpeechRecognized = onSpeechRecognizedHandler;
     Voice.onSpeechEnd = onSpeechEndHandler;
     Voice.onSpeechResults = onSpeechResultsHandler;
@@ -98,16 +97,16 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
   // Immediately get permissions from the user, just one time.
   // Once permissions are granted, we can set them. 
   // TODO: Try to set permissions through a callback in this component, 
-      // but for now, we will set user data after they finish recording
-      // This is because they can't have recorded without granting speech-to-text permission
+  // but for now, we will set user data after they finish recording
+  // This is because they can't have recorded without granting speech-to-text permission
   React.useEffect(() => {
     const wrapper = async () => {
       if (!user || !user.speechToTextPermission) {
         // returns 1 if available and permission granted, 0 if not
-        let result = await Voice.isAvailable(); 
+        let result = await Voice.isAvailable();
 
         // Merge old user object with new fields
-        let updatedUser = {...user, ...{ 'speechToTextPermission': result===1 ? true : false }}; 
+        let updatedUser = { ...user, speechToTextPermission: result === 1 ? true : false };
         setUser(updatedUser);
       }
     }
@@ -132,12 +131,12 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: any): JSX.Element =>
 
   return (
     result && !isLoading
-    ?
-    <View style={styles.container}>
-      <VideoCaption text={result} />
-    </View>
-    :
-    <></>
+      ?
+      <View style={styles.container}>
+        <VideoCaption text={result} />
+      </View>
+      :
+      <></>
   );
 };
 

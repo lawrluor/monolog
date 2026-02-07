@@ -1,17 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
-
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View, Text } from 'react-native';
 
 import SignInButton from './SignInButton';
-
 import { text, spacings, icons, colors } from '../styles';
 
 // This component does not render if user has more than enough videos
 // It also will not render if the user closes the alert
 // These states belong to the parent component, which renders this component conditionally,
-  // and is NOT passed these states as props.
-const NewUserMessage = ({ navigateCallback }: any) => {
+// and is NOT passed these states as props.
+const NewUserMessage = ({ navigateCallback }: { navigateCallback: () => void }) => {
   return (
     <View style={styles.featureContainer}>
       <Text style={styles.featureTitle}>Vistas</Text>

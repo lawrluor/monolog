@@ -1,17 +1,23 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, ImageSourcePropType } from 'react-native';
 import { text, spacings, colors } from '../styles';
 import { pathwaysMap } from '../utils/pathwaysData'
 import ProgressBar from './ProgressBar';
 import UserContext from '../context/UserContext';
-/*
- * @param {string} pathwayName name of the pathway info to be displayed
-*/
-const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
-  const MAX_LEVELS = 10 // Max number of prompts a pathway may contain
-  const { user } = React.useContext(UserContext);
 
-  const getImageURI = (img: any) => {
+type Props = {
+  pathwayName: string;
+  children: React.ReactNode;
+}
+const PathwayCard = ({ pathwayName, children }: Props) => {
+  const MAX_LEVELS = 10;  // Max number of prompts a pathway may contain
+  const userContext = React.useContext(UserContext);
+  if (!userContext) throw new Error('UserContext must be used within a provider');
+
+  const { user } = userContext;
+  if (!user) throw new Error('User not found');
+
+  const getImageURI = (img: ImageSourcePropType) => {
     return Image.resolveAssetSource(img).uri
   }
 
@@ -19,7 +25,7 @@ const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
 
   // If the current pathway exists in the user's data then that means they have started that pathway.
   // If they have started that pathway set the current level or score to their level otherwise it is 0
-  const currentLevel = (pathwayName in user?.pathways) ? user.pathways[pathwayName]['currentLevel'] - 1 : 0;
+  const currentLevel = (pathwayName in user.pathways) ? user.pathways[pathwayName].currentLevel - 1 : 0;
 
   const renderProgressBar = () => {
     if (pathwayName != "New Year's Resolutions") {
@@ -29,13 +35,13 @@ const PathwayCard = ({ children, pathwayName }: any): JSX.Element => {
         </View>
       )
     } else {
-      
+
     }
   }
 
   return (
     <View style={styles.featureContainer}>
-      <Image style={styles.imageHeader} source={{uri: getImageURI(currentPathway.image)}}/>
+      <Image style={styles.imageHeader} source={{ uri: getImageURI(currentPathway.image) }} />
       <Text style={styles.featureTitle}>{pathwayName}</Text>
       {renderProgressBar()}
       {children}

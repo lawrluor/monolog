@@ -1,9 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const ProgressBar = ({ currentProgress, total }: any): JSX.Element => { 
+type Props = {
+  currentProgress: number;
+  total: number;
+}
+
+const ProgressBar = ({ currentProgress, total }: Props) => {
   const progress = Math.floor(currentProgress / total * 100);
-  const MAX_LEVELS = 10 // Maximum number of prompts a pathway may have
+  const MAX_LEVELS = 10;  // Maximum number of prompts a pathway may have
   return (
     <View style={styles.container}>
       <View style={styles.barContainer}>
@@ -11,7 +16,7 @@ const ProgressBar = ({ currentProgress, total }: any): JSX.Element => {
           <View style={[StyleSheet.absoluteFill, styles.progressBarFill, { width: `${progress}%` }]} />
         </View>
       </View>
-      <Text style={styles.percent}>{currentProgress}/{ MAX_LEVELS }</Text>
+      <Text style={styles.percent}>{currentProgress}/{MAX_LEVELS}</Text>
     </View>
   )
 

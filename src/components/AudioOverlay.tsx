@@ -1,19 +1,17 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
-
 import { colors } from '../styles';
 
-const AudioOverlay = ({ children }: any) => {
+const AudioOverlay = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <SafeAreaTop /> 
+      <SafeAreaTop />
 
       <SafeAreaBottom>
-      <LinearGradient
+        <LinearGradient
           // Background Linear Gradient
           colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
           style={styles.container}

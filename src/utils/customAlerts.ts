@@ -34,7 +34,7 @@ export const editProfileAlert = () => {
 }
 
 export const deleteDataAlert = (callback: OptionalCallback = () => { }) => {
-  return Alert.alert(
+  Alert.alert(
     "Delete Data",
     "Delete all your profile data and logs?",
     [

@@ -16,10 +16,15 @@ type SectionData = {
 
 type RecordedSections = Record<string, SectionData>;
 
+type MoodDay = {
+  date: Date;
+  count: number;
+  mood_score: number;
+}
 type MoodData = {
   week: {
     last_updated_secs: number;
-    days: string[];
+    days: MoodDay[];
   }
 };
 

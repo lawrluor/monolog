@@ -3,12 +3,16 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 
 import { colors } from '../styles';
 
-// TODO: Make work on individual screens
-export const SafeAreaContainer = (props) => {
+type SafeAreaType = {
+  transparent?: boolean;
+  children?: any;
+}
+
+export const SafeAreaContainer = (props: SafeAreaType) => {
   return (
     <>
-      <SafeAreaView style={!props.transparent ? styles.safeAreaTop : styles.safeAreaTopTransparent}/>
-      
+      <SafeAreaView style={!props.transparent ? styles.safeAreaTop : styles.safeAreaTopTransparent} />
+
       <SafeAreaView style={!props.transparent ? styles.safeAreaBottom : styles.safeAreaBottomTransparent}>
         {props.children}
       </SafeAreaView>
@@ -16,18 +20,13 @@ export const SafeAreaContainer = (props) => {
   )
 }
 
-interface SafeAreaType {
-  transparent?: boolean;
-  children?: any;
-}
-
-export const SafeAreaTop = ({transparent}: SafeAreaType) => {
+export const SafeAreaTop = ({ transparent }: SafeAreaType) => {
   return (
-    <SafeAreaView style={!transparent ? styles.safeAreaTop : styles.safeAreaTopTransparent}/>
+    <SafeAreaView style={!transparent ? styles.safeAreaTop : styles.safeAreaTopTransparent} />
   )
 }
 
-export const SafeAreaBottom = ({transparent, children}: SafeAreaType) => {
+export const SafeAreaBottom = ({ transparent, children }: SafeAreaType) => {
   // TODO: Selecting between the two safeAreaBottom styles based on the transparent prop seems bugged
   // However, transparent=true is passed as a prop successfully and works in SafeAreaTop
   return (

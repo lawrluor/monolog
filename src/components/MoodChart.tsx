@@ -14,14 +14,33 @@ import { createRatingFromFile } from '../utils/rating';
 
 import { text, spacings, colors } from '../styles';
 
-const MOOD_CHART_SUMMARY =  "Welcome to your Mood Tracker Vista. This widget will display your average mood across all your logs for a given day, over the past week, based on the emojis that you select after recording an entry."
+type MoodDay = {
+  date: Date;
+  count: number;
+  mood_score: number;
+}
+
+type MoodData = {
+  week: {
+    last_updated_secs: number;
+    days: MoodDay[];
+  }
+}
+
+const MOOD_CHART_SUMMARY = "Welcome to your Mood Tracker Vista. This widget will display your average mood across all your logs for a given day, over the past week, based on the emojis that you select after recording an entry."
 const MILLISECONDS_IN_A_WEEK = 604800000;
 const MILLISECONDS_IN_A_DAY = 86400000;
 
-const MoodChart = ({ abridged, callback }: any) => {
-  const { moodData, toggleVideosRefresh } = React.useContext(VideosContext);
+const MoodChart = ({ abridged, callback }: {
+  abridged: boolean;
+  callback: () => void
+}) => {
+  const videosContext = React.useContext(VideosContext);
+  if (!videosContext) throw new Error("VideosContext must be used within a provider");
 
-  const updateMoodMap = (emojiValue, timestampSeconds) => {
+  const { moodData, toggleVideosRefresh } = videosContext as { moodData: MoodData, toggleVideosRefresh: () => Promise<void> };
+
+  const updateMoodMap = (emojiValue: number, timestampSeconds: number) => {
     // Initialize date object for the timestamp in question.
     let dateToUpdate = new Date(0);  // Epoch
     dateToUpdate.setSeconds(timestampSeconds);
@@ -32,7 +51,7 @@ const MoodChart = ({ abridged, callback }: any) => {
     //  b) we insert at the specified counter value.
     let counter = 0;
     while (moodData.week.days.length > 0 && dateToUpdate < moodData.week.days[counter].date &&
-           counter <= moodData.week.days.length - 1) {
+      counter <= moodData.week.days.length - 1) {
       counter += 1;
     }
 
@@ -40,7 +59,7 @@ const MoodChart = ({ abridged, callback }: any) => {
     // Comparisons use DateString() to make date equality easier. Avoids complex
     // timestamp math.
     if (moodData.week.days.length > 0 && moodData.week.days[counter].date.toLocaleDateString() ===
-        dateToUpdate.toLocaleDateString()) {
+      dateToUpdate.toLocaleDateString()) {
       moodData.week.days[counter]["mood_score"] *= moodData.week.days[counter].count;
       moodData.week.days[counter].count++;
       moodData.week.days[counter]["mood_score"] += emojiValue;
@@ -63,7 +82,7 @@ const MoodChart = ({ abridged, callback }: any) => {
   // removes expired video entries from data structure, and updates data
   // structure.
   const initializeMoodTracker = () => {
-    videoTimestamps = []
+    let videoTimestamps: number[] = [];
     FileSystem.readDirectoryAsync(FileSystem.documentDirectory + "videos/")
       .then((files) => {
         // Process most recent files first for efficiency.
@@ -77,8 +96,9 @@ const MoodChart = ({ abridged, callback }: any) => {
         let todaySec = new Date(new Date().toDateString()).getTime() / 1000;
         let lastWeekSec = todaySec - 604800;
         for (const file of files) {
-          let timestamp = file.slice(0,-4)
-          if (parseInt(timestamp) >= lastWeekSec) {
+          const timestampStr = file.slice(0, -4)
+          const timestamp = parseInt(timestampStr, 10);
+          if (timestamp >= lastWeekSec) {
             videoTimestamps.push(timestamp);
             continue;
           }
@@ -87,65 +107,58 @@ const MoodChart = ({ abridged, callback }: any) => {
           break;
         };
 
-        // We don't need to update if we've already accounted for the most
-        // recent video.
-        if (videoTimestamps === moodData.week.last_updated_secs) {
-          return;
-        }
-
         // Clear all week-old data in moodData data structure.
         // Previous filtering is for videos in file system (not yet in DS).
         const clearExpiredMoodData = () => {
           let moodDataList = moodData.week.days;
           while (moodDataList.length > 0 &&
-                 (moodDataList[moodDataList.length - 1].date.getTime() / 1000 <
-                 lastWeekSec)) {
+            (moodDataList[moodDataList.length - 1].date.getTime() / 1000 <
+              lastWeekSec)) {
             moodData.week.days.pop();
           }
-       }
-       clearExpiredMoodData();
+        }
+        clearExpiredMoodData();
 
-       // Update mood chart from early to late since moodData is sorted.
-       videoTimestamps.reverse()
-       for (const timestamp of videoTimestamps) {
-         // This is both the emoji file name and the timeestamp in seconds.
-         createRatingFromFile(generateRatingUri(timestamp))
-             .then((rating) => {
-               updateMoodMap(rating.index, timestamp);
-         }).catch(error => {
-           console.log("MoodChart:createRatingFromFile", error);
-         });  // createRatingFromFile
+        // Update mood chart from early to late since moodData is sorted.
+        videoTimestamps.reverse()
+        for (const timestamp of videoTimestamps) {
+          // This is both the emoji file name and the timeestamp in seconds.
+          createRatingFromFile(generateRatingUri(timestamp.toString()))
+            .then((rating) => {
+              updateMoodMap(rating?.index ?? 0, timestamp);
+            }).catch(error => {
+              console.log("MoodChart:createRatingFromFile", error);
+            });  // createRatingFromFile
         }
       })  // readDirectoryAsync
       .catch(error => {
         console.log("initializeMoodTracker:readDirectoryAsync", error);
       });
   }
+
   React.useEffect((): void => {
     console.log("initializing from MoodChart");
     initializeMoodTracker();
   }, []);
 
   // reverses an array in place between start & end.
-  // [start, end)
-  const revInPlace = (days, start, end) => {
-    while(start < end) {
-        let temp = days[start];
-        days[start] = days[end];
-        days[end] = temp;
-        start++;
-        end--;
+  const revInPlace = (days: string[], start: number, end: number) => {
+    while (start < end) {
+      let temp = days[start];
+      days[start] = days[end];
+      days[end] = temp;
+      start++;
+      end--;
     }
   }
 
   // Rotate in-place efficiently by using reverse in place.
   // https://iq.opengenus.org/reversal-algorithm/
-  const rotateDays = (days, rotations) => {
+  const rotateDays = (days: string[], rotations: number) => {
     revInPlace(days, 0, rotations - 1);
     revInPlace(days, rotations, days.length - 1);
     revInPlace(days, 0, days.length - 1)
   }
-
 
   const renderMoodTracker = () => {
     // Datastructure that contains all data to render.
@@ -170,16 +183,17 @@ const MoodChart = ({ abridged, callback }: any) => {
     // chunk of the line graph. Clips are alternating dashed and not dashed.
     let data = [];  // contains each data point (including hidden points).
     let circleData = [];  // contains only data that should be plotted.
-    let clipIndex = [ [0, -1] ];  // contains clips.
+    let clipIndex = [[0, -1]];  // contains clips.
     for (let i = moodDays.length - 1; i >= 0; i--) {
       // first, detect if there should be a clip.
       // special case first day since instead of comparing against a recorded
       // date, we should compare against today's date..
       if (i == moodDays.length - 1) {
         // Calculate dateDiff from one week from today.
-        let dateDiff = parseInt((moodDays[i].date.getTime() -
-                           (today.getTime() - MILLISECONDS_IN_A_WEEK)) /
-                            MILLISECONDS_IN_A_DAY);
+        let dateDiff = Math.floor((moodDays[i].date.getTime() -
+          (today.getTime() - MILLISECONDS_IN_A_WEEK)) /
+          MILLISECONDS_IN_A_DAY);
+
         if (dateDiff > 0) {
           // The first video was not taken on the same day as the start of the
           // window. We need to create a clip.
@@ -212,8 +226,8 @@ const MoodChart = ({ abridged, callback }: any) => {
           clipIndex.push([data.length, -1]);
         }
       } else if (i < moodDays.length - 1) {
-        let dateDiff = parseInt((moodDays[i].date.getTime() -
-                       moodDays[i + 1].date.getTime()) / MILLISECONDS_IN_A_DAY);
+        let dateDiff = Math.floor((moodDays[i].date.getTime() -
+          moodDays[i + 1].date.getTime()) / MILLISECONDS_IN_A_DAY);
         // We found a skipped day. We need to add a clip and compute mood
         // differences.
         if (dateDiff > 1) {
@@ -228,7 +242,7 @@ const MoodChart = ({ abridged, callback }: any) => {
           // skipped.
           let clipCounter = 0;
           let moodDiff = moodDays[i].mood_score -
-                         moodDays[i + 1].mood_score;
+            moodDays[i + 1].mood_score;
           let slope = moodDiff / dateDiff;
           let previousMood = moodDays[i + 1].mood_score;
           while (clipCounter < dateDiff - 1) {
@@ -250,8 +264,8 @@ const MoodChart = ({ abridged, callback }: any) => {
 
     if (moodDays.length > 0) {
       // One last time, for skipped days at the tail-end of our window.
-      let dateDiff = parseInt((today.getTime() - moodDays[0].date.getTime()) /
-                                   MILLISECONDS_IN_A_DAY);
+      let dateDiff = Math.floor((today.getTime() - moodDays[0].date.getTime()) /
+        MILLISECONDS_IN_A_DAY);
       // We found a skipped day. We need to add a clip and compute mood
       // differences.
       if (dateDiff > 0) {
@@ -281,68 +295,73 @@ const MoodChart = ({ abridged, callback }: any) => {
     }
 
     // Construct Clips svg template given clipIndex.
-    const Clips = ({ x, width }) => (
-      <Defs key={ 'clips' }>
+    const Clips = ({ x }: { x: (index: number) => number }) => (
+      <Defs key={'clips'}>
         {clipIndex.map((elem, index) => (
-          <ClipPath key={index} id={ "clip-path-" + index }>
-            <Rect x={ x(elem[0]) } y={ '0' } width={ x(elem[1]) - x(elem[0]) } height={ '100%' }/>
+          <ClipPath key={index} id={"clip-path-" + index}>
+            <Rect x={x(elem[0])} y={'0'} width={x(elem[1]) - x(elem[0])} height={'100%'} />
           </ClipPath>
         ))}
       </Defs>
     );
 
     // Construct Dashed Lines for each odd clip.
-    let dashedClips = clipIndex.filter((element, index) => {
+    let dashedClips = clipIndex.filter((_, index: number) => {
       return index % 2 === 1;
     });
-    const DashedLines = ({ line }) => (
+
+    const DashedLines = ({ line }: { line: string }) => (
       <>
-      {dashedClips.map((elem, index) => (
-        <Path
-          key={ 'line-' + (2 * index + 1) }
-          d={ line }
-          stroke={ colors.HIGHLIGHT }
-          strokeWidth={ 2 }
-          fill={ 'none' }
-          strokeDasharray={ [ 4, 4 ] }
-          clipPath={ 'url(#clip-path-'+ (2 * index + 1) + ')' }
-        />
-      ))}
+        {dashedClips.map((_, index) => (
+          <Path
+            key={'line-' + (2 * index + 1)}
+            d={line}
+            stroke={colors.HIGHLIGHT}
+            strokeWidth={2}
+            fill={'none'}
+            strokeDasharray={[4, 4]}
+            clipPath={'url(#clip-path-' + (2 * index + 1) + ')'}
+          />
+        ))}
       </>
     );
 
     // Construct Solid Lines for each even clip.
-    let solidClips = clipIndex.filter((element, index) => {
+    let solidClips = clipIndex.filter((_, index) => {
       return index % 2 === 0;
     });
-    const SolidLines = ({ line }) => (
+
+    const SolidLines = ({ line }: { line: string }) => (
       <>
-      {solidClips.map((elem, index) => (
-        <Path
-          key={ 'line-' + (2 * index) }
-          d={ line }
-          stroke={ colors.HIGHLIGHT }
-          strokeWidth={ 2 }
-          fill={ 'none' }
-          clipPath={ 'url(#clip-path-'+ (2 * index) + ')' }
-        />
-      ))}
+        {solidClips.map((_, index) => (
+          <Path
+            key={'line-' + (2 * index)}
+            d={line}
+            stroke={colors.HIGHLIGHT}
+            strokeWidth={2}
+            fill={'none'}
+            clipPath={'url(#clip-path-' + (2 * index) + ')'}
+          />
+        ))}
       </>
     );
 
     // This is a function that runs on each data point of the line graph to
     // create points on the line graph.
-    const Decorator = ({ x, y }) => {
-        return circleData.map((value, index) => (
-            <Circle
-                key={ index }
-                cx={ x(index) }
-                cy={ y(value) }
-                r={ 4 }
-                stroke={ colors.HIGHLIGHT }
-                fill={ colors.HIGHLIGHT }
-            />
-        ))
+    const Decorator = ({ x, y }: {
+      x: (x: number) => number;
+      y: (y: number) => number
+    }) => {
+      return circleData.map((value, index) => (
+        <Circle
+          key={index}
+          cx={x(index)}
+          cy={y(value)}
+          r={4}
+          stroke={colors.HIGHLIGHT}
+          fill={colors.HIGHLIGHT}
+        />
+      ))
     }
 
     return (
@@ -350,16 +369,18 @@ const MoodChart = ({ abridged, callback }: any) => {
         <LineChart
           style={{ height: 200 }}
           data={data}
-          svg={{ stroke: colors.HIGHLIGHT, strokeWidth: 1.8,
-                 clipPath: "url(#clip-path-0)" }}
-          contentInset={{ top: 20, bottom: 20 , left: 20, right: 20}}
-          yMin={ 0.0 }
-          yMax={ 4.0 }
+          svg={{
+            stroke: colors.HIGHLIGHT, strokeWidth: 1.8,
+            clipPath: "url(#clip-path-0)"
+          }}
+          contentInset={{ top: 20, bottom: 20, left: 20, right: 20 }}
+          yMin={0.0}
+          yMax={4.0}
         >
-          <Clips/>
-          <Decorator/>
-          <DashedLines/>
-          <SolidLines/>
+          <Clips />
+          <Decorator />
+          <DashedLines />
+          <SolidLines />
         </LineChart>
 
         <View style={{ marginVertical: spacings.LARGE }}>
@@ -370,7 +391,7 @@ const MoodChart = ({ abridged, callback }: any) => {
           style={{ marginHorizontal: -10 }}
           data={data}
           formatLabel={(value, index) => xaxisMap[index]}
-          contentInset={{ top: 20, bottom: 20 , left: 20, right: 20}}
+          contentInset={{ top: 20, bottom: 20, left: 20, right: 20 }}
           svg={{ fontSize: 14, fill: 'black' }}
         />
       </>
@@ -381,7 +402,8 @@ const MoodChart = ({ abridged, callback }: any) => {
     <>
       <Text style={styles.featureTitle}>Mood Chart</Text>
       {renderMoodTracker()}
-      {abridged ? null : <View style={{ marginVertical: spacings.MEDIUM }}><VistaSummaryText summaryText={MOOD_CHART_SUMMARY} callback={callback}/></View>}
+      {!abridged && <View style={{ marginVertical: spacings.MEDIUM }}>
+        <VistaSummaryText summaryText={MOOD_CHART_SUMMARY} callback={callback} /></View>}
     </>
   )
 }

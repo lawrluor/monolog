@@ -1,17 +1,17 @@
 import React from 'react';
-import { View, Animated, Easing, Pressable, StyleSheet } from 'react-native';
-import Svg, { Defs, RadialGradient, Stop, Circle, Rect, Use } from "react-native-svg";
+import { View, Animated, Easing, StyleSheet } from 'react-native';
+import Svg, { Defs, RadialGradient, Stop, Circle } from "react-native-svg";
 
 import { dimensions } from '../styles';
 
-const MAX_BUBBLE_SIZE = 240;  // largest possible bubble
-const MIN_BUBBLE_SIZE = 120;  // smallest possible bubble
+const MAX_BUBBLE_SIZE = 240;
+const MIN_BUBBLE_SIZE = 120;
 const NUMBER_OF_BUBBLES = 10;
 
 // An individual animated Audio Bubble, with its own individual display states
-const AudioBubble = ({ shouldBegin }: any) => {
+const AudioBubble = ({ shouldBegin }: { shouldBegin: boolean }) => {
   // Helper function: Math.random() to generate range (-0.5, 0.5) then scaled to screen width
-  const generateRandomCoordinates = (): any => {
+  const generateRandomCoordinates = () => {
     const x = (Math.random() - 0.5) * dimensions.width;
     const y = (Math.random() - 0.5) * (dimensions.height * 0.66);  // 2/3 of max distance
     return { x: x, y: y };
@@ -90,7 +90,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
   }, [])
 
   // animation transform
-   // https://stackoverflow.com/questions/62064894/react-native-animated-you-must-specify-exactly-one-property-per-transform-objec
+  // https://stackoverflow.com/questions/62064894/react-native-animated-you-must-specify-exactly-one-property-per-transform-objec
 
   const shadowStyle = {
     shadowColor: 'black',
@@ -100,7 +100,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
   }
 
   const transformStyle = {
-    transform: [{translateX: coordinate.x}, {translateY: coordinate.y}, {scaleX: size}, {scaleY: size}]
+    transform: [{ translateX: coordinate.x }, { translateY: coordinate.y }, { scaleX: size }, { scaleY: size }]
   }
 
   const bubbleSize = {
@@ -123,14 +123,14 @@ const AudioBubble = ({ shouldBegin }: any) => {
           </RadialGradient>
         </Defs>
 
-        <Circle cx = "50%" cy = "50%" r = "50%" fill="url(#gradient)" />
+        <Circle cx="50%" cy="50%" r="50%" fill="url(#gradient)" />
       </Svg>
     )
   }
 
   return (
     <View style={[styles.container, { display: isVisible ? 'flex' : 'none' }]}>
-      <Animated.View style={[ styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity } ]} >
+      <Animated.View style={[styles.bubble, bubbleSize, shadowStyle, transformStyle, { opacity: opacity }]} >
         <SvgCircle />
       </Animated.View>
     </View>
@@ -138,7 +138,7 @@ const AudioBubble = ({ shouldBegin }: any) => {
 }
 
 // shouldBegin is a generalized alias for isRecording
-const AudioBubbles = ({ shouldBegin }: any) => {
+const AudioBubbles = ({ shouldBegin }: { shouldBegin: boolean }) => {
   // create array of size NUMBER_OF_BUBBLES to map through and generate each audio bubble
   const mapArray = [...Array(NUMBER_OF_BUBBLES).keys()];
 

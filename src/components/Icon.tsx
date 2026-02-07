@@ -4,16 +4,16 @@ import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-ico
 import { colors, icons } from '../styles';
 
 type IconProps = {
-  family: string,
-  name: string,
-  size: string,
-  colorUnpressed?: string,
-  colorPressed?: string,
-  onPress: () => void
+  family: 'AntDesign' | 'FontAwesome' | 'MaterialCommunityIcons';
+  name: string;
+  size: string;
+  colorUnpressed?: string;
+  colorPressed?: string;
+  onPress: () => void;
 }
 
 const getIconSize = (size: string) => {
-  switch(size) {
+  switch (size) {
     case "TINY":
       return icons.TINY;
     case "SMALL":
@@ -27,18 +27,17 @@ const getIconSize = (size: string) => {
   }
 }
 
+// Returns an Icon with pressable props
 const renderIconFamily = (pressed: boolean, props: IconProps) => {
-  console.log(pressed, props.family)
-  // Returns an Icon with pressable props
-  switch(props.family) {
+  switch (props.family) {
     case "AntDesign":
-      return <AntDesign name={props.name} style={[getIconSize(props.size), { color: pressed ? colors.BACKGROUND : colors.HIGHLIGHT } ]} />
+      return <AntDesign name={props.name as keyof typeof AntDesign.glyphMap} style={[getIconSize(props.size), { color: pressed ? colors.BACKGROUND : colors.HIGHLIGHT }]} />
     case "FontAwesome":
-      return <FontAwesome name={props.name} style={[getIconSize(props.size), { color: pressed ? colors.BACKGROUND : colors.HIGHLIGHT } ]} />
+      return <FontAwesome name={props.name as keyof typeof FontAwesome.glyphMap} style={[getIconSize(props.size), { color: pressed ? colors.BACKGROUND : colors.HIGHLIGHT }]} />
     case "MaterialCommunityIcons":
-      return <MaterialCommunityIcons name={props.name} style={[getIconSize(props.size), { color: pressed ? colors.BACKGROUND : colors.HIGHLIGHT } ]} />
+      return <MaterialCommunityIcons name={props.name as keyof typeof MaterialCommunityIcons.glyphMap} style={[getIconSize(props.size), { color: pressed ? colors.BACKGROUND : colors.HIGHLIGHT }]} />
     default:
-      return "";
+      return null;
   }
 }
 

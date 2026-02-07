@@ -1,20 +1,17 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
 
 import { spacings, icons, colors } from '../styles';
-
 import CustomIcon from './CustomIcon';
 
-// A container with clickable text to navigate back
 type Props = {
-  callback?: any
+  callback?: () => void;
 }
 
-// This component can take an optional callback function
+// Can take an optional callback function
 // But by default, will simply call navigation.goBack()
-// If going back is not possible, this component will not be returned at all
+// If going back is not possible, this component will not be be rendered
 const GoBack = ({ callback }: Props) => {
   const navigation = useNavigation();
 
@@ -22,24 +19,13 @@ const GoBack = ({ callback }: Props) => {
     navigation.goBack();
   }
 
+  if (!navigation.canGoBack()) {
+    return null;
+  }
+
   return (
-    navigation.canGoBack()
-    ?
     <TouchableOpacity style={styles.goBackContainer} onPress={callback ? callback : navigateBack} hitSlop={spacings.hitSlopLarge}>
       <CustomIcon style={styles.backIcon} name='back_arrow_no_circle' />
-    </TouchableOpacity>
-    :
-    null
-  )
-}
-
-// Optional: Text-based rather than icon based
-const GoBackText = ({ text }: Props) => {
-  const navigation = useNavigation();
-
-  return (
-    <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()} hitSlop={spacings.hitSlopLarge}>
-      <Text style={styles.goBackText}>{text || "Back"}</Text>
     </TouchableOpacity>
   )
 }
