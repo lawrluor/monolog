@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { spacings, icons, colors } from '../styles';
@@ -15,16 +15,10 @@ type Props = {
 const GoBack = ({ callback }: Props) => {
   const navigation = useNavigation();
 
-  const navigateBack = () => {
-    navigation.goBack();
-  }
-
-  if (!navigation.canGoBack()) {
-    return null;
-  }
+  if (!navigation.canGoBack()) return null;
 
   return (
-    <TouchableOpacity style={styles.goBackContainer} onPress={callback ? callback : navigateBack} hitSlop={spacings.hitSlopLarge}>
+    <TouchableOpacity style={styles.goBackContainer} onPress={callback ? callback : () => navigation.goBack()} hitSlop={spacings.hitSlopLarge}>
       <CustomIcon style={styles.backIcon} name='back_arrow_no_circle' />
     </TouchableOpacity>
   )

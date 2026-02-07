@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Pressable  } from 'react-native';
-import { Audio, Video } from 'expo-av';
+import { StyleSheet, View, Pressable } from 'react-native';
+import { Audio, Video, type PlaybackStatus } from 'expo-av';
 
 import { FullPageSpinner } from './Spinner';
 
@@ -12,19 +12,19 @@ type Props = {
   showVideo: boolean,
   videoUri: string,
   isPlaying: boolean,
-  setIsPlaying: any,
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
 // showVideo is a string that determines whether AudioOverlay.tsx is displayed
 // over the video.
 const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): JSX.Element => {
-  const video = React.useRef(null);
+  const video = React.useRef<Video>(null);
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);  // TODO: set loading handling
-  const [status, setStatus] = React.useState({'isPlaying': false});  // TODO: set props for status object
+  const [status, setStatus] = React.useState({ 'isPlaying': false });  // TODO: set props for status object
 
   const togglePlay = () => {
-    status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
+    status.isPlaying ? video?.current?.pauseAsync() : video?.current?.playAsync();
     setIsPlaying(!isPlaying);
   }
 
@@ -32,11 +32,10 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
   const resetRecordingAudio = async () => {
     const recording = new Audio.Recording();
     try {
-      console.log("Resetting recording");
       await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
       await recording.stopAndUnloadAsync()
     } catch (error) {
-      console.log("err resetting recording", error);
+      console.error("Error resetting recording", error);
     }
   }
 
@@ -70,45 +69,24 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
 
       await Audio.setIsEnabledAsync(true);
 
-
-      if (video && video.current) {
-        let status = await video.current.getStatusAsync();
-        console.log("status", status);
-        console.log("-----2. VideoPlayer: audio loaded, now playing video");
-        await video.current.loadAsync({ uri: videoUri, volume: 1.0 });
+      if (video?.current) {
+        await video.current.loadAsync({ uri: videoUri });
         await video.current.playAsync();
-
       }
     }
 
     setAudioModes();
 
-    // return () => {
-    //   console.log("unmounting video player");
-    //   video.current.stopAsync()
-    //     .then()
-    //     .catch((err: any) => {
-    //       console.log("[ERROR] VideoPlayer: useEffect", err);
-    //     });
-
-    //   video.current.unloadAsync()
-    //     .then()
-    //     .catch((err: any) => {
-    //       console.log("[ERROR] VideoPlayer: useEffect", err);
-    //     });
-    // }
-
     return () => {
-      console.log("unmounting VideoPlayer");
       // crucial line: allows us to unmount audio for bug-free recording
       Audio.setIsEnabledAsync(false);
 
       const unmount = async () => {
         try {
-          await video.current.stopAsync();
-          await video.current.unloadAsync();
-        } catch(err: any) {
-          console.log("[ERROR] VideoPlayer.tsx:useEffect", err)
+          await video?.current?.stopAsync();
+          await video?.current?.unloadAsync();
+        } catch (err: Error | unknown) {
+          console.error("[ERROR] VideoPlayer.tsx:useEffect", err)
         }
       }
 
@@ -116,11 +94,11 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
     }
   }, []);
 
-  const handlePlaybackStatusUpdate = (status: any) => {
+  const handlePlaybackStatusUpdate = (status: PlaybackStatus) => {
     // Manual looping set: this is because setting prop isLooping in Video component directly causes freezing.
     // Reference: https://github.com/expo/expo/issues/3488
     if (status.didJustFinish && !status.isLooping) {
-      if (video && video.current) {
+      if (video?.current) {
         video.current.replayAsync();
         video.current.setIsLoopingAsync(true);
       }
@@ -132,30 +110,21 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
   // We render AudioOverlay if we should not show the video.
   const renderAudioOverlay = (showVideo: boolean) => {
     return (
-      showVideo
-      ?
-      <></>
-      :
+      showVideo &&
       <View style={styles.audioOverlayContainer}>
         <AudioOverlay>
-        {
-          isPlaying
-          ?
-          <AudioBubbles shouldBegin={isPlaying} />
-          :
-          <></>
-        }
+          {isPlaying && <AudioBubbles shouldBegin={isPlaying} />}
         </AudioOverlay>
-
       </View>
     )
   }
 
   return (
     <>
-      <View style={[styles.container, { display: isLoading || !status?.isLoaded ? 'none' : 'flex'}]}>
+      <View style={[styles.container, { display: isLoading ? 'none' : 'flex' }]}>
         <Pressable onPress={togglePlay}>
           {renderAudioOverlay(showVideo)}
+
           <Video
             ref={video}
             shouldPlay
@@ -169,13 +138,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
         </Pressable>
       </View>
 
-      {
-        isLoading || !(status?.isLoaded)
-        ?
-        <FullPageSpinner size="large" />
-        :
-        null
-      }
+      {isLoading && <FullPageSpinner size="large" />}
     </>
   );
 }
@@ -201,27 +164,27 @@ const styles = StyleSheet.create({
   }
 });
 
-  // This useEffect is not currently used, but will handle sound not playing properly.
-  // Keep for now
-  // useEffect(() => {
-  //   Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+// This useEffect is not currently used, but will handle sound not playing properly.
+// Keep for now
+// useEffect(() => {
+//   Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
 
-    // Tricks to fix that the audio doesn't work even if we set the configuration on iOS: `playsInSilentModeIOS`
-    // See: https://github.com/expo/expo/issues/7485#issuecomment-852221060
-  //   if (Platform.OS === 'ios') {
-  //       const playSilentSound = async () => {
-  //           await sound.loadAsync(require('./silent-sound.mp3'))
-  //           await sound.playAsync()
-  //           await sound.setIsLoopingAsync(true)
-  //       }
-  //       void playSilentSound()
-  //   }
+// Tricks to fix that the audio doesn't work even if we set the configuration on iOS: `playsInSilentModeIOS`
+// See: https://github.com/expo/expo/issues/7485#issuecomment-852221060
+//   if (Platform.OS === 'ios') {
+//       const playSilentSound = async () => {
+//           await sound.loadAsync(require('./silent-sound.mp3'))
+//           await sound.playAsync()
+//           await sound.setIsLoopingAsync(true)
+//       }
+//       void playSilentSound()
+//   }
 
-  //   // on component unmount
-  //   return () => {
-  //       void sound.stopAsync()
-  //       void sound.unloadAsync()
-  //   }
-  // }, []
+//   // on component unmount
+//   return () => {
+//       void sound.stopAsync()
+//       void sound.unloadAsync()
+//   }
+// }, []
 
 export default VideoPlayer;

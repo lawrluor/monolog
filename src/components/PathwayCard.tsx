@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ImageSourcePropType } from 'react-native';
+import { View, Text, Image, StyleSheet, type ImageSourcePropType } from 'react-native';
 import { text, spacings, colors } from '../styles';
 import { pathwaysMap } from '../utils/pathwaysData'
 import ProgressBar from './ProgressBar';

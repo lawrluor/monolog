@@ -17,7 +17,7 @@ const infoTextEntryGroupState = {
   email: "",
 }
 
-const Signup = ({ route, navigation }): JSX.Element => {
+const Signup = ({ route, navigation }) => {
   const { setUser, setShouldOnboard } = route.params;
   const [signupInput, setSignupInput] = React.useState(infoTextEntryGroupState);
   const [isChecked, setIsChecked ] = React.useState<boolean>(false);

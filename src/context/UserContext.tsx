@@ -1,17 +1,7 @@
 import React from 'react';
 
 import { writeUserData, readUserData } from '../utils/localStorageUtils';
-
-type User = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  gender: string;
-  pronouns: string;
-  pathways: Record<string, { currentLevel: number }>;
-  onboarded?: boolean;
-  speechToTextPermission?: boolean;
-}
+import { type User } from '../types/user';
 
 type UserContextValue = {
   user: User | null;
@@ -21,7 +11,7 @@ type UserContextValue = {
 
 const UserContext = React.createContext<UserContextValue | undefined>(undefined);
 
-export const UserProvider: React.FC = ({ children }) => {
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
 

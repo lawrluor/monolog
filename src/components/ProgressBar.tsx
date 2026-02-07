@@ -43,8 +43,6 @@ const styles = StyleSheet.create({
     borderColor: '#000',
   },
   percent: {
-    // display: 'flex',
-    // flexDirection: 'column',
     position: 'relative',
     top: 13,
     color: '#BEBEBE'

@@ -14,10 +14,6 @@ type CustomIconProps = {
   name: string;
   size?: number;
   color?: string;
-
-  // style is a JS object that represents the style, same format as any other style.
-  // Normally core/built-in components in React-Native automatically handle this
-  // Because this is our own custom component that will receive a style prop, we must handle it ourselves
   style?: StyleProp<TextStyle>
 }
 

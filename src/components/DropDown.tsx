@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
   pickerItem: {
     ...text.h3,
     height: 140,
-    // padding: 20  Unsure how to make the highlight region taller/larger
   },
 });
 

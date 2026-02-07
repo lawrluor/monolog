@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { text, spacings } from '../styles';
 
-const VideoCaption = ({ text }: any) => {
+const VideoCaption = ({ text }: { text: string }) => {
   // TODO: to account for correcting too many words, store last 3 results. 
   // If all 3 last results over threshold, means still over 5 words even with revision.
 

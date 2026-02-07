@@ -1,5 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Pressable, Text, Alert } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 
 import { DeleteVideoLog } from './Delete';
 import TranscriptEditor from './TranscriptEditor';
@@ -9,24 +11,26 @@ import GoBack from './GoBack';
 
 import VideosContext from '../context/VideosContext';
 
-import { Ionicons } from '@expo/vector-icons';
-
 import { deleteVideoLog } from '../utils/localStorageUtils';
 import { getCurrentDate } from '../utils/dates';
-import { getLastRoute, getRoutesInStack } from '../utils/navigationUtils';
+import { getLastRoute } from '../utils/navigationUtils';
 
 import { icons, spacings, text } from '../styles';
+import { AppStackParamsList } from '../types/navigation';
 
 type Props = {
   videoData: any,
   isPlaying: boolean,
-  navigation: any,
+  navigation: StackNavigationProp<AppStackParamsList>,
 }
 
 // This component is comprised of the buttons, rating, and show transcript button
 // These are absolute positioned towards the bottom of the screen
-const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element => {
-  const { toggleVideosRefresh } = React.useContext(VideosContext);
+const VideoOverlay = ({ videoData, isPlaying, navigation }: Props) => {
+  const videosContext = React.useContext(VideosContext);
+  if (!videosContext) throw new Error("VideosContext must be used within provider");
+  const { toggleVideosRefresh } = videosContext;
+
   const [modalShown, setModalShown] = React.useState<boolean>(false);
 
   const deleteLogCallback = () => {
@@ -45,10 +49,8 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
       toggleVideosRefresh();
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Home' }]
+        routes: [{ name: 'TabNavigator', params: { screen: 'Home' } }]
       });
-
-      navigation.navigate('Home');
 
       Alert.alert(
         "Success",
@@ -72,7 +74,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   const renderShowTranscriptButton = () => {
     return (
       <View style={styles.button}>
-        <Pressable onPress={() => setModalShown(!modalShown)} hitSlop={spacings.hitSlopLarge} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+        <Pressable onPress={() => setModalShown(!modalShown)} hitSlop={spacings.hitSlopLarge} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
           <CustomIcon name={'open_transcript'} style={styles.iconActions} />
         </Pressable>
       </View>
@@ -83,12 +85,10 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   const renderCaption = () => {
     return (
       !modalShown
-      ?
+      &&
       <View style={styles.contentContainer}>
         <VideoCaption text={videoData.caption} />
       </View>
-      :
-      <></>
     )
   }
 
@@ -107,7 +107,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
 
     // In the future, use Pressable to allow us to press to change the Rating emoji
     return (
-      <Pressable onPress={changeRating} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+      <Pressable onPress={changeRating} hitSlop={spacings.hitSlopLarge} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
         <Text style={styles.emojiText}>{videoData.rating.substring(0, 2) || '❔'}</Text>
       </Pressable>
     )
@@ -119,8 +119,8 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
         {renderShowTranscriptButton()}
 
         <View style={styles.button}>
-          <View style={styles.iconBackground}>
-            <Pressable onPress={() => navigation.navigate('Gallery')} hitSlop={spacings.hitSlopLarge} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+          <View>
+            <Pressable onPress={() => navigation.navigate('TabNavigator', { screen: 'Gallery' })} hitSlop={spacings.hitSlopLarge} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
               <CustomIcon name='check_circle' style={styles.iconFinished} />
             </Pressable>
           </View>
@@ -134,7 +134,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   }
 
   // If navigating after making new recording (stack is: Rating -> Transcript -> Player),
-    // must pop twice to get back to Rating
+  // must pop twice to get back to Rating
   // Otherwise if navigating from Gallery/other, pop once (stack is: Gallery -> Player)
   // Yes, this is spaghetti code because VideoOverlay is used in both the above cases
   const resetNavigation = async () => {
@@ -154,16 +154,16 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props): JSX.Element 
   // This conditional render is handled by the boolean state modalShown
   return (
     <>
-      {modalShown ? <></> : <GoBack callback={resetNavigation} /> }
-      {modalShown ? <></> : <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View> }
+      {!modalShown && <GoBack callback={resetNavigation} />}
+      {!modalShown && <View style={styles.deleteLogContainer}><DeleteVideoLog callback={deleteLogCallback} /></View>}
 
       <View style={styles.videoContainer}>
 
         {/* TODO: Send full populated videoData object with transcript + rating? */}
         <View style={styles.videoOverlayContainer}>
           {/* {renderCaption()} */}
-          {isPlaying ? null : <Ionicons style={styles.iconPlayStatus} name={'pause-circle-outline'}/>}
-          {modalShown ? <></> : renderButtonsContainer()}
+          {!isPlaying && <Ionicons style={styles.iconPlayStatus} name={'pause-circle-outline'} />}
+          {!modalShown && renderButtonsContainer()}
         </View>
       </View>
 

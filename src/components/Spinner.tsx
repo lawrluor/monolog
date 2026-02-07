@@ -9,40 +9,34 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { deleteDataAlert } from '../utils/customAlerts';
 
 type Props = {
-  size?: string
+  size?: number | "large" | "small" | undefined;
 }
 
-const Spinner = ({ size }: Props) => {
+const Spinner = ({ size = "large" }: Props) => {
   return (
     <View style={styles.spinner}>
-      <ActivityIndicator size={size || 'large'} />
+      <ActivityIndicator size={size} />
     </View>
   )
 }
 
 // size should generally be "large", unless you want full page with small spinner
-const FullPageSpinner = ({ size }) => {
+const FullPageSpinner = ({ size }: Props) => {
   const [message, setMessage] = useState('');
 
   // Notes:
   // 1. timeout is not cleared in AppStackLoading, possibly because component is not popped off but just navigated away from
   // 2. However, timeouts in App.js and AuthLoading.js are usually cleared even before they begin, since loading is faster than timeout interval
   // 3. This means timer is not cleared and possibly may lead to performance problems over periods of time
-  useEffect(():void => {
-    // Run on mount
-    const timeout = setTimeout(():void => {
-      console.log("[DEBUG] Timeout began")
+  useEffect(() => {
+    const timeout = setTimeout((): void => {
       setMessage('Please make sure you have the latest version of the app and that you have allowed all permissions that the app requests. Please note that the app may not work as expected on Mac or iPad devices. If you\'re still having trouble, please try closing and re-opening the app. You can also opt to delete your data using the button below and reload the app. If that still doesn\'t resolve your issues, please delete and reinstall the app. You will lose your saved logs, however. For further questions, feel free to reach out to usemonolog@gmail.com with a bug report.');
     }, 5000);
 
     // Unmount cleanup, clear timeout if component unmounted
-    return ():void => {
-      console.log("[DEBUG] Full Page Spinner unmounting");
-      if (typeof timeout !== 'undefined') {
-        // Make sure variable exists before trying to clear it
-        clearTimeout(timeout);
-      }
-    }
+    return () => {
+      clearTimeout(timeout);  // does not crash on undefined
+    };
   }, []);
 
   return (
@@ -51,23 +45,17 @@ const FullPageSpinner = ({ size }) => {
       style={styles.fullSizeContainer}
     >
       <ActivityIndicator size={size} />
-      {
-        message
-        ?
-        <>
-          <GoBack />
+      {message && <>
+        <GoBack />
 
-          <View style={{ marginVertical: spacings.LARGE }}>
-            <Text style={styles.messageText}>{message}</Text>
-          </View>
+        <View style={{ marginVertical: spacings.LARGE }}>
+          <Text style={styles.messageText}>{message}</Text>
+        </View>
 
-          <View style={{ marginVertical: spacings.LARGE }}>
-            <ActionButton callback={deleteDataAlert} text={"Delete Data"}/>
-          </View>
-        </>
-        :
-        null
-      }
+        <View style={{ marginVertical: spacings.LARGE }}>
+          <ActionButton callback={deleteDataAlert} text={"Delete Data"} />
+        </View>
+      </>}
     </LinearGradient>
   )
 }

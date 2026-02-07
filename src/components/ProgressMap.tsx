@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Image, StyleSheet, ImageSourcePropType } from 'react-native';
+import { ScrollView, Image, StyleSheet, type ImageSourcePropType } from 'react-native';
 import { spacings } from '../styles';
 
 import {
@@ -18,18 +18,18 @@ type Props = {
 const ProgressMap = ({ currentProgress, total }: Props) => {
 
   const getImageURI = (img: ImageSourcePropType) => {
-    return Image.resolveAssetSource(img).uri
+    return Image.resolveAssetSource(img).uri;
   }
 
   let completedArray = [];
   let uncompletedArray = [];
-  for (let mapI = 0; mapI < total - 1; mapI++) {
-    if (mapI === currentProgress) {
-      completedArray.push(<Image style={styles.currentPoint} key={mapI} source={{ uri: getImageURI(unlocked_current) }} />)
-    } else if (mapI < currentProgress) {
-      completedArray.push(<Image style={styles.mapPoint} key={mapI} source={{ uri: getImageURI(unlocked_completed) }} />)
+  for (let i = 0; i < total - 1; i++) {
+    if (i === currentProgress) {
+      completedArray.push(<Image style={styles.currentPoint} key={i} source={{ uri: getImageURI(unlocked_current) }} />)
+    } else if (i < currentProgress) {
+      completedArray.push(<Image style={styles.mapPoint} key={i} source={{ uri: getImageURI(unlocked_completed) }} />)
     } else {
-      uncompletedArray.push(<Image style={styles.mapPoint} key={mapI} source={{ uri: getImageURI(locked_prompt) }} />)
+      uncompletedArray.push(<Image style={styles.mapPoint} key={i} source={{ uri: getImageURI(locked_prompt) }} />)
     }
   }
   if (currentProgress === total - 1) {

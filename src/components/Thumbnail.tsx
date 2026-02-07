@@ -1,20 +1,21 @@
 import React from 'react';
 import { StyleSheet, Image, Pressable, View } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 import { dimensions, icons, spacings } from '../styles';
 import CustomIcon from '../components/CustomIcon';
+import { type AppStackParamsList } from '../types/navigation';
+import { type Video } from '../types/video';
 
-// TODO: How to define navigation?
 type Props = {
-  navigation: any,
-  video: any
+  navigation: StackNavigationProp<AppStackParamsList>,
+  video: Video
 }
 
-const Thumbnail = ({ navigation, video}: Props): JSX.Element => {
+const Thumbnail = ({ navigation, video }: Props) => {
   const navigateToPlayer = () => {
     navigation.navigate('Player', {
-      video: video,
-      navigation: navigation,
+      video,
     });
   }
 
@@ -22,17 +23,19 @@ const Thumbnail = ({ navigation, video}: Props): JSX.Element => {
   // with or without the camera active.
   const renderThumbnailImage = () => {
     return (
-      video.show_video ?
-      <Image source={{ uri: video.thumbnail_uri }} style={styles.thumbnail} /> :
+      video.show_video
+        ?
+        <Image source={{ uri: (video).thumbnail_uri }} style={styles.thumbnail} />
+        :
         <View style={styles.camera_off_container} >
-        <CustomIcon name='headphones_with_waves' size={icons.LARGE.fontSize} />
-      </View>
+          <CustomIcon name='headphones_with_waves' size={icons.LARGE.fontSize} />
+        </View>
     )
   }
 
   return (
     <Pressable onPress={navigateToPlayer}>
-      { renderThumbnailImage()}
+      {renderThumbnailImage()}
     </Pressable>
   )
 }

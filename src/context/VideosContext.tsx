@@ -7,14 +7,7 @@ import * as FileSystem from 'expo-file-system';
 
 import { allSettled } from '../utils/promises';
 import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri, VIDEO_DIRECTORY, createDirectory } from '../utils/localStorageUtils';
-
-type SectionData = {
-  title: string;
-  key: string;
-  data: { list: any[] }[];
-};
-
-type RecordedSections = Record<string, SectionData>;
+import { type SectionData, type RecordedSections } from '../types/video';
 
 type MoodDay = {
   date: Date;
@@ -41,7 +34,7 @@ type VideosContextValue = {
 // Workaround bug https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/#extended-example
 const VideosContext = React.createContext<VideosContextValue | undefined>(undefined);
 
-export const VideosProvider: React.FC = ({ children }) => {
+export const VideosProvider = ({ children }: { children: React.ReactNode }) => {
   const [query, setQuery] = React.useState<string>("");
   const [videosData, setVideosData] = React.useState<SectionData[] | null>(null);
   const [videosCount, setVideosCount] = React.useState<number>(0);

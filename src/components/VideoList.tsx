@@ -1,12 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, SectionList } from 'react-native';
+import { type StackNavigationProp } from '@react-navigation/stack';
 
 import Thumbnail from '../components/Thumbnail';
-
+import { type Video, type SectionData, type SectionRow } from '../types/video';
+import { type AppStackParamsList } from '../types/navigation';
 import { spacings, text, colors } from '../styles';
 
-const VideoList = ({ navigation, videoData }) => {
-  const renderSectionHeader = ({ section }) => {
+type Props = {
+  navigation: StackNavigationProp<AppStackParamsList>;
+  videoData: SectionData[];
+}
+
+const VideoList = ({ navigation, videoData }: Props) => {
+  const renderSectionHeader = ({ section }: { section: SectionData }) => {
     return (
       <View style={styles.sectionTitleContainer}>
         <Text style={styles.sectionTitle}>{section.title}</Text>
@@ -14,7 +21,7 @@ const VideoList = ({ navigation, videoData }) => {
     )
   }
 
-  const renderListItem = ({ item }) => {
+  const renderListItem = ({ item }: { item: Video }) => {
     return (
       <Thumbnail
         video={item}
@@ -23,17 +30,13 @@ const VideoList = ({ navigation, videoData }) => {
     )
   }
 
-  const keyExtractor = (item) => {
-    return item.name;
-  }
-
-  const renderSection = ({ item }) => {
+  const renderSection = ({ item }: { item: SectionRow }) => {
     return (
       <FlatList
         data={item.list}
         numColumns={3}
         renderItem={renderListItem}
-        keyExtractor={keyExtractor}
+        keyExtractor={(item: Video) => item.uri}
       />
     )
   }
@@ -45,7 +48,7 @@ const VideoList = ({ navigation, videoData }) => {
       renderSectionHeader={renderSectionHeader}
       renderItem={renderSection}
       showsVerticalScrollIndicator={false}
-      keyExtractor={keyExtractor}
+      keyExtractor={(item: SectionData) => item.key}
     />
   )
 }

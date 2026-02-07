@@ -9,6 +9,8 @@ import * as FileSystem from 'expo-file-system';
 import { filteredWords, removePunctuation } from './textProcessing';
 import { createRatingFromFile } from './rating';
 
+import { type Video } from '../types/video';
+
 export const USER_DATA_DIRECTORY = FileSystem.documentDirectory + 'userData/';
 export const TRANSCRIPT_DIRECTORY = FileSystem.documentDirectory + 'transcripts/';
 export const THUMBNAIL_DIRECTORY = FileSystem.documentDirectory + 'thumbnails/';
@@ -495,9 +497,9 @@ export const getRating = async (uri: string) => {
 
 export const writeFinalTranscript = async (transcriptUri: string, text: string) => {
   try {
-    FileSystem.writeAsStringAsync(transcriptUri, text);  // No return value
+    await FileSystem.writeAsStringAsync(transcriptUri, text);  // No return value
     return true;
-  } catch (err: any) {
+  } catch (err: Error | unknown) {
     console.log("[ERROR] Transcript:FileSystem.writeAsStringAsync:", err);
     return false;
   }
@@ -530,18 +532,18 @@ export const initVideoDataObject = async (filename: string) => {
     rating = `${ratingObject.emoji}${ratingObject.index}`
     showVideo = ratingObject.isCameraOn
   }
-  let videoData = {
-    "baseName": filename,
-    "name": generateVideoUri(filename),
-    "uri": generateVideoUri(filename),
-    "thumbnail_uri": generateThumbnailUri(filename),
-    "transcript_uri": transcriptUri,
-    "transcript_content": transcriptContent,
-    "rating": rating,
+  let videoData: Video = {
+    baseName: filename,
+    name: generateVideoUri(filename),
+    uri: generateVideoUri(filename),
+    thumbnail_uri: generateThumbnailUri(filename),
+    transcript_uri: transcriptUri,
+    transcript_content: transcriptContent,
+    rating: rating,
     // isCameraOn means show video, defaults to true in ratings.ts
     // However, if this field doesn't exist (undefined, migrating from older versions),
     // this will be explicitly set to boolean false
-    "show_video": showVideo
+    show_video: showVideo
   }
 
   return videoData;

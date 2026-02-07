@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-
 import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 
 import VideoCaption from './VideoCaption';
-
 import UserContext from '../context/UserContext';
+import { type User } from '../types/user';
 
 type Props = {
   isRecording: boolean;
@@ -106,7 +105,7 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: Props) => {
         let result = await Voice.isAvailable();
 
         // Merge old user object with new fields
-        let updatedUser = { ...user, speechToTextPermission: result === 1 ? true : false };
+        let updatedUser = { ...user, speechToTextPermission: result === 1 ? true : false } as User;
         setUser(updatedUser);
       }
     }

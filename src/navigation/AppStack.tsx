@@ -5,37 +5,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Pathways, PathwayFull, PathwaysPrompt } from '../screens';
-
 import CustomIcon from '../components/CustomIcon';
-
 import { colors, icons, spacings } from '../styles';
+import { AppStackParamsList, AppStackTabNavigatorParamsList } from '../types/navigation';
 
 // Initial params (NOT PROPS) for routes: See https://reactnavigation.org/docs/typescript/
 // Specifying undefined means that the route doesn't have params.
 // A union type with undefined (e.g. SomeType | undefined) means that params are optional.
-type StackNavigatorParams = {
-  "Recording": undefined,
-  "Player": undefined,
-  "Rating": undefined,
-  "Transcript": undefined,
-  "Pathways": undefined,
-  "PathwayFull": undefined,
-  "PathwaysPrompt": undefined,
-  "TabNavigator": undefined
-}
 
-type TabNavigatorParams = {
-  "Gallery": undefined,
-  "Recording": undefined,
-  "Home": undefined,
-  "Vistas": undefined,
-  "Settings": undefined,
-  "Pathways": undefined,
-  "Feedback": undefined
-}
-
-const Stack = createNativeStackNavigator<StackNavigatorParams>();
-const Tab = createBottomTabNavigator<TabNavigatorParams>();
+const Stack = createNativeStackNavigator<AppStackParamsList>();
+const Tab = createBottomTabNavigator<AppStackTabNavigatorParamsList>();
 
 // A bottom tab navigator to hold important screens that can be accessed directly from most other screens
 // For styling, see https://reactnavigation.org/docs/tab-based-navigation#customizing-the-appearance
@@ -43,7 +22,7 @@ const TabNavigator = () => {
   const [shouldDisplay, setShouldDisplay] = React.useState(true);
 
   // Constants for rendering TabNavigator conditionally
-  const INITIAL_TAB_ROUTE = "Rating";
+  const INITIAL_TAB_ROUTE = "Home";
   const navigation = useNavigation();
   const route = useRoute();
   const tabHiddenRoutes = ["Recording"];

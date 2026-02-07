@@ -21,7 +21,7 @@ const SignInButton = ({ children, text, background, onPress }: Props) => {
   )
 }
 
-export const ActionButton = ({ callback, text }: { callback: () => void; text: string }) => {
+export const ActionButton = ({ callback, text }: { callback: () => void, text: string }) => {
   return (
     <SignInButton
       background={colors.HIGHLIGHT}
