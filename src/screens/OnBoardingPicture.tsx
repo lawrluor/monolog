@@ -11,7 +11,7 @@ import { comingSoonAlert} from '../utils/customAlerts';
 import { styles } from './OnBoarding1';
 import { colors, dimensions } from '../styles';
 
-const OnBoarding3 = ({ route, navigation }): JSX.Element => {
+const OnBoarding3 = ({ route, navigation }): React.FC => {
   const { setShouldOnboard } = route.params;
 
   // Wrapper function - handles updating state to allow moving to the AppStack after OnBoarding is finished

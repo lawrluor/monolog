@@ -1,15 +1,17 @@
 import { Alert } from 'react-native';
 import { deleteAllData } from './localStorageUtils';
 
-// type SimpleAlertProps = {
-//   title: string,
-//   message: string,
-//   buttonText: string,
-//   callback: Function
-// }
+type OptionalCallback = () => void | Promise<void>;
+
+type SimpleAlertProps = {
+  title: string;
+  message: string;
+  buttonText: string;
+  callback: () => void;
+}
 
 // Wrapper for an Alert Message with one choice
-export const simpleAlert = (title, message, buttonText, callback) => {
+export const simpleAlert = ({ title, message, buttonText, callback }: SimpleAlertProps) => {
   Alert.alert(
     title,
     message,
@@ -21,7 +23,7 @@ export const simpleAlert = (title, message, buttonText, callback) => {
 
 
 // NOTE: This function isn't being used yet.
-export const editProfileAlert = (callback=null) => {
+export const editProfileAlert = () => {
   return Alert.alert(
     "Edit Profile",
     "Edit your profile.",
@@ -31,7 +33,7 @@ export const editProfileAlert = (callback=null) => {
   )
 }
 
-export const deleteDataAlert = (callback=null) => {
+export const deleteDataAlert = (callback: OptionalCallback = () => { }) => {
   return Alert.alert(
     "Delete Data",
     "Delete all your profile data and logs?",
@@ -42,15 +44,13 @@ export const deleteDataAlert = (callback=null) => {
   )
 }
 
-export const deleteDataConfirmation = (callback=null) => {
+export const deleteDataConfirmation = (callback: OptionalCallback = () => { }) => {
   const deleteDataWrapper = async () => {
     await deleteAllData();
 
     // The callback is called after pressing the final confirmation button.
     // Right now, this should usually be navigation.navigate('AuthLoading')
-    if (callback) {
-      callback();
-    }
+    callback();
   }
 
   return Alert.alert(
@@ -87,13 +87,13 @@ export const feedbackConfirmationFailure = () => {
   );
 }
 
-export const comingSoonAlert = (callback=null) => {
-  return simpleAlert(
-    title="Hold up!",
-    message="This feature is coming soon.",
-    buttonText="OK",
-    callback=callback
-  )
+export const comingSoonAlert = (callback: OptionalCallback = () => { }) => {
+  return simpleAlert({
+    title: "Hold up!",
+    message: "This feature is coming soon.",
+    buttonText: "OK",
+    callback: callback
+  })
 }
 
 // TODO:
