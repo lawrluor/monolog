@@ -45,9 +45,9 @@ const renderIconFamily = (pressed: boolean, props: IconProps) => {
 const Icon = (props: IconProps) => {
   return (
     <Pressable onPress={props.onPress}>
-      {({ pressed }) => {
-        renderIconFamily(pressed, props);
-      }}
+      {({ pressed }: { pressed: boolean }) => (
+        renderIconFamily(pressed, props)
+      )}
     </Pressable>
   )
 }

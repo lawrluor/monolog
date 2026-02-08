@@ -17,6 +17,7 @@ const PathwayCard = ({ pathwayName, children }: Props) => {
   const { user } = userContext;
   if (!user) throw new Error('User not found');
 
+
   const getImageURI = (img: ImageSourcePropType) => {
     return Image.resolveAssetSource(img).uri
   }
@@ -25,7 +26,7 @@ const PathwayCard = ({ pathwayName, children }: Props) => {
 
   // If the current pathway exists in the user's data then that means they have started that pathway.
   // If they have started that pathway set the current level or score to their level otherwise it is 0
-  const currentLevel = (pathwayName in user.pathways) ? user.pathways[pathwayName].currentLevel - 1 : 0;
+  const currentLevel = !user.pathways[pathwayName] ? 0 : user.pathways[pathwayName].currentLevel - 1;
 
   const renderProgressBar = () => {
     if (pathwayName != "New Year's Resolutions") {

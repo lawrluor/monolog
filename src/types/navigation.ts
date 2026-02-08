@@ -24,7 +24,7 @@ export type AppStackTabNavigatorParamsList = {
 
 export type AppStackParamsList = {
   "Recording": undefined;
-  "Player": { video: Video, showVideo: boolean };
+  "Player": { video: Video, showVideo?: boolean };
   "Rating": { fileBaseName: string, finalResult: string, isCameraOn: boolean };
   "Transcript": { selection: string, fileBaseName: string, finalResult: string, isCameraOn: boolean };
   "Pathways": undefined;

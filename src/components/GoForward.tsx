@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     left: spacings.MASSIVE,
     top: spacings.ABSOLUTE_OFFSET_MEDIUM,
     zIndex: 15, // works on ios
-    elevate: 3, // works on android
+    elevation: 3, // works on android
   },
   forwardIcon: {
     ...icons.SMALL,

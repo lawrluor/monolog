@@ -8,11 +8,8 @@ interface DividerProps {
 
 // This is a simple horizontal line that visually divides content on a page.  
 const Divider = ({ widthPercentage, color }: DividerProps) => {
-  // Default divider's width to parent container width, otherwise use number representing percent
-  let width = widthPercentage ? `${widthPercentage}%` : "100%";
-
   return (
-    <View style={[styles.divider, { 'width': width, 'borderBottomColor': color }]} />
+    <View style={[styles.divider, { 'width': widthPercentage ? `${widthPercentage}%` : "100%", 'borderBottomColor': color }]} />
   )
 }
 
