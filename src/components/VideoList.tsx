@@ -48,7 +48,7 @@ const VideoList = ({ navigation, videoData }: Props) => {
       renderSectionHeader={renderSectionHeader}
       renderItem={renderSection}
       showsVerticalScrollIndicator={false}
-      keyExtractor={(item: SectionData) => item.key}
+      keyExtractor={(_item, index) => index.toString()}
     />
   )
 }

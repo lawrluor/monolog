@@ -1,15 +1,9 @@
-import { NavigationProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-import {
-  type AppStackParamsList,
-  type AppStackTabNavigatorParamsList,
-  type AuthStackParamsList,
-  type MainNavigationStackParamsList,
-  type OnBoardingStackParamsList
-} from '../types/navigation';
+import { type AppStackParamsList } from '../types/navigation';
 
 type Props = {
-  navigation: NavigationProp<AppStackParamsList | AppStackTabNavigatorParamsList | AuthStackParamsList | MainNavigationStackParamsList | OnBoardingStackParamsList>;
+  navigation: StackNavigationProp<AppStackParamsList>;
 }
 
 export const getRoutesInStack = async ({ navigation }: Props) => {

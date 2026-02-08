@@ -6,7 +6,7 @@ import React from 'react';
 import * as FileSystem from 'expo-file-system';
 
 import { allSettled } from '../utils/promises';
-import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri, VIDEO_DIRECTORY, createDirectory } from '../utils/localStorageUtils';
+import { getTranscriptContent, getAllWordsFromTranscripts, initVideoDataObject, generateTranscriptUri, VIDEO_DIRECTORY, createDirectory, type WordCountItem } from '../utils/localStorageUtils';
 import { type SectionData, type RecordedSections } from '../types/video';
 
 type MoodDay = {
@@ -29,7 +29,7 @@ type VideosContextValue = {
   toggleVideosRefresh: () => Promise<void>;
   submitQuery: (query: string) => void;
   moodData: MoodData;
-  wordChartData: string[];
+  wordChartData: WordCountItem[];
 };
 
 // Workaround bug https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/#extended-example
@@ -44,7 +44,7 @@ export const VideosProvider = ({ children }: { children: React.ReactNode }) => {
 
   // wordChartData is queried from here and passed throughout app
   // TODO: make this separate context
-  const [wordChartData, setWordChartData] = React.useState<string[]>([]);
+  const [wordChartData, setWordChartData] = React.useState<WordCountItem[]>([]);
 
   // Default mood data structure for rendering. Currently mock data.
   // Will remove very soon, not worth putting it into json and then parsing the
@@ -122,7 +122,7 @@ export const VideosProvider = ({ children }: { children: React.ReactNode }) => {
 
         // Now that section header/key for Month & year exists, push video into section array
         const singleVideoData = await initVideoDataObject(filename);
-        recorded_sections[section_key]["data"][0]["list"].push(singleVideoData);
+        recorded_sections[section_key]!["data"][0]["list"].push(singleVideoData);
       });
 
       await allSettled(videoDataPromises);
@@ -134,7 +134,9 @@ export const VideosProvider = ({ children }: { children: React.ReactNode }) => {
     if (Object.keys(recorded_sections).length === 0) return [];
 
     let sortedVideosByDate = Object.values(recorded_sections).sort((a: SectionData, b: SectionData) => {
-      return a.data[0].list[0].name > b.data[0].list[0].name ? -1 : 1;
+      const aName = a.data[0]?.list[0]?.name || "";
+      const bName = b.data[0]?.list[0]?.name || "";
+      return aName > bName ? -1 : 1;
     });
 
     return sortedVideosByDate;
@@ -163,6 +165,7 @@ export const VideosProvider = ({ children }: { children: React.ReactNode }) => {
       return videos[0]['data'][0]['list'].length;
     } catch (err) {
       console.log("[ERROR] VideosContext.tsx:getVideosCount", err);
+      return 0;
     }
   }
 

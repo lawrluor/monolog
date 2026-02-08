@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import VideosContext from '../context/VideosContext';
+import { type WordCountItem } from '../utils/localStorageUtils';
 import VistaSummaryText from './VistaSummaryText';
 import Divider from './Divider';
 import { text, spacings, colors, icons } from '../styles';
@@ -92,7 +93,7 @@ const WordChart = ({ defaultNumOfWords = 10, abridged, callback }: Props) => {
   // Renders the word chart with appropriate number of words displayed
   const renderWordChart = () => {
     return wordChartData.slice(0, numOfWordsCurrentlyDisplayed)
-      .map((item: string) => renderBarWithText(item));
+      .map((item: WordCountItem) => renderBarWithText(item));
   }
 
   // A Pressable that toggles state, to change number of words displayed

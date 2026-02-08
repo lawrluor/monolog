@@ -138,7 +138,7 @@ const VideoOverlay = ({ videoData, isPlaying, navigation }: Props) => {
   // Otherwise if navigating from Gallery/other, pop once (stack is: Gallery -> Player)
   // Yes, this is spaghetti code because VideoOverlay is used in both the above cases
   const resetNavigation = async () => {
-    let routes = await getLastRoute(navigation, 2);
+    let routes = await getLastRoute({ navigation }, 2);
 
     if (routes?.name === 'Rating') {
       // Two routes ago we were at Rating; skip the Player route

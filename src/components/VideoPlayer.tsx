@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
-import { Audio, Video, type PlaybackStatus } from 'expo-av';
+import { Audio, Video, type AVPlaybackStatus, InterruptionModeIOS, InterruptionModeAndroid, ResizeMode } from 'expo-av';
 
 import { FullPageSpinner } from './Spinner';
 
@@ -21,10 +21,11 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
   const video = React.useRef<Video>(null);
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);  // TODO: set loading handling
-  const [status, setStatus] = React.useState({ 'isPlaying': false });  // TODO: set props for status object
+  const [status, setStatus] = React.useState<AVPlaybackStatus | { isPlaying: boolean }>({ 'isPlaying': false });
 
   const togglePlay = () => {
-    status.isPlaying ? video?.current?.pauseAsync() : video?.current?.playAsync();
+    const isPlaying = 'isPlaying' in status ? status.isPlaying : false;
+    isPlaying ? video?.current?.pauseAsync() : video?.current?.playAsync();
     setIsPlaying(!isPlaying);
   }
 
@@ -32,7 +33,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
   const resetRecordingAudio = async () => {
     const recording = new Audio.Recording();
     try {
-      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
       await recording.stopAndUnloadAsync()
     } catch (error) {
       console.error("Error resetting recording", error);
@@ -46,10 +47,10 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         staysActiveInBackground: true,
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+        interruptionModeIOS: InterruptionModeIOS.DuckOthers,
         playsInSilentModeIOS: true,       // this option is unreliable at the moment
         shouldDuckAndroid: false,
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
         playThroughEarpieceAndroid: false,
       });
 
@@ -60,10 +61,10 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         staysActiveInBackground: true,
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+        interruptionModeIOS: InterruptionModeIOS.DuckOthers,
         playsInSilentModeIOS: true,       // this option is unreliable at the moment
         shouldDuckAndroid: false,
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
         playThroughEarpieceAndroid: false,
       });
 
@@ -94,10 +95,10 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
     }
   }, []);
 
-  const handlePlaybackStatusUpdate = (status: PlaybackStatus) => {
+  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
     // Manual looping set: this is because setting prop isLooping in Video component directly causes freezing.
     // Reference: https://github.com/expo/expo/issues/3488
-    if (status.didJustFinish && !status.isLooping) {
+    if (status.isLoaded && status.didJustFinish && !status.isLooping) {
       if (video?.current) {
         video.current.replayAsync();
         video.current.setIsLoopingAsync(true);
@@ -132,7 +133,7 @@ const VideoPlayer = ({ videoUri, isPlaying, setIsPlaying, showVideo }: Props): J
             style={styles.video}
             isMuted={false}
             useNativeControls={false}
-            resizeMode="cover"
+            resizeMode={ResizeMode.COVER}
             onPlaybackStatusUpdate={(status) => handlePlaybackStatusUpdate(status)}
           />
         </Pressable>

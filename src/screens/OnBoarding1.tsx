@@ -163,10 +163,10 @@ const OnBoarding1 = () => {
     if (screenNumber === 1) {
       return (
         <View style={styles.formFieldsContainer}>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="First Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)} /></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Last Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)} /></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" keyboardType='email-address' editable isTextBox returnKeyType="next" innerRef={textRefs[2]} textState={email} setTextState={setEmail} onFinish={() => handleTextOnFinish(2)} /></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[3]} textState={age} setTextState={setAge} onFinish={handleFormSubmit} /></View>
+          <View style={styles.textEntryContainer}><TextEntry id={0} placeholderValue="First Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)} /></View>
+          <View style={styles.textEntryContainer}><TextEntry id={1} placeholderValue="Last Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)} /></View>
+          <View style={styles.textEntryContainer}><TextEntry id={2} placeholderValue="Email" keyboardType='email-address' editable isTextBox returnKeyType="next" innerRef={textRefs[2]} textState={email} setTextState={setEmail} onFinish={() => handleTextOnFinish(2)} /></View>
+          <View style={styles.textEntryContainer}><TextEntry id={3} placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[3]} textState={age} setTextState={setAge} onFinish={handleFormSubmit} /></View>
         </View>
       )
     } else {

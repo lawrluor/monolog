@@ -10,7 +10,7 @@ import { filteredWords, removePunctuation } from './textProcessing';
 import { createRatingFromFile } from './rating';
 
 import { type Video } from '../types/video';
-type WordCountItem = {
+export type WordCountItem = {
   word: string;
   count: number;
   value?: number

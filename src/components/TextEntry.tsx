@@ -6,7 +6,7 @@ type TextEntryProps = {
   children?: React.ReactNode;
   textState?: string;
   setTextState?: React.Dispatch<React.SetStateAction<string>>;
-  id?: number;
+  id: number;
   innerRef: React.RefObject<TextInput> | undefined;
   label?: string;
   autoCapitalize?: TextInputProps['autoCapitalize'];
@@ -16,8 +16,7 @@ type TextEntryProps = {
   placeholderValue?: string;
   returnKeyType?: ReturnKeyTypeOptions;
   isTextBox?: boolean;
-  onChangeText?: React.Dispatch<React.SetStateAction<string>>;
-  onFinish?: (nextId?: number, currentId?: number, text?: string) => void;
+  onFinish?: (nextId: number, currentId: number, text?: string) => void;
 }
 
 const TextEntry = ({ textState, setTextState, id, innerRef, label, autoCapitalize, editable, keyboardType, secureTextEntry, placeholderValue, returnKeyType, isTextBox, onFinish }: TextEntryProps) => {
@@ -119,9 +118,9 @@ export const SearchEntry = ({ children, editable, secureTextEntry, placeholderVa
 
 type PasswordEntryProps = {
   label: string;
-  id?: number;
+  id: number;
   innerRef: React.RefObject<TextInput> | undefined;
-  onChangeText?: (stateId: number, changedTextValue: string) => void;
+  onChangeText: (stateId: number, changedTextValue: string) => void;
   editable: boolean;
   secureTextEntry: boolean;
   placeholderValue: string;

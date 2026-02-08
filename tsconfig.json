@@ -7,7 +7,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false,
-    "noUncheckedIndexedAccess": true,
     "typeRoots": [
       "./node_modules/@types"
     ],

@@ -40,7 +40,7 @@ const App = () => {
     const timer = setTimeout(() => {
       setInTimeout(false);
     }, 500);
-w
+
     return () => {
       clearTimeout(timer)
     }

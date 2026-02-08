@@ -181,9 +181,9 @@ const MoodChart = ({ abridged, callback }: {
     // A clip is defined as a pair of inclusive indicies: [start, end]
     // We use clips to add dotted lines between skipped days. Each clip is a
     // chunk of the line graph. Clips are alternating dashed and not dashed.
-    let data = [];  // contains each data point (including hidden points).
-    let circleData = [];  // contains only data that should be plotted.
-    let clipIndex = [[0, -1]];  // contains clips.
+    let data: number[] = [];  // contains each data point (including hidden points).
+    let circleData: number[] = [];  // contains only data that should be plotted.
+    let clipIndex: number[][] = [[0, -1]];  // contains clips.
     for (let i = moodDays.length - 1; i >= 0; i--) {
       // first, detect if there should be a clip.
       // special case first day since instead of comparing against a recorded
@@ -295,68 +295,79 @@ const MoodChart = ({ abridged, callback }: {
     }
 
     // Construct Clips svg template given clipIndex.
-    const Clips = ({ x }: { x: (index: number) => number }) => (
-      <Defs key={'clips'}>
-        {clipIndex.map((elem, index) => (
-          <ClipPath key={index} id={"clip-path-" + index}>
-            <Rect x={x(elem[0])} y={'0'} width={x(elem[1]) - x(elem[0])} height={'100%'} />
-          </ClipPath>
-        ))}
-      </Defs>
-    );
+    const Clips = ({ x }: { x?: (index: number) => number }) => {
+      const safeX = x ?? ((index: number) => index);
+      return (
+        <Defs key={'clips'}>
+          {clipIndex.map((elem, index) => (
+            <ClipPath key={index} id={"clip-path-" + index}>
+              <Rect x={safeX(elem[0])} y={'0'} width={safeX(elem[1]) - safeX(elem[0])} height={'100%'} />
+            </ClipPath>
+          ))}
+        </Defs>
+      );
+    };
 
     // Construct Dashed Lines for each odd clip.
     let dashedClips = clipIndex.filter((_, index: number) => {
       return index % 2 === 1;
     });
 
-    const DashedLines = ({ line }: { line: string }) => (
-      <>
-        {dashedClips.map((_, index) => (
-          <Path
-            key={'line-' + (2 * index + 1)}
-            d={line}
-            stroke={colors.HIGHLIGHT}
-            strokeWidth={2}
-            fill={'none'}
-            strokeDasharray={[4, 4]}
-            clipPath={'url(#clip-path-' + (2 * index + 1) + ')'}
-          />
-        ))}
-      </>
-    );
+    const DashedLines = ({ line }: { line?: string }) => {
+      if (!line) return null;
+      return (
+        <>
+          {dashedClips.map((_, index) => (
+            <Path
+              key={'line-' + (2 * index + 1)}
+              d={line}
+              stroke={colors.HIGHLIGHT}
+              strokeWidth={2}
+              fill={'none'}
+              strokeDasharray={[4, 4]}
+              clipPath={'url(#clip-path-' + (2 * index + 1) + ')'}
+            />
+          ))}
+        </>
+      );
+    };
 
     // Construct Solid Lines for each even clip.
     let solidClips = clipIndex.filter((_, index) => {
       return index % 2 === 0;
     });
 
-    const SolidLines = ({ line }: { line: string }) => (
-      <>
-        {solidClips.map((_, index) => (
-          <Path
-            key={'line-' + (2 * index)}
-            d={line}
-            stroke={colors.HIGHLIGHT}
-            strokeWidth={2}
-            fill={'none'}
-            clipPath={'url(#clip-path-' + (2 * index) + ')'}
-          />
-        ))}
-      </>
-    );
+    const SolidLines = ({ line }: { line?: string }) => {
+      if (!line) return null;
+      return (
+        <>
+          {solidClips.map((_, index) => (
+            <Path
+              key={'line-' + (2 * index)}
+              d={line}
+              stroke={colors.HIGHLIGHT}
+              strokeWidth={2}
+              fill={'none'}
+              clipPath={'url(#clip-path-' + (2 * index) + ')'}
+            />
+          ))}
+        </>
+      );
+    };
 
     // This is a function that runs on each data point of the line graph to
     // create points on the line graph.
     const Decorator = ({ x, y }: {
-      x: (x: number) => number;
-      y: (y: number) => number
+      x?: (x: number) => number;
+      y?: (y: number) => number
     }) => {
+      const safeX = x ?? ((index: number) => index);
+      const safeY = y ?? ((value: number) => value);
       return circleData.map((value, index) => (
         <Circle
           key={index}
-          cx={x(index)}
-          cy={y(value)}
+          cx={safeX(index)}
+          cy={safeY(value)}
           r={4}
           stroke={colors.HIGHLIGHT}
           fill={colors.HIGHLIGHT}
@@ -390,7 +401,7 @@ const MoodChart = ({ abridged, callback }: {
         <XAxis
           style={{ marginHorizontal: -10 }}
           data={data}
-          formatLabel={(value, index) => xaxisMap[index]}
+          formatLabel={(_value: number, index: number) => xaxisMap[index] ?? ''}
           contentInset={{ top: 20, bottom: 20, left: 20, right: 20 }}
           svg={{ fontSize: 14, fill: 'black' }}
         />

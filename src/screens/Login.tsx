@@ -45,8 +45,8 @@ const Login = ({ route }: Props) => {
         </View>
 
         <View style={styles.fieldContainer}>
-          <View style={styles.textEntryContainer}><TextEntry label="Email" keyboardType="email-address" placeholderValue="monologRocks@gmail.com" editable={true} returnKeyType="next" innerRef={textRefs[0]} onFinish={() => selectTextRef(1)} /></View>
-          <View style={styles.textEntryContainer}><PasswordEntry label="Password" placeholderValue="•••••••" editable={true} secureTextEntry={true} returnKeyType="done" innerRef={textRefs[1]} onFinish={authenticate} /></View>
+          <View style={styles.textEntryContainer}><TextEntry id={0} label="Email" keyboardType="email-address" placeholderValue="monologRocks@gmail.com" editable={true} returnKeyType="next" innerRef={textRefs[0]} onFinish={() => selectTextRef(1)} /></View>
+          <View style={styles.textEntryContainer}><PasswordEntry id={1} label="Password" placeholderValue="•••••••" editable={true} secureTextEntry={true} returnKeyType="done" innerRef={textRefs[1]} onFinish={authenticate} onChangeText={(text) => console.log(text)} /></View>
           <Pressable onPress={() => { }} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
             <Text style={styles.forgotPassword}>Forgot Your Password?</Text>
           </Pressable>
