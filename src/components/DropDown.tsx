@@ -6,7 +6,10 @@ import { text } from '../styles';
 
 type Props = {
   title: string;
-  options: string[];
+  options: {
+    label: string;
+    value: string;
+  }[];
   selectedValue: string;
   setSelectedValue: (itemValue: string) => void;
 }

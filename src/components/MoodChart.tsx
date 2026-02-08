@@ -33,7 +33,7 @@ const MILLISECONDS_IN_A_DAY = 86400000;
 
 const MoodChart = ({ abridged, callback }: {
   abridged: boolean;
-  callback: () => void
+  callback?: () => void
 }) => {
   const videosContext = React.useContext(VideosContext);
   if (!videosContext) throw new Error("VideosContext must be used within a provider");

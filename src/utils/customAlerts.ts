@@ -7,7 +7,7 @@ type SimpleAlertProps = {
   title: string;
   message: string;
   buttonText: string;
-  callback: () => void;
+  callback?: () => void;
 }
 
 // Wrapper for an Alert Message with one choice

@@ -1,21 +1,26 @@
 import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Pressable } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-
-import { containers, icons, text, spacings, colors } from '../styles';
 import { AntDesign } from '@expo/vector-icons';
 
 import SignInButton from '../components/SignInButton';
 import TextEntry, { PasswordEntry } from '../components/TextEntry';
 import GoBack from '../components/GoBack';
+import { containers, icons, text, spacings, colors } from '../styles';
+import { type AuthStackParamsList } from '../types/navigation';
 
-const Login = ({ route, navigation }): JSX.Element => {
+type Props = {
+  route: RouteProp<AuthStackParamsList, 'Login'>;
+}
+
+const Login = ({ route }: Props) => {
   const { setUser } = route.params;
 
   // TODO: Optional: refactor text entries to be inside a container, which then manages the ref state
   // Import this text entry container into other components and have it accept props for text entry fields
   // see OnBoarding1, Signup for more examples
-  const textRefs = [textEntry1, textEntry2, textEntry3] = [React.createRef(), React.createRef(), React.createRef()];
+  const textRefs = [React.createRef<TextInput>(), React.createRef<TextInput>(), React.createRef<TextInput>()];
 
   const authenticate = () => {
     // TODO: Use listener for user signin/signup in App/MainNavigator instead of passing back props 
@@ -23,15 +28,15 @@ const Login = ({ route, navigation }): JSX.Element => {
   }
 
   const selectTextRef = (index: number) => {
-    textRefs[index].current.focus();
+    textRefs[index]?.current?.focus();
   }
 
   return (
     <LinearGradient
-        // Background Linear Gradient
-        colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-        style={styles.container}
-    > 
+      // Background Linear Gradient
+      colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+      style={styles.container}
+    >
       <GoBack />
       <View style={styles.formContainer}>
         <View style={styles.titleContainer}>
@@ -40,9 +45,9 @@ const Login = ({ route, navigation }): JSX.Element => {
         </View>
 
         <View style={styles.fieldContainer}>
-          <View style={styles.textEntryContainer}><TextEntry label="Email" keyboardType="email-address" placeholderValue="monologRocks@gmail.com" editable={true} returnKeyType="next" innerRef={textRefs[0]} onFinish={() => selectTextRef(1)}/></View>
-          <View style={styles.textEntryContainer}><PasswordEntry label="Password" placeholderValue="•••••••" editable={true} secureTextEntry={true} returnKeyType="done" innerRef={textRefs[1]} onFinish={authenticate}/></View>
-          <Pressable onPress={() => {}} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+          <View style={styles.textEntryContainer}><TextEntry label="Email" keyboardType="email-address" placeholderValue="monologRocks@gmail.com" editable={true} returnKeyType="next" innerRef={textRefs[0]} onFinish={() => selectTextRef(1)} /></View>
+          <View style={styles.textEntryContainer}><PasswordEntry label="Password" placeholderValue="•••••••" editable={true} secureTextEntry={true} returnKeyType="done" innerRef={textRefs[1]} onFinish={authenticate} /></View>
+          <Pressable onPress={() => { }} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
             <Text style={styles.forgotPassword}>Forgot Your Password?</Text>
           </Pressable>
         </View>
@@ -52,7 +57,7 @@ const Login = ({ route, navigation }): JSX.Element => {
           <SignInButton text={"Sign In With Google"} onPress={authenticate} background={colors.BACKGROUND}><AntDesign name="google" style={styles.socialIcon} /></SignInButton>
           <SignInButton text={"Sign In With Facebook"} onPress={authenticate} background={colors.BACKGROUND}><AntDesign name="facebook-square" style={styles.socialIcon} /></SignInButton>
         </View>
-      </View> 
+      </View>
     </LinearGradient>
   )
 }

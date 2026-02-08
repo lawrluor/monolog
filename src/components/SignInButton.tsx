@@ -4,10 +4,10 @@ import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { colors, text, spacings, dimensions, sizes } from '../styles';
 
 type Props = {
-  text?: string,
-  background: string,
+  text?: string;
+  background: string;
   onPress: () => void;
-  children: any
+  children?: React.ReactNode;
 }
 
 const SignInButton = ({ children, text, background, onPress }: Props) => {

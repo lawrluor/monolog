@@ -1,5 +1,17 @@
 import { type Video } from './video';
 
+export type MainNavigationStackParamsList = {
+  "AuthLoading": undefined;
+  "AppStack": undefined;
+  "AuthStack": undefined;
+  "OnBoardingStack": undefined;
+}
+
+export type AuthStackParamsList = {
+  "Signup": undefined;
+  "Login": { setUser: (value: boolean) => void };
+}
+
 export type AppStackTabNavigatorParamsList = {
   "Gallery": undefined,
   "Recording": undefined,
@@ -21,4 +33,7 @@ export type AppStackParamsList = {
   "TabNavigator": { screen?: keyof AppStackTabNavigatorParamsList } | undefined
 }
 
-
+export type OnBoardingStackParamsList = {
+  "OnBoarding1": undefined;
+  "Landing": undefined;
+}

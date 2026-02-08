@@ -2,16 +2,9 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Signup, Login } from '../screens';
+import { AuthStackParamsList } from '../types/navigation';
 
-// Initial params (NOT PROPS) for routes: See https://reactnavigation.org/docs/typescript/
-// Specifying undefined means that the route doesn't have params.
-// A union type with undefined (e.g. SomeType | undefined) means that params are optional.
-type AuthStackParams = {
-  "Signup": undefined;
-  "Login": undefined;
-}
-
-const Stack = createNativeStackNavigator<AuthStackParams>();
+const Stack = createNativeStackNavigator<AuthStackParamsList>();
 
 const AuthNavigator = () => {
   return (

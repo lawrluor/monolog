@@ -2,14 +2,9 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { OnBoarding1, Landing } from '../screens';
+import { OnBoardingStackParamsList } from '../types/navigation';
 
-// TODO: add OnBoarding3, OnBoardingPicture, OnBoardingSliders
-type OnBoardingStackParams = {
-  "OnBoarding1": undefined;
-  "Landing": undefined;
-}
-
-const Stack = createNativeStackNavigator<OnBoardingStackParams>();
+const Stack = createNativeStackNavigator<OnBoardingStackParamsList>();
 
 const OnBoardingNavigator = () => {
   return (

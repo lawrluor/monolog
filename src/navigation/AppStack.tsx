@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { useNavigation, useRoute, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Gallery, Player, Recording, Rating, Transcript, Home, Vistas, Pathways, PathwayFull, PathwaysPrompt } from '../screens';
 import CustomIcon from '../components/CustomIcon';
 import { colors, icons, spacings } from '../styles';
-import { AppStackParamsList, AppStackTabNavigatorParamsList } from '../types/navigation';
+import { type AppStackParamsList, type AppStackTabNavigatorParamsList } from '../types/navigation';
 
 // Initial params (NOT PROPS) for routes: See https://reactnavigation.org/docs/typescript/
 // Specifying undefined means that the route doesn't have params.

@@ -1,25 +1,23 @@
 import React from 'react';
-import { StyleSheet, View, Text, KeyboardAvoidingView, Keyboard, Platform, Pressable } from 'react-native';
-
+import { StyleSheet, View, Text, TextInput, KeyboardAvoidingView, Keyboard, Platform, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { text, spacings, colors, icons, sizes } from '../styles';
-
-import { validateGender, validatePronouns, validateEmail, validateName, validateAge, genderOptions, pronounOptions } from '../utils/onboardingHelpers';
-
 import UserContext from '../context/UserContext';
-
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import TextEntry from '../components/TextEntry';
 import DropDown from '../components/DropDown';
 import SignInButton from '../components/SignInButton';
+import { validateGender, validatePronouns, validateEmail, validateName, validateAge, genderOptions, pronounOptions } from '../utils/onboardingHelpers';
+import { text, spacings, colors, icons, sizes } from '../styles';
 
 const LAST_SCREEN = 2;  // 2 screens in total for onboarding process
 
-const OnBoarding1 = (): JSX.Element => {
-  const { setUser } = React.useContext(UserContext);
+const OnBoarding1 = () => {
+  const userContext = React.useContext(UserContext);
+  if (!userContext) throw new Error('UserContext must be used wtihin a provider');
+  const { setUser } = userContext;
 
-  const textRefs = [textRef0, textRef1, textRef2, textRef3] = [React.createRef(), React.createRef(), React.createRef(), React.createRef()];
+  const textRefs = [React.createRef<TextInput>(), React.createRef<TextInput>(), React.createRef<TextInput>(), React.createRef<TextInput>()];
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
@@ -33,18 +31,18 @@ const OnBoarding1 = (): JSX.Element => {
   React.useEffect(() => {
     // Listener to detect when move to screen 2
     // TODO: figure out a way to autofocus without jittering screen
-    if (screenNumber===1) {
+    if (screenNumber === 1) {
       selectTextRef(0);  // focus the textRef at index 3
     }
   }, [screenNumber]);
 
   // NOTE: because we allow skipping the forms completely,
-    // only validate a given field if the user has entered info already into that field.
-    // setErrorMessage() will let us conditionally render error messages via renderErrorMessage()
+  // only validate a given field if the user has entered info already into that field.
+  // setErrorMessage() will let us conditionally render error messages via renderErrorMessage()
   // HOWEVER, if user presses "Skip for now", it skips all this. See handleFormSkip()
-    // Case 1: User enters no information across all text fields. Returns: true
-    // Case 2: User enters improperly formatted email. Returns: false
-    // Case 3: User enters properly formatted email, leaving other fields blank. Returns: true
+  // Case 1: User enters no information across all text fields. Returns: true
+  // Case 2: User enters improperly formatted email. Returns: false
+  // Case 3: User enters properly formatted email, leaving other fields blank. Returns: true
   const validateData = (): boolean => {
     if (email && !validateEmail(email)) {
       setErrorMessage("Email is not formatted properly.");
@@ -73,9 +71,9 @@ const OnBoarding1 = (): JSX.Element => {
   // Clears states using state setters up to a given number of states
   const clearTextStates = (clearUpTo?: number) => {
     let stateToEndAt = clearUpTo || stateSetters.length;
-    for (let i=0; i < stateToEndAt; i++) {
+    for (let i = 0; i < stateToEndAt; i++) {
       let stateSetter = stateSetters[i];
-      stateSetter("");
+      stateSetter?.("");
     }
   }
 
@@ -95,7 +93,7 @@ const OnBoarding1 = (): JSX.Element => {
   // Only allow moving forward to next page if data entered on this page is valid
   const handleFormSubmit = () => {
     if (validateData())
-     renderNextOnboardingScreen();
+      renderNextOnboardingScreen();
   }
 
   const renderNextOnboardingScreen = () => {
@@ -135,10 +133,10 @@ const OnBoarding1 = (): JSX.Element => {
   // renders validation error if any exists
   const renderErrorMessage = (): JSX.Element | null => {
     return (
-        errorMessage
+      errorMessage
         ?
         <View style={{ marginVertical: spacings.MEDIUM }}>
-          <Text style={[text.h4, { color: colors.ERROR, textAlign: 'center'}]}>{errorMessage}</Text>
+          <Text style={[text.h4, { color: colors.ERROR, textAlign: 'center' }]}>{errorMessage}</Text>
         </View>
         :
         null
@@ -160,39 +158,39 @@ const OnBoarding1 = (): JSX.Element => {
   // When "next/done" is pressed in child TextEntry,
   // this callback will allow the parent OnBoarding screen to focus on the next TextEntry element.
   const selectTextRef = (index: number) => {
-    textRefs[index].current.focus();
+    textRefs[index]?.current?.focus();
   }
 
   // TODO: Allow pressing out of text entries, either by adding ScrollView (hack) or full screen modal
   const renderTextEntries = () => {
-    if (screenNumber===1) {
+    if (screenNumber === 1) {
       return (
         <View style={styles.formFieldsContainer}>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="First Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)}/></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Last Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)}/></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" keyboardType='email-address' editable isTextBox returnKeyType="next" innerRef={textRefs[2]} textState={email} setTextState={setEmail}  onFinish={() => handleTextOnFinish(2)}/></View>
-          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[3]} textState={age} setTextState={setAge}  onFinish={handleFormSubmit}/></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="First Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[0]} textState={firstName} setTextState={setFirstName} onFinish={() => handleTextOnFinish(0)} /></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Last Name" autoCapitalize='words' editable isTextBox returnKeyType="next" innerRef={textRefs[1]} textState={lastName} setTextState={setLastName} onFinish={() => handleTextOnFinish(1)} /></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Email" keyboardType='email-address' editable isTextBox returnKeyType="next" innerRef={textRefs[2]} textState={email} setTextState={setEmail} onFinish={() => handleTextOnFinish(2)} /></View>
+          <View style={styles.textEntryContainer}><TextEntry placeholderValue="Age" editable isTextBox keyboardType="numeric" returnKeyType="done" innerRef={textRefs[3]} textState={age} setTextState={setAge} onFinish={handleFormSubmit} /></View>
         </View>
       )
     } else {
       return (
         <View style={styles.formFieldsContainer}>
-          <DropDown title={"Gender"} options={genderOptions} selectedValue={gender} setSelectedValue={setGender}  />
-          <DropDown title={"Pronouns"} options={pronounOptions} selectedValue={pronouns} setSelectedValue={setPronouns}  />
+          <DropDown title={"Gender"} options={genderOptions} selectedValue={gender} setSelectedValue={setGender} />
+          <DropDown title={"Pronouns"} options={pronounOptions} selectedValue={pronouns} setSelectedValue={setPronouns} />
         </View>
       )
     }
   }
 
   const renderFormTitle = () => {
-    switch(screenNumber) {
+    switch (screenNumber) {
       case 1:
         return (
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Hello!</Text>
 
             <View style={styles.subTitleContainer}>
-              <Text style={[styles.subTitle, {'textAlign': 'center'}]}>Before we start, we just have a few optional questions...</Text>
+              <Text style={[styles.subTitle, { 'textAlign': 'center' }]}>Before we start, we just have a few optional questions...</Text>
             </View>
           </View>
         )
@@ -218,9 +216,9 @@ const OnBoarding1 = (): JSX.Element => {
         <View style={styles.fullWidth}></View>
 
         <View style={styles.skipTextContainer}>
-          {screenNumber === 2 && <View style={{ marginBottom: spacings.MEDIUM }}><SignInButton text={"Finish"} onPress={handleFormSubmit} background={colors.BACKGROUND}/></View>}
+          {screenNumber === 2 && <View style={{ marginBottom: spacings.MEDIUM }}><SignInButton text={"Finish"} onPress={handleFormSubmit} background={colors.BACKGROUND} /></View>}
 
-          <Pressable onPress={handleFormSkip} hitSlop={spacings.hitSlopLarge} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
+          <Pressable onPress={handleFormSkip} hitSlop={spacings.hitSlopLarge} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
             <Text style={styles.linkText}>Skip For Now</Text>
           </Pressable>
 
@@ -231,17 +229,17 @@ const OnBoarding1 = (): JSX.Element => {
   }
 
   const renderScreenSelectorIcons = () => {
-    if (screenNumber===1) {
+    if (screenNumber === 1) {
       return (
         <View style={styles.iconsContainer}>
           <View style={[styles.circle, styles.circleSelected]}></View>
-          <Pressable onPress={handleFormSubmit} hitSlop={spacings.hitSlopMedium} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }><View style={styles.circle}></View></Pressable>
+          <Pressable onPress={handleFormSubmit} hitSlop={spacings.hitSlopMedium} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}><View style={styles.circle}></View></Pressable>
         </View>
       )
     } else {
       return (
         <View style={styles.iconsContainer}>
-          <Pressable onPress={moveToPreviousOnboardingScreen} hitSlop={spacings.hitSlopMedium} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }><View style={styles.circle}></View></Pressable>
+          <Pressable onPress={moveToPreviousOnboardingScreen} hitSlop={spacings.hitSlopMedium} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}><View style={styles.circle}></View></Pressable>
           <View style={[styles.circle, styles.circleSelected]}></View>
         </View>
       )
@@ -325,7 +323,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     width: icons.SMALL.fontSize - 18,
     aspectRatio: 1,
-    borderRadius: (icons.SMALL.fontSize - 18) /  2,
+    borderRadius: (icons.SMALL.fontSize - 18) / 2,
     margin: spacings.SMALL
   },
   circleSelected: {

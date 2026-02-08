@@ -11,7 +11,7 @@ type Props = {
   defaultNumOfWords?: number;
   abridged?: boolean;
   navigation: any,
-  callback: any
+  callback?: any
 }
 
 const MAX_NUM_OF_WORDS_TO_DISPLAY = 50;

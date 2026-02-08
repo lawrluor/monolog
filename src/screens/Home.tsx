@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Text, Pressable } from 'react-native';
+import { type StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
 import VideosContext from '../context/VideosContext';
 import UserContext from '../context/UserContext';
-
 import CustomIcon from '../components/CustomIcon';
 import Divider from '../components/Divider';
 import WordChart from '../components/WordChart';
@@ -16,18 +16,29 @@ import SignInButton from '../components/SignInButton';
 import { FullPageSpinner } from '../components/Spinner';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
-import { comingSoonAlert, deleteDataAlert, simpleAlert } from '../utils/customAlerts';
+import { deleteDataAlert, simpleAlert } from '../utils/customAlerts';
 import { getRecordingPermissions } from '../utils/permissions';
 import { INITIAL_USER_DATA } from '../utils/localStorageUtils';
+import { getImagesByDeviceSize } from '../utils/images';
+
+import { type AppStackParamsList } from '../types/navigation';
 
 import { containers, icons, text, spacings, colors } from '../styles';
-import { getImagesByDeviceSize } from '../utils/images';
 
 const VIDEOS_THRESHOLD = 1;
 
-const Home = ({ navigation }: any): JSX.Element => {
-  const { user, setUser } = React.useContext(UserContext);
-  const { videosCount, toggleVideosRefresh, isLoading } = React.useContext(VideosContext);
+type Props = {
+  navigation: StackNavigationProp<AppStackParamsList>;
+}
+
+const Home = ({ navigation }: Props) => {
+  const userContext = React.useContext(UserContext);
+  if (!userContext) throw new Error("UserContext must be used within a provider");
+  const { user, setUser } = userContext;
+
+  const videosContext = React.useContext(VideosContext);
+  if (!videosContext) throw new Error("VideosContext must be used within a provider");
+  const { videosCount, toggleVideosRefresh, isLoading } = videosContext;
 
   // Optionally used to allow for closing alert/promo messages in Home
   const [alertVisible, setAlertVisible] = React.useState<boolean>(false);
@@ -42,11 +53,11 @@ const Home = ({ navigation }: any): JSX.Element => {
   let imagesLoadingState = [true, true, true];
 
   const navigateToVistas = () => {
-    navigation.navigate('Vistas');
+    navigation.navigate('TabNavigator', { screen: 'Vistas' });
   }
 
   const navigateToRecord = () => {
-    navigation.navigate('Recording');
+    navigation.navigate('TabNavigator', { screen: 'Recording' });
   }
 
   const navigateToProfile = async () => {
@@ -55,18 +66,17 @@ const Home = ({ navigation }: any): JSX.Element => {
     // which handles auth state for us and should display Landing page.
     deleteDataAlert(() => {
       setUser(INITIAL_USER_DATA);  // Refresh UserContext
-      toggleVideosRefresh(false);  // Refresh VideosContext
-      navigation.navigate('AuthLoading');
+      toggleVideosRefresh();       // Refresh VideosContext
     });
   }
 
-  const renderPathwaysWidget = (): JSX.Element => {
+  const renderPathwaysWidget = () => {
     return (
       <View style={styles.featureContainer}>
         <Text style={styles.featureTitle}>Pathways</Text>
 
         <View style={{ marginVertical: spacings.SMALL, alignItems: 'center' }}>
-          <SignInButton onPress={() => navigation.navigate('Pathways') } background={colors.HIGHLIGHT}><Text style={text.h4}>View Pathways</Text></SignInButton>
+          <SignInButton onPress={() => navigation.navigate('Pathways')} background={colors.HIGHLIGHT}><Text style={text.h4}>View Pathways</Text></SignInButton>
         </View>
       </View>
     )
@@ -78,7 +88,7 @@ const Home = ({ navigation }: any): JSX.Element => {
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Vistas Summary</Text>
 
-        <Pressable onPress={navigateToVistas} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}, { 'flexDirection': 'row', 'alignItems': 'center' }] }>
+        <Pressable onPress={navigateToVistas} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }, { 'flexDirection': 'row', 'alignItems': 'center' }]}>
           <Text style={text.h4}>See all</Text>
           <Ionicons name='chevron-forward' style={styles.forwardIconWhite} />
         </Pressable>
@@ -96,14 +106,14 @@ const Home = ({ navigation }: any): JSX.Element => {
     } else {
       return (
         <Pressable
-          onPress={() => simpleAlert("Feature Locked", "Record more logs to begin tracking your Vistas!", "OK", ()=>{})}
-          style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }
+          onPress={() => simpleAlert({ title: "Feature Locked", message: "Record more logs to begin tracking your Vistas!", buttonText: "OK" })}
+          style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
         >
           <View style={[styles.featureContainer, styles.featureContainerWithIcon]}>
             <Text style={styles.featureTitle}>Frequent Words</Text>
             <Ionicons name='lock-closed' style={styles.lockIcon} />
           </View>
-        </Pressable>
+        </Pressable >
       )
     }
   }
@@ -118,8 +128,8 @@ const Home = ({ navigation }: any): JSX.Element => {
     } else {
       return (
         <Pressable
-          onPress={() => simpleAlert("Feature Locked", "Record more logs to begin tracking your Vistas!", "OK", ()=>{})}
-          style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }
+          onPress={() => simpleAlert({ title: "Feature Locked", message: "Record more logs to begin tracking your Vistas!", buttonText: "OK" })}
+          style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
         >
           <View style={[styles.featureContainer, styles.featureContainerWithIcon]}>
             <Text style={styles.featureTitle}>Mood Tracker</Text>
@@ -132,9 +142,7 @@ const Home = ({ navigation }: any): JSX.Element => {
 
   const onImageLoadCallback = (index: number) => {
     imagesLoadingState[index] = false;
-    setImagesLoading(imagesLoadingState.some((val: boolean) => val===true));
-    // console.log('tutorial1', tutorial1ShouldShow);
-    // console.log('imagesLoadingState', imagesLoadingState);
+    setImagesLoading(imagesLoadingState.some((val: boolean) => val === true));
   }
 
   // Async wrapper for getting permissions
@@ -162,66 +170,58 @@ const Home = ({ navigation }: any): JSX.Element => {
   // TODO: ideally, just have the imageUri as a state and have that update whenever tutorialShouldShow state toggles.
   return (
     <TutorialImageModal shouldShow={tutorial1ShouldShow} setShouldShow={setTutorial1ShouldShow} imageUri={getImagesByDeviceSize('home3')} onLoadCallback={() => onImageLoadCallback(0)}>
-    <TutorialImageModal shouldShow={tutorial2ShouldShow} setShouldShow={setTutorial2ShouldShow} imageUri={getImagesByDeviceSize('home2')} onLoadCallback={() => onImageLoadCallback(1)}>
-    <TutorialImageModal shouldShow={tutorial3ShouldShow} setShouldShow={setTutorial3ShouldShow} imageUri={getImagesByDeviceSize('home1')} onLoadCallback={() => onImageLoadCallback(2)}>
-      {
-        imagesLoading && tutorial1ShouldShow
-        ?
-        <FullPageSpinner size='large'></FullPageSpinner>
-        :
-        <>
-          <SafeAreaTop />
+      <TutorialImageModal shouldShow={tutorial2ShouldShow} setShouldShow={setTutorial2ShouldShow} imageUri={getImagesByDeviceSize('home2')} onLoadCallback={() => onImageLoadCallback(1)}>
+        <TutorialImageModal shouldShow={tutorial3ShouldShow} setShouldShow={setTutorial3ShouldShow} imageUri={getImagesByDeviceSize('home1')} onLoadCallback={() => onImageLoadCallback(2)}>
+          {
+            imagesLoading && tutorial1ShouldShow
+              ?
+              <FullPageSpinner size='large'></FullPageSpinner>
+              :
+              <>
+                <SafeAreaTop />
 
-          <SafeAreaBottom>
-            <LinearGradient
-              colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-              style={styles.container}
-            >
-              <View style={styles.headerContainer}>
-                <View>
-                  <Text style={styles.subTitle}>Welcome,</Text>
-                  <Text style={styles.profileTitle}>{user?.firstName || "Journaler!"}</Text>
-                </View>
+                <SafeAreaBottom>
+                  <LinearGradient
+                    colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+                    style={styles.container}
+                  >
+                    <View style={styles.headerContainer}>
+                      <View>
+                        <Text style={styles.subTitle}>Welcome,</Text>
+                        <Text style={styles.profileTitle}>{user?.firstName || "Journaler!"}</Text>
+                      </View>
 
-                <View>
-                  <Pressable onPress={navigateToProfile} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-                    <CustomIcon name='avatar' style={styles.profileIcon} />
-                  </Pressable>
-                </View>
-              </View>
+                      <View>
+                        <Pressable onPress={navigateToProfile} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
+                          <CustomIcon name='avatar' style={styles.profileIcon} />
+                        </Pressable>
+                      </View>
+                    </View>
 
-              <View style={{ paddingHorizontal: spacings.HUGE }}>
-                <Divider color={colors.BACKGROUND} />
-              </View>
+                    <View style={{ paddingHorizontal: spacings.HUGE }}>
+                      <Divider color={colors.BACKGROUND} />
+                    </View>
 
-              <ScrollView
-                style={styles.bodyContainer}
-                contentContainerStyle={styles.scrollContentContainerStyle}
-                showsVerticalScrollIndicator={false}
-              >
-                {renderVistasSummaryHeader()}
-                {
-                  (alertVisible && (videosCount < VIDEOS_THRESHOLD))
-                  && <NewUserMessage navigateCallback={navigateToRecord} />
-                }
-                {renderPathwaysWidget()}
-                {renderWordChartSummary(videosCount)}
-                {renderMoodChartSummary(videosCount)}
-
-                {/* Social Button: Not used at the moment
-                 <Pressable onPress={() => comingSoonAlert(null)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-                  <View style={[styles.featureContainer, styles.socialContainer]}>
-                    <Text style={styles.featureTitle}>Social</Text>
-                    <Ionicons name='chevron-forward' style={styles.forwardIconGrey} />
-                  </View>
-                </Pressable> */}
-              </ScrollView>
-            </LinearGradient>
-          </SafeAreaBottom>
-        </>
-      }
-    </TutorialImageModal>
-    </TutorialImageModal>
+                    <ScrollView
+                      style={styles.bodyContainer}
+                      contentContainerStyle={styles.scrollContentContainerStyle}
+                      showsVerticalScrollIndicator={false}
+                    >
+                      {renderVistasSummaryHeader()}
+                      {
+                        (alertVisible && (videosCount < VIDEOS_THRESHOLD))
+                        && <NewUserMessage navigateCallback={navigateToRecord} />
+                      }
+                      {renderPathwaysWidget()}
+                      {renderWordChartSummary(videosCount)}
+                      {renderMoodChartSummary(videosCount)}
+                    </ScrollView>
+                  </LinearGradient>
+                </SafeAreaBottom>
+              </>
+          }
+        </TutorialImageModal>
+      </TutorialImageModal>
     </TutorialImageModal>
   )
 }

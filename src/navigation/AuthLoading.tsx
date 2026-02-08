@@ -1,13 +1,18 @@
 import React from 'react';
+import { type StackNavigationProp } from '@react-navigation/stack';
 
 import UserContext from '../context/UserContext';
-
 import { FullPageSpinner } from '../components/Spinner';
+import { type MainNavigationStackParamsList } from '../types/navigation';
+
+type Props = {
+  navigation: StackNavigationProp<MainNavigationStackParamsList>;
+}
 
 // Initial screen in the mainNavigator, which App loads
 // HANDLES: reading user from Context and checking if user exists/logged in,
 // then forwarding to either AppStack or AuthStack
-const AuthLoading = ({ navigation }: any) => {
+const AuthLoading = ({ navigation }: Props) => {
   const userContext = React.useContext(UserContext);
   if (!userContext) throw new Error('AuthLoading must be used within a UserProvider');
   const { user } = userContext;
@@ -30,9 +35,6 @@ const AuthLoading = ({ navigation }: any) => {
   }
 
   React.useEffect(() => {
-    // authenticate() will be called whenever currentUser updates
-    // This happens after the correct user is from database is matched to login/auth credentials
-    // Then, this user is loaded from Context
     authenticate();
   }, [user]);
 

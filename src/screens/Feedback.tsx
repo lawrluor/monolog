@@ -1,15 +1,14 @@
 import React from 'react';
 import { StyleSheet, Platform, KeyboardAvoidingView, View, Text, Pressable, Linking, Alert, Keyboard } from 'react-native';
-
+import { type StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { TextArea } from '../components/TextEntry';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import SignInButton from '../components/SignInButton';
-
 import { feedbackConfirmationSuccess, feedbackConfirmationFailure } from '../utils/customAlerts';
-
 import { containers, text, spacings, colors } from '../styles';
+import { type AppStackParamsList } from '../types/navigation';
 
 const FEEDBACK_EMAIL_ADDRESS = "monist@monist.me";
 
@@ -21,7 +20,6 @@ const sendEmail = async (to: string, subject: string, body: string) => {
   // Parsing and replacing each '\n' with '%0A', the newline character in query strings, doesn't work.
   const sanitizeBody = (text: string) => {
     let sanitized = text.replace('\\n', '\\t');  // This has the same result
-    console.log("sanitized", text);
     return sanitized;
   }
 
@@ -41,7 +39,11 @@ const sendEmail = async (to: string, subject: string, body: string) => {
   return Linking.openURL(url);
 }
 
-const Settings = ({ navigation }): JSX.Element => {
+type Props = {
+  navigation: StackNavigationProp<AppStackParamsList>;
+}
+
+const Settings = ({ navigation }: Props) => {
   const placeholderText = "Your feedback is very important to us - please tell us how we can build a better app for you!";
   const [feedbackText, setFeedbackText] = React.useState<string>("");
 
@@ -53,13 +55,13 @@ const Settings = ({ navigation }): JSX.Element => {
   const sendEmailButtonCallback = () => {
     sendEmail(FEEDBACK_EMAIL_ADDRESS, "Monist App Feedback", feedbackText);
 
-     // Hacky way to have a "callback" for when sending feedback through outside email app
-     // Have a delay so that there is no "whiplash" from navigating screen immediately 
-     // After they either send or don't send the email, on navigating back to Monist,
-      // they will have been navigated to the moe page with this confirmation alert.
+    // Hacky way to have a "callback" for when sending feedback through outside email app
+    // Have a delay so that there is no "whiplash" from navigating screen immediately 
+    // After they either send or don't send the email, on navigating back to Monist,
+    // they will have been navigated to the moe page with this confirmation alert.
     // NOTE: we could clear the Feedback textarea, but better to leave it there
     // in case users would like to edit their text later or accidentally leave the screen.
-    setTimeout(submitFeedbackConfirmation, 2000); 
+    setTimeout(submitFeedbackConfirmation, 2000);
   }
 
   const submitFeedbackConfirmation = () => {
@@ -67,19 +69,19 @@ const Settings = ({ navigation }): JSX.Element => {
       "Please Note:",
       `In order for the Monist team to receive your feedback, you must have sent it via email to ${FEEDBACK_EMAIL_ADDRESS} when prompted.`,
       [
-        { 
+        {
           text: "No Thanks", onPress: feedbackConfirmationFailure
         },
-        { 
+        {
           text: "Done",
-          onPress: () => {   
-            navigation.navigate('Home');  
+          onPress: () => {
+            navigation.navigate("TabNavigator", { screen: 'Home' });
             feedbackConfirmationSuccess();
           }
         }
       ]
-    );    
-  } 
+    );
+  }
 
   const openEmailAppAlert = () => {
     Alert.alert(
@@ -91,7 +93,7 @@ const Settings = ({ navigation }): JSX.Element => {
           style: "cancel",
           onPress: feedbackConfirmationFailure
         },
-        { 
+        {
           text: "OK",
           onPress: sendEmailButtonCallback
         }
@@ -129,7 +131,7 @@ const Settings = ({ navigation }): JSX.Element => {
                 <TextArea onChange={handleOnChange} editable placeholder={placeholderText} />
               </View>
 
-              <SignInButton text={"Submit Feedback"} background={colors.BACKGROUND} onPress={handleSubmit}/>
+              <SignInButton text={"Submit Feedback"} background={colors.BACKGROUND} onPress={handleSubmit} />
             </LinearGradient>
           </KeyboardAvoidingView>
         </Pressable>

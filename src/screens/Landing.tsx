@@ -1,13 +1,18 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Image, Text } from 'react-native';
+import { type StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 
+import { type OnBoardingStackParamsList } from '../types/navigation';
+import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
+import SignInButton from '../components/SignInButton';
 import { dimensions, text, spacings, colors } from '../styles';
 
-import SignInButton from '../components/SignInButton';
+type Props = {
+  navigation: StackNavigationProp<OnBoardingStackParamsList>
+}
 
-const Landing = ({ navigation }: any): JSX.Element => {
+const Landing = ({ navigation }: Props) => {
   const beginOnboarding = () => {
     navigation.navigate('OnBoarding1');
   }
@@ -18,23 +23,23 @@ const Landing = ({ navigation }: any): JSX.Element => {
 
       <SafeAreaBottom>
 
-      <LinearGradient
+        <LinearGradient
           // Background Linear Gradient
           colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
           style={styles.container}
-      >
-        <View style={styles.formContainer}>
-          <View style={styles.titleContainer}>
-            {/* <Text style={styles.title}>Monolog</Text> */}
-            <Image style={styles.brandImage} source={require('../../assets/img/monolog_logo_full.png')} />
-            <Text style={styles.subTitle}>Think Out Loud</Text>
-          </View>
+        >
+          <View style={styles.formContainer}>
+            <View style={styles.titleContainer}>
+              {/* <Text style={styles.title}>Monolog</Text> */}
+              <Image style={styles.brandImage} source={require('../../assets/img/monolog_logo_full.png')} />
+              <Text style={styles.subTitle}>Think Out Loud</Text>
+            </View>
 
-          <View style={styles.buttonContainer}>
-            <SignInButton text={"Get started"} onPress={beginOnboarding} background={colors.BACKGROUND}></SignInButton>
-          </View>
+            <View style={styles.buttonContainer}>
+              <SignInButton text={"Get started"} onPress={beginOnboarding} background={colors.BACKGROUND}></SignInButton>
+            </View>
 
-          {/* Disable Login Path for Alpha Release
+            {/* Disable Login Path for Alpha Release
           <View style={styles.forgotPasswordContainer}>
             <Text style={styles.forgotPassword}>Already a member? </Text>
             <Pressable onPress={navigateToLogin} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
@@ -42,8 +47,8 @@ const Landing = ({ navigation }: any): JSX.Element => {
             </Pressable>
           </View>
           */}
-        </View>
-      </LinearGradient>
+          </View>
+        </LinearGradient>
       </SafeAreaBottom>
     </>
   )

@@ -6,8 +6,8 @@ type TextEntryProps = {
   children?: React.ReactNode;
   textState?: string;
   setTextState?: React.Dispatch<React.SetStateAction<string>>;
-  id: number;
-  innerRef: React.RefObject<TextInput>;
+  id?: number;
+  innerRef: React.RefObject<TextInput> | undefined;
   label?: string;
   autoCapitalize?: TextInputProps['autoCapitalize'];
   editable: boolean;
@@ -50,11 +50,11 @@ const TextEntry = ({ textState, setTextState, id, innerRef, label, autoCapitaliz
 }
 
 type SearchEntryProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   editable: boolean;
-  secureTextEntry: boolean;
-  placeholderValue: string;
-  returnKeyType: ReturnKeyTypeOptions;
+  secureTextEntry?: boolean;
+  placeholderValue?: string;
+  returnKeyType?: ReturnKeyTypeOptions;
   onFinish: (text: string) => void;
   modalShown: boolean;
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -119,14 +119,14 @@ export const SearchEntry = ({ children, editable, secureTextEntry, placeholderVa
 
 type PasswordEntryProps = {
   label: string;
-  id: number;
-  innerRef: React.RefObject<TextInput>;
-  onChangeText: (stateId: number, changedTextValue: string) => void;
+  id?: number;
+  innerRef: React.RefObject<TextInput> | undefined;
+  onChangeText?: (stateId: number, changedTextValue: string) => void;
   editable: boolean;
   secureTextEntry: boolean;
   placeholderValue: string;
   returnKeyType: ReturnKeyTypeOptions;
-  isTextBox: boolean;
+  isTextBox?: boolean;
   onFinish: (nextId: number, currentId: number, text: string) => void;
 }
 
@@ -183,7 +183,7 @@ export const PasswordEntry = ({ label, id, innerRef, onChangeText, editable, sec
 }
 
 type TextAreaProps = {
-  value: string;
+  value?: string;
   onChange: (text: string) => void;
   editable: boolean;
   placeholder: string;
