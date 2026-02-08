@@ -1,14 +1,20 @@
 import React from 'react';
 import { StyleSheet, View, Text, Pressable } from 'react-native';
-
+import { type RouteProp } from '@react-navigation/native';
+import { type StackNavigationProp } from '@react-navigation/stack';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-
-import { containers, text, spacings, colors, icons } from '../styles';
 
 import SignInButton from '../components/SignInButton';
 import TextEntryGroup from '../components/TextEntryGroup';
 import GoBack from '../components/GoBack';
+import { containers, text, spacings, colors, icons } from '../styles';
+import { type AuthStackParamsList } from '../types/navigation';
+
+type Props = {
+  route: RouteProp<AuthStackParamsList, 'Signup'>;
+  navigation: StackNavigationProp<AuthStackParamsList>;
+}
 
 // Initial state for text inputs, bound together with reducer
 const infoTextEntryGroupState = {
@@ -17,13 +23,11 @@ const infoTextEntryGroupState = {
   email: "",
 }
 
-const Signup = ({ route, navigation }) => {
+const Signup = ({ route }: Props) => {
   const { setUser, setShouldOnboard } = route.params;
   const [signupInput, setSignupInput] = React.useState(infoTextEntryGroupState);
-  const [isChecked, setIsChecked ] = React.useState<boolean>(false);
+  const [isChecked, setIsChecked] = React.useState<boolean>(false);
   const [isSigningIn, setIsSigningIn] = React.useState<boolean>(false);
-
-  const infoTextEntryGroupRef = React.useRef();
 
   // validateSignupData will validate that signupInput data is in the correct format (passwords, email, etc.)
   // TODO: Helper for authenticate(), will run text validation on each state
@@ -35,43 +39,39 @@ const Signup = ({ route, navigation }) => {
   // TODO: Add data validation: Each Text Entry should also update the component state
   // Then, upon calling authenticate(), should evaluate the current state variables of the text entries.
   // Wrapper function called when user presses sign up button
-  const authenticate = async () => {
-    setSignupInput(infoTextEntryGroupRef.current.getState());
-    setIsSigningIn(true);
+  const authenticate = () => {
+    try {
+      setIsSigningIn(true);
 
-    let isValid = await validateSignupData();
-
-    if (isValid) {
-      setUser(true);
-      setIsSigningIn(false);  
-      setShouldOnboard(true);
-    } else {
-      // TODO: Display error message/alert
-      console.log("ERROR: Invalid input");
-      setIsSigningIn(false);  
+      let isValid = validateSignupData();
+      if (isValid) {
+        setUser(true);
+        setShouldOnboard(true);
+      } else {
+        throw new Error("Invalid input");
+      }
+    } catch (error: Error | unknown) {
+      console.error(error);
+    } finally {
+      setIsSigningIn(false);
     }
   }
 
-  const selectTextRef = (index: number) => {
-    textRefs[index].current.focus();
-  }
-
-  const renderCheckbox = (checked) => {
+  const renderCheckbox = (checked: boolean) => {
     return (
       checked
-      ? 
-      <Pressable onPress={() => setIsChecked(!isChecked)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-        <MaterialIcons name="check-box" style={styles.checkboxIcon}/>
-      </Pressable>
-      :
-      <Pressable onPress={() => setIsChecked(!isChecked)} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-        <MaterialIcons name="check-box-outline-blank" style={styles.checkboxIcon}/>
-      </Pressable>
+        ?
+        <Pressable onPress={() => setIsChecked(!isChecked)} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
+          <MaterialIcons name="check-box" style={styles.checkboxIcon} />
+        </Pressable>
+        :
+        <Pressable onPress={() => setIsChecked(!isChecked)} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
+          <MaterialIcons name="check-box-outline-blank" style={styles.checkboxIcon} />
+        </Pressable>
     )
   }
 
   React.useEffect(() => {
-    console.log("*****signup state*****", signupInput);
     if (isSigningIn) {
       validateSignupData()
     }
@@ -79,9 +79,8 @@ const Signup = ({ route, navigation }) => {
 
   return (
     <LinearGradient
-        // Background Linear Gradient
-        colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
-        style={styles.container}
+      colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
+      style={styles.container}
     >
       <GoBack />
       <View style={styles.formContainer}>
@@ -93,12 +92,12 @@ const Signup = ({ route, navigation }) => {
         <View style={styles.fieldContainer}>
           {/* TODO (UX): Consider removing redundant labels if placeholder text for each text entry will suffice */}
           {/* TODO (UX): Consider moving name entries to onboarding process to alleviate initial shock of 5 entries */}
-          
-          <TextEntryGroup ref={infoTextEntryGroupRef} type={'default'} initialState={infoTextEntryGroupState} />
-          
+
+          <TextEntryGroup state={signupInput} setState={setSignupInput} type={'default'} />
+
           <View style={styles.tosContainer}>
             {renderCheckbox(isChecked)}
-            <Pressable onPress={()=>{}} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }><Text style={styles.tos}>I agree to the terms of service.</Text></Pressable>
+            <Pressable onPress={() => { }} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}><Text style={styles.tos}>I agree to the terms of service.</Text></Pressable>
           </View>
         </View>
 
@@ -108,7 +107,7 @@ const Signup = ({ route, navigation }) => {
           <SignInButton text={"Sign Up With Google"} onPress={authenticate} background={colors.BACKGROUND}><AntDesign name="google" style={styles.socialIcon} /></SignInButton>
           <SignInButton text={"Sign Up With Facebook"} onPress={authenticate} background={colors.BACKGROUND}><AntDesign name="facebook-square" style={styles.socialIcon} /></SignInButton>
         </View>
-      </View> 
+      </View>
     </LinearGradient>
   )
 }

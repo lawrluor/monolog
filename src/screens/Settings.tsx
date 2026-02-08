@@ -1,28 +1,26 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
-
 import { containers, text, spacings, colors } from '../styles';
 
-const Settings = ({ navigation }): JSX.Element => {
+const Settings = () => {
   return (
     <>
       <SafeAreaTop />
 
       <SafeAreaBottom>
 
-      <LinearGradient
+        <LinearGradient
           // Background Linear Gradient
           colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
           style={styles.container}
-      >
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Settings</Text>
-        </View>
-      </LinearGradient>
+        >
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Settings</Text>
+          </View>
+        </LinearGradient>
       </SafeAreaBottom>
     </>
   )

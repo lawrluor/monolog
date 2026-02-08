@@ -1,13 +1,16 @@
 import React from 'react';
 
 import VideoContainer from '../components/VideoContainer';
+import { type StackNavigationProp } from '@react-navigation/stack';
+import { type RouteProp } from '@react-navigation/native';
+import { type AppStackParamsList } from '../types/navigation';
 
 type Props = {
-  navigation: any,
-  route: any
+  navigation: StackNavigationProp<AppStackParamsList>;
+  route: RouteProp<AppStackParamsList, 'Player'>;
 }
 
-const Player = ({ route, navigation }: Props): JSX.Element => {
+const Player = ({ route, navigation }: Props) => {
   const { video } = route.params;
 
   return (

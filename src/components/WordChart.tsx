@@ -6,12 +6,14 @@ import VideosContext from '../context/VideosContext';
 import VistaSummaryText from './VistaSummaryText';
 import Divider from './Divider';
 import { text, spacings, colors, icons } from '../styles';
+import { type StackNavigationProp } from '@react-navigation/stack';
+import { type AppStackParamsList } from '../types/navigation';
 
 type Props = {
   defaultNumOfWords?: number;
   abridged?: boolean;
-  navigation: any,
-  callback?: any
+  navigation?: StackNavigationProp<AppStackParamsList>,
+  callback?: () => void;
 }
 
 const MAX_NUM_OF_WORDS_TO_DISPLAY = 50;
@@ -54,12 +56,12 @@ const WordChart = ({ defaultNumOfWords = 10, abridged, callback }: Props) => {
     const maximumBarWidth = 0.5;  // Modifier for the container width. TODO: look closely at this
     let barRatio = maximumBarWidth * item.value;
     barRatio = barRatio > 0.90 ? 0.90 : barRatio;  // cap to 90% of the parent container
-    let finalBarWidth = `${barRatio * 100}%`;  // convert to string for CSS % of parent width
+    const finalBarWidth = barRatio * 100;  // convert to string for CSS % of parent width
 
     const renderBarWithTextInside = (item: any) => {
       return (
         <View key={item.word} style={styles.barItemContainer}>
-          <View key={item.word} style={[styles.bar, { width: finalBarWidth }]}>
+          <View key={item.word} style={[styles.bar, { width: `${finalBarWidth}%` }]}>
             <Text style={[styles.barText, { 'color': colors.BACKGROUND }]}>{item.word}</Text>
           </View>
 

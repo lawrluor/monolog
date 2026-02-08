@@ -5,25 +5,40 @@
 // Attributes are accessed with the '.' operator.
 import { readFile, writeFile } from '../utils/localStorageUtils';
 
+type RatingJSON = {
+  emoji: string;
+  index: string;
+  isCameraOn: string;
+}
+
 // Tries to create a rating from a file.
 // Best effort to create backwards-compatible legacy rating object.
 // Returns null if we can't create one from file.
 export const createRatingFromFile = async (filename: string):
   Promise<Rating | undefined> => {
+
   try {
     let content = await readFile(filename);
+
+    // Check for specific legacy rating format.
     if (content.length == 3) {
+      let index = content[2];
+      if (index === undefined) throw new Error("index is undefined");
+
       let rating = {
         emoji: content.substring(0, 2),
-        index: content[2],
+        index: index,
         isCameraOn: "true"  // default value for legacy ratings.
       }
+
       return new Rating(rating);
     }
+
     let rating = JSON.parse(content);
     return new Rating(rating);
-  } catch {
-    return;
+  } catch (error: Error | unknown) {
+    console.error("[ERROR] rating.ts:createRatingFromFile", error);
+    return
   }
 }
 
@@ -37,21 +52,10 @@ export const createRatingFromMetadata = (
   });
 }
 
-type RatingJSON = {
-  emoji: string;
-  index: string;
-  isCameraOn: string;
-}
-
 class Rating {
   // emoji is the emoji selected by a user.
   emoji: string;
-
-  // TODO(ryanluo): Create a central emoji util.
-  // index of the emoji, references the Rating file.
   index: number;
-
-  // Was the associated video recorded with camera off?
   isCameraOn: boolean;
 
   // Expects that ratingJson is well-formed with the following structure:
@@ -60,12 +64,11 @@ class Rating {
   //   index: "{NUMBER}"
   //   isCameraOn: "{IS_CAMERA_ON}"
   // }
+
   constructor(ratingJson: RatingJSON) {
     this.emoji = ratingJson.emoji;
     this.index = parseInt(ratingJson.index);
-
-    // Parse to boolean.
-    this.isCameraOn = JSON.parse(ratingJson.isCameraOn);
+    this.isCameraOn = JSON.parse(ratingJson.isCameraOn);  // Parse to boolean.
   }
 
   public toString = (): string => {

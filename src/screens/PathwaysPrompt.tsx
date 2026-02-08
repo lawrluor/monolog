@@ -1,26 +1,36 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import { type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import UserContext from '../context/UserContext';
-
 import GoBack from '../components/GoBack';
 import SignInButton from '../components/SignInButton';
-
 import { pathwaysPrompts } from '../utils/pathwaysData'
-
 import { text, spacings, colors } from '../styles';
+import { type StackNavigationProp } from '@react-navigation/stack';
+import { type AppStackParamsList } from '../types/navigation';
+import { type User } from '../types/user';
 
-const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
-  const { pathway, level } = route.params;
-  const { user, setUser } = React.useContext(UserContext);
+interface Props {
+  route: RouteProp<AppStackParamsList, 'PathwaysPrompt'>;
+  navigation: StackNavigationProp<AppStackParamsList>;
+}
 
-  let pathwaysPromptsData = JSON.stringify(pathwaysPrompts);
-  pathwaysPromptsData = JSON.parse(pathwaysPromptsData);
-  let prompt = pathwaysPromptsData[pathway][level - 1];
+const PathwaysPrompt = ({ route, navigation }: Props) => {
+  const { pathwayName, level } = route.params;
+
+  const userContext = React.useContext(UserContext);
+  if (!userContext) throw new Error('UserContext must be used wtihin a provider');
+  const { user, setUser } = userContext;
+
+  const pathwaysPromptsData: Record<string, string[]> = pathwaysPrompts;
+  const promptsForPathway = pathwaysPromptsData[pathwayName] ?? [];
+  let prompt = promptsForPathway[level - 1] ?? '';
+
   // Continue showing the second prompt for new years resolution pathway
-  if (pathway === "New Year's Resolutions" && level >= 1) {
-    prompt = pathwaysPromptsData[pathway][1]
+  if (pathwayName === "New Year's Resolutions" && level >= 1) {
+    prompt = pathwaysPromptsData[pathwayName]?.[1] ?? prompt;
   }
 
   const navigateToRecording = () => {
@@ -28,7 +38,7 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
   }
 
   const backAndReset = async () => {
-    let updatedUser = { ...user, ...{ currentPathway: " " } };
+    let updatedUser = { ...user, currentPathway: "" } as User;
     setUser(updatedUser);
     navigation.goBack();
   }
@@ -38,7 +48,7 @@ const PathwaysPrompt = ({ route, navigation }: any): JSX.Element => {
       colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
       style={styles.container}
     >
-      <GoBack callback={backAndReset}/>
+      <GoBack callback={backAndReset} />
 
       <View style={styles.featureContainer}>
         <Text style={styles.promptNum}>Prompt #{level}</Text>

@@ -1,25 +1,31 @@
 import React from 'react';
 import { Alert, StyleSheet, View, Text, Pressable } from 'react-native';
-
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { generateRatingUri } from '../utils/localStorageUtils';
-import { createRatingFromMetadata } from '../utils/rating';
-
 import VideosContext from '../context/VideosContext';
-
 import GoBack from '../components/GoBack';
 import SignInButton from '../components/SignInButton';
 import TutorialImageModal from '../components/TutorialImageModal';
 import { FullPageSpinner } from '../components/Spinner';
-
-import { containers, text, dimensions, spacings, colors, icons } from '../styles';
 import { getImagesByDeviceSize } from '../utils/images';
+import { generateRatingUri } from '../utils/localStorageUtils';
+import { createRatingFromMetadata } from '../utils/rating';
+import { containers, text, dimensions, spacings, colors, icons } from '../styles';
+import { type RouteProp } from '@react-navigation/native';
+import { type StackNavigationProp } from '@react-navigation/stack';
+import { type AppStackParamsList } from '../types/navigation';
 
-const Rating = ({ route, navigation }: any): JSX.Element => {
-  const { moodData, videosCount } = React.useContext(VideosContext);
+type Props = {
+  route: RouteProp<AppStackParamsList, 'Rating'>;
+  navigation: StackNavigationProp<AppStackParamsList>;
+}
 
-  const emojis = ['😥','😐','🙂','😃','😍'];
+const Rating = ({ route, navigation }: Props) => {
+  const videosContext = React.useContext(VideosContext);
+  if (!videosContext) throw new Error('VideosContext must be used within a provider');
+  const { moodData, videosCount } = videosContext;
+
+  const emojis = ['😥', '😐', '🙂', '😃', '😍'];
   const [selectedEmojiIndex, setSelectedEmojiIndex] = React.useState<number>(-1);
   const [shouldShowTutorial, setShouldShowTutorial] = React.useState<boolean>(videosCount < 1);
   const [tutorialLoading, setTutorialLoading] = React.useState<boolean>(true);
@@ -30,40 +36,30 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
     // Global Data Structure is sorted by date
     let today = new Date();
     let lastWeekSec = today.getTime() / 1000 - 604800;
-    let moodDataList = moodData.week.days;
+    const moodDataList = moodData.week.days || [];
 
-    // Remove expired dates on video upload.
+    if (moodDataList.length === 0) {
+      moodData.week.days.unshift({ mood_score: emojiValue, count: 1, date: new Date(today.toDateString()) });
+    }
+
+    // now the list has at least one element
     while (moodDataList.length > 0 &&
-        (moodDataList[moodDataList.length - 1].date.getTime() / 1000 <
-        lastWeekSec)) {
+      moodDataList[moodDataList.length - 1]!.date.getTime() / 1000 < lastWeekSec) {
       moodData.week.days.pop();
     }
-    if (moodData.week.days.length === 0 || moodData.week.days[0].date.toLocaleDateString() !=
-        today.toLocaleDateString()) {
-      moodData.week.days.unshift({
-        "mood_score": emojiValue,
-        "count": 1,
-        "date": new Date(today.toDateString())
-      });
+    if (moodData.week.days.length === 0 || moodData.week.days[0]!.date.toLocaleDateString() !== today.toLocaleDateString()) {
+      moodData.week.days.unshift({ mood_score: emojiValue, count: 1, date: new Date(today.toDateString()) });
     } else {
-      moodData.week.days[0]["mood_score"] *= moodData.week.days[0].count;
-      moodData.week.days[0].count++;
-      moodData.week.days[0]["mood_score"] += emojiValue;
-      moodData.week.days[0]["mood_score"] /= moodData.week.days[0].count;
+      moodData.week.days[0]!.mood_score *= moodData.week.days[0]!.count;
+      moodData.week.days[0]!.count++;
+      moodData.week.days[0]!.mood_score += emojiValue;
+      moodData.week.days[0]!.mood_score /= moodData.week.days[0]!.count;
     }
   }
 
   const submitRating = () => {
-    if (selectedEmojiIndex >= 0) {
-      updateMoodMap(selectedEmojiIndex);
-
-      // See utils/rating.ts for how Ratings are created and written.
-      createRatingFromMetadata(
-          emojis[selectedEmojiIndex], selectedEmojiIndex, isCameraOn)
-        .writeRatingToFile(generateRatingUri(fileBaseName));
-
-      navigateToTranscript(emojis[selectedEmojiIndex]);
-    } else {
+    const emoji = emojis[selectedEmojiIndex];
+    if (!emoji) {
       Alert.alert(
         "Not so fast...",
         "Please select an emoji to continue.",
@@ -71,12 +67,23 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
           { text: "OK" }
         ]
       );
+
+      return;
     }
+
+    updateMoodMap(selectedEmojiIndex);
+
+    // See utils/rating.ts for how Ratings are created and written.
+    createRatingFromMetadata(
+      emoji, selectedEmojiIndex, isCameraOn)
+      .writeRatingToFile(generateRatingUri(fileBaseName));
+
+    navigateToTranscript(emoji);
   }
 
   const navigateToTranscript = (selection: string) => {
     navigation.navigate('Transcript',
-        { selection, fileBaseName, finalResult, isCameraOn });
+      { selection, fileBaseName, finalResult, isCameraOn });
   }
 
   const setSelectedEmojiWrapper = (emojiIndex: number) => {
@@ -93,43 +100,43 @@ const Rating = ({ route, navigation }: any): JSX.Element => {
       {
         // If we have not shown the tutorial, wait for it to load.
         shouldShowTutorial && tutorialLoading
-        ?
-        <FullPageSpinner size="large"></FullPageSpinner>
-        :
-        <LinearGradient
+          ?
+          <FullPageSpinner size="large"></FullPageSpinner>
+          :
+          <LinearGradient
             // Background Linear Gradient
             colors={[colors.HIGHLIGHT, colors.HIGHLIGHT2]}
             style={styles.container}
-        >
-          <GoBack />
+          >
+            <GoBack />
 
-          <View>
-            <View style={styles.titleContainer}>
-              <Text style={styles.title}>How are you feeling?</Text>
-            </View>
-
-            <View style={styles.ratingContainer}>
-              {emojis.map((elem, index) => (
-                <Pressable
-                  key={elem}
-                  onPress={() => setSelectedEmojiWrapper(index)}
-                >
-                  <View style={elem===emojis[selectedEmojiIndex] ? styles.emojiSelectedBackground : styles.emojiBackground}>
-                    <Text style={styles.emojiText}>{elem}</Text>
-                  </View>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          <View style={styles.nextContainer}>
-            <Pressable onPress={submitRating} style={ ({pressed}) => [{opacity: pressed ? 0.3 : 1}] }>
-              <View>
-                <SignInButton text={"Next"} onPress={submitRating} background={colors.BACKGROUND} />
+            <View>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>How are you feeling?</Text>
               </View>
-            </Pressable>
-          </View>
-        </LinearGradient>
+
+              <View style={styles.ratingContainer}>
+                {emojis.map((elem, index) => (
+                  <Pressable
+                    key={elem}
+                    onPress={() => setSelectedEmojiWrapper(index)}
+                  >
+                    <View style={elem === emojis[selectedEmojiIndex] ? styles.emojiSelectedBackground : styles.emojiBackground}>
+                      <Text style={styles.emojiText}>{elem}</Text>
+                    </View>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.nextContainer}>
+              <Pressable onPress={submitRating} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
+                <View>
+                  <SignInButton text={"Next"} onPress={submitRating} background={colors.BACKGROUND} />
+                </View>
+              </Pressable>
+            </View>
+          </LinearGradient>
       }
     </TutorialImageModal>
   )

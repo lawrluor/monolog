@@ -14,6 +14,7 @@ type MoodDay = {
   count: number;
   mood_score: number;
 }
+
 type MoodData = {
   week: {
     last_updated_secs: number;
@@ -48,12 +49,12 @@ export const VideosProvider = ({ children }: { children: React.ReactNode }) => {
   // Default mood data structure for rendering. Currently mock data.
   // Will remove very soon, not worth putting it into json and then parsing the
   // date obj.
-  const [moodData] = React.useState<MoodData>({
+  const moodData: MoodData = {
     week: {
       last_updated_secs: new Date(2022, 4, 5).getTime() / 1000,
       days: []
     }
-  });
+  };
 
   const initSectionData = async (section_key: string, recorded_sections: RecordedSections) => {
     recorded_sections[section_key] = {

@@ -130,16 +130,13 @@ const OnBoarding1 = () => {
     setUser(finalUserData);  // Set in Context, which also then saves to local storage
   }
 
-  // renders validation error if any exists
-  const renderErrorMessage = (): JSX.Element | null => {
+  const renderErrorMessage = () => {
     return (
       errorMessage
-        ?
-        <View style={{ marginVertical: spacings.MEDIUM }}>
-          <Text style={[text.h4, { color: colors.ERROR, textAlign: 'center' }]}>{errorMessage}</Text>
-        </View>
-        :
-        null
+      &&
+      <View style={{ marginVertical: spacings.MEDIUM }}>
+        <Text style={[text.h4, { color: colors.ERROR, textAlign: 'center' }]}>{errorMessage}</Text>
+      </View>
     )
   }
 

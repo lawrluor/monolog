@@ -8,29 +8,29 @@ export type MainNavigationStackParamsList = {
 }
 
 export type AuthStackParamsList = {
-  "Signup": undefined;
+  "Signup": { setUser: (value: boolean) => void, setShouldOnboard: (value: boolean) => void };
   "Login": { setUser: (value: boolean) => void };
 }
 
 export type AppStackTabNavigatorParamsList = {
-  "Gallery": undefined,
-  "Recording": undefined,
-  "Home": undefined,
-  "Vistas": undefined,
-  "Settings": undefined,
-  "Pathways": undefined,
-  "Feedback": undefined
+  "Gallery": undefined;
+  "Recording": undefined;
+  "Home": undefined;
+  "Vistas": undefined;
+  "Settings": undefined;
+  "Pathways": undefined;
+  "Feedback": undefined;
 }
 
 export type AppStackParamsList = {
-  "Recording": undefined,
-  "Player": { video: Video },
-  "Rating": undefined,
-  "Transcript": undefined,
-  "Pathways": undefined,
-  "PathwayFull": undefined,
-  "PathwaysPrompt": undefined,
-  "TabNavigator": { screen?: keyof AppStackTabNavigatorParamsList } | undefined
+  "Recording": undefined;
+  "Player": { video: Video, showVideo: boolean };
+  "Rating": { fileBaseName: string, finalResult: string, isCameraOn: boolean };
+  "Transcript": { selection: string, fileBaseName: string, finalResult: string, isCameraOn: boolean };
+  "Pathways": undefined;
+  "PathwayFull": { pathwayName: string };
+  "PathwaysPrompt": { pathwayName: string, level: number };
+  "TabNavigator": { screen?: keyof AppStackTabNavigatorParamsList } | undefined;
 }
 
 export type OnBoardingStackParamsList = {

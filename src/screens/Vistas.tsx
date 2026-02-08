@@ -1,23 +1,28 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, Text } from 'react-native';
+import { type StackNavigationProp } from '@react-navigation/stack';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import VideosContext from '../context/VideosContext';
 import { SafeAreaTop, SafeAreaBottom } from '../components/SafeAreaContainer';
 import WordChart from '../components/WordChart';
 import MoodChart from '../components/MoodChart';
-
-import VideosContext from '../context/VideosContext';
-
-import { getLastWeekFromTodayMMDD } from '../utils/dates';
-
-import { dimensions, spacings, icons, colors, text, sizes, debug } from '../styles';
 import NewUserMessage from '../components/NewUserMessage';
+import { getLastWeekFromTodayMMDD } from '../utils/dates';
+import { dimensions, spacings, icons, colors, text, sizes, debug } from '../styles';
+import { type AppStackParamsList } from '../types/navigation';
+
+type Props = {
+  navigation: StackNavigationProp<AppStackParamsList>;
+}
 
 const VIDEOS_THRESHOLD = 0;
 
-const Vistas = ({ navigation }: any):  JSX.Element => {
-  const { videosCount } = React.useContext(VideosContext);
+const Vistas = ({ navigation }: Props) => {
+  const videosContext = React.useContext(VideosContext);
+  if (!videosContext) throw new Error('VideosContext must be used within a provider');
+  const { videosCount } = videosContext;
 
   const navigateToRecord = () => {
     navigation.navigate('Recording');
@@ -37,25 +42,25 @@ const Vistas = ({ navigation }: any):  JSX.Element => {
             <Text style={styles.subtitle}>{getLastWeekFromTodayMMDD()}</Text>
           </View>
 
-          <ScrollView 
-            style={styles.bodyContainer} 
+          <ScrollView
+            style={styles.bodyContainer}
             contentContainerStyle={styles.scrollContentContainer}
             showsVerticalScrollIndicator={false}
-          > 
+          >
             {
               videosCount <= VIDEOS_THRESHOLD
-              ?
-              <NewUserMessage navigateCallback={() => navigation.navigate('Recording')} />
-              :
-              <>
-                <View style={styles.featureContainer}>
-                  <WordChart defaultNumOfWords={10} abridged={false} callback={navigateToRecord} />
-                </View>
-              
-                <View style={styles.featureContainer}>
-                  <MoodChart abridged={false} callback={navigateToRecord}/>
-                </View>
-              </>
+                ?
+                <NewUserMessage navigateCallback={() => navigation.navigate('Recording')} />
+                :
+                <>
+                  <View style={styles.featureContainer}>
+                    <WordChart defaultNumOfWords={10} abridged={false} callback={navigateToRecord} />
+                  </View>
+
+                  <View style={styles.featureContainer}>
+                    <MoodChart abridged={false} callback={navigateToRecord} />
+                  </View>
+                </>
             }
           </ScrollView>
         </LinearGradient>

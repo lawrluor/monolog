@@ -1,28 +1,38 @@
 import React from 'react';
+import { type RouteProp } from '@react-navigation/native';
+import { type StackNavigationProp } from '@react-navigation/stack';
 
 import VideosContext from '../context/VideosContext';
-
-import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from '../utils/localStorageUtils';
-
 import { FullPageSpinner } from '../components/Spinner';
 import UserContext from '../context/UserContext';
+import { initVideoDataObject, writeFinalTranscript, generateTranscriptUri } from '../utils/localStorageUtils';
+import { type AppStackParamsList } from '../types/navigation';
+import { type Video } from '../types/video';
 
-const Transcript = ({ route, navigation }: any): JSX.Element => {
+type Props = {
+  route: RouteProp<AppStackParamsList, 'Transcript'>;
+  navigation: StackNavigationProp<AppStackParamsList>;
+}
+
+const Transcript = ({ route, navigation }: Props) => {
   const { finalResult, fileBaseName, isCameraOn } = route.params;
-  const { toggleVideosRefresh } = React.useContext(VideosContext);
-  // finalResultString contains the full transcript of the video
-  // Joins the array of strings into one long string.
-  const finalResultString: string = finalResult.join(' ');
+
+  const userContext = React.useContext(UserContext);
+  if (!userContext) throw new Error('UserContext must be used within a provider');
+  const { user, setUser } = userContext;
+
+  const videosContext = React.useContext(VideosContext);
+  if (!videosContext) throw new Error('VideosContext must be used within a provider');
+  const { toggleVideosRefresh } = videosContext;
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-  const [videoData, setVideoData] = React.useState(null);
-  const { user, setUser } = React.useContext(UserContext);
+  const [videoData, setVideoData] = React.useState<Video | null>(null);
 
   // Doesn't contain our final data, yet but shares the same name when passed to VideoContainer
   // For fully processed logs, videoData will include: transcript_uri, thumbnail_uri, etc.
   // let videoData = {
   //   'uri': videoStorePath,
-  //   'transcript_content': finalResultString,
+  //   'transcript_content': finalResult,
   //   'rating': selection,
   //   'date': getCurrentDate()
   // }
@@ -36,10 +46,10 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
       // It will not find a saved transcript yet, as one does not exist yet
       // So, we add the final transcript after getting the mostly finished videoData object.
       let queriedVideoData = await initVideoDataObject(fileBaseName);
-      queriedVideoData['transcript_content'] = finalResultString;
+      queriedVideoData['transcript_content'] = finalResult;
       setVideoData(queriedVideoData);
       setIsLoading(false);
-      writeFinalTranscript(await generateTranscriptUri(fileBaseName), finalResultString);
+      writeFinalTranscript(await generateTranscriptUri(fileBaseName), finalResult);
       toggleVideosRefresh();  // TODO: move this somewhere better
     }
 
@@ -49,17 +59,19 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
   // When the user reaches transcript page to increment the scores on their pathways
   const incrementPathwayProgress = () => {
     const MAX_LEVELS = 10 // Maximum number of prompts a pathway may have
-    const pathwayName = user.currentPathway
-    //If the user has already started the pathway, set their level, otherwise set their level to 1
-    const currentPathwayLevel = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['currentLevel'] : 1
-    const timesCompleted = (pathwayName in user['pathways']) ? user['pathways'][pathwayName]['timesCompleted'] : 0
-    if ( currentPathwayLevel === MAX_LEVELS ) {
+    const pathwayName = user?.currentPathway;
+    if (!pathwayName) return;
+
+    // If the user has already started the pathway, set their level, otherwise set their level to 1
+    const currentPathwayLevel = user?.pathways[pathwayName]?.currentLevel || 1;
+    const timesCompleted = user?.pathways[pathwayName]?.timesCompleted || 0;
+    if (currentPathwayLevel === MAX_LEVELS) {
       let updates = {
         pathways: {
           ...user.pathways,
           [pathwayName]: {
             currentLevel: 1,
-            timesCompleted: timesCompleted+1
+            timesCompleted: timesCompleted + 1
           }
         },
         // Reset current pathway so that if a user records a non pathway prompt
@@ -88,13 +100,14 @@ const Transcript = ({ route, navigation }: any): JSX.Element => {
 
   const navigateToPlayer = () => {
     // TODO: increment their score for that pathway if there is one
-    console.log("USER IN TRANSCRIPT", user)
-    if (user.currentPathway !== " ") {
+    if (user?.currentPathway !== " ") {
       incrementPathwayProgress()
     }
+
+    if (!videoData) return;
+
     navigation.navigate('Player', {
       video: videoData,
-      navigation: navigation,
       showVideo: isCameraOn
     });
   }

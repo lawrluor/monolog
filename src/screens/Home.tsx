@@ -103,19 +103,19 @@ const Home = ({ navigation }: Props) => {
           <WordChart defaultNumOfWords={5} abridged navigation={navigation} />
         </View>
       )
-    } else {
-      return (
-        <Pressable
-          onPress={() => simpleAlert({ title: "Feature Locked", message: "Record more logs to begin tracking your Vistas!", buttonText: "OK" })}
-          style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
-        >
-          <View style={[styles.featureContainer, styles.featureContainerWithIcon]}>
-            <Text style={styles.featureTitle}>Frequent Words</Text>
-            <Ionicons name='lock-closed' style={styles.lockIcon} />
-          </View>
-        </Pressable >
-      )
     }
+
+    return (
+      <Pressable
+        onPress={() => simpleAlert({ title: "Feature Locked", message: "Record more logs to begin tracking your Vistas!", buttonText: "OK" })}
+        style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+      >
+        <View style={[styles.featureContainer, styles.featureContainerWithIcon]}>
+          <Text style={styles.featureTitle}>Frequent Words</Text>
+          <Ionicons name='lock-closed' style={styles.lockIcon} />
+        </View>
+      </Pressable >
+    )
   }
 
   const renderMoodChartSummary = (videosCount: number) => {
@@ -125,19 +125,19 @@ const Home = ({ navigation }: Props) => {
           <MoodChart abridged />
         </View>
       )
-    } else {
-      return (
-        <Pressable
-          onPress={() => simpleAlert({ title: "Feature Locked", message: "Record more logs to begin tracking your Vistas!", buttonText: "OK" })}
-          style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
-        >
-          <View style={[styles.featureContainer, styles.featureContainerWithIcon]}>
-            <Text style={styles.featureTitle}>Mood Tracker</Text>
-            <Ionicons name='lock-closed' style={styles.lockIcon} />
-          </View>
-        </Pressable>
-      )
     }
+
+    return (
+      <Pressable
+        onPress={() => simpleAlert({ title: "Feature Locked", message: "Record more logs to begin tracking your Vistas!", buttonText: "OK" })}
+        style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+      >
+        <View style={[styles.featureContainer, styles.featureContainerWithIcon]}>
+          <Text style={styles.featureTitle}>Mood Tracker</Text>
+          <Ionicons name='lock-closed' style={styles.lockIcon} />
+        </View>
+      </Pressable>
+    )
   }
 
   const onImageLoadCallback = (index: number) => {

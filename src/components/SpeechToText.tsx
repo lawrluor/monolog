@@ -8,7 +8,7 @@ import { type User } from '../types/user';
 
 type Props = {
   isRecording: boolean;
-  getTranscriptResult: (result: string[]) => void;
+  getTranscriptResult: (result: string) => void;
 }
 
 // TODO: Inherit stop/start state from parent (Recording) which toggles these states too.
@@ -54,8 +54,7 @@ const SpeechToText = ({ isRecording, getTranscriptResult }: Props) => {
   // Called when the user would want to FINISH the recording process, then move on.
   const finishRecording = async () => {
     await stopRecording();
-    const resultAsString = result.split(' ');
-    getTranscriptResult(resultAsString);  // updates parent state in Recording before it navigates to Rating
+    getTranscriptResult(result);  // updates parent state in Recording before it navigates to Rating
   }
 
   const stopRecording = async () => {

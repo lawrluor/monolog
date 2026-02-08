@@ -10,6 +10,11 @@ import { filteredWords, removePunctuation } from './textProcessing';
 import { createRatingFromFile } from './rating';
 
 import { type Video } from '../types/video';
+type WordCountItem = {
+  word: string;
+  count: number;
+  value?: number
+};
 
 export const USER_DATA_DIRECTORY = FileSystem.documentDirectory + 'userData/';
 export const TRANSCRIPT_DIRECTORY = FileSystem.documentDirectory + 'transcripts/';
@@ -331,11 +336,13 @@ export const processAllWordsFromTranscripts = async (allWordsByTranscript: strin
 
   // TODO: make more efficient in as few loops as possible
   // Can we do this in one pass?
-  let wordsByCount: any = {};
+  let wordsByCount: Record<string, WordCountItem> = {};
   let totalWordCount: number = 0;
 
   for (let i = 0; i < allWordsByTranscript.length; i++) {
     let transcript = allWordsByTranscript[i];
+    if (!transcript) continue;
+
     let splitWords = removePunctuation(transcript).toLowerCase().split(' ');
 
     for (let currentWord of splitWords) {
@@ -363,27 +370,33 @@ export const processAllWordsFromTranscripts = async (allWordsByTranscript: strin
     return (count / totalWordCount) * 6;
   }
 
+  const wordKeys = Object.keys(wordsByCount);
+  if (wordKeys.length === 0 || totalWordCount === 0) return [];
+
+  const allWordCountsOnly: number[] = wordKeys.map((key: string) => wordsByCount[key]!.count);
+
   // Calculates the top X percent (percentile) of this word's count
   const calculateWeightedRatio = (count: number): number => {
-    let allWordCountsOnly: number[] = Object.keys(wordsByCount).map((key: string) => wordsByCount[key].count);
-    let min = Math.min(...allWordCountsOnly);  // Must destructure array first
-    let max = Math.max(...allWordCountsOnly);
-    let weightedPercentage = 0.1 + (0.8 * (count - min) / (max - min));  // Keep between 10% and 80% of bar width
+    const min = Math.min(...allWordCountsOnly);  // Must destructure array first
+    const max = Math.max(...allWordCountsOnly);
+    if (max === min) return 0.5;  // avoid divide-by-zero; arbitrary mid value
+    const weightedPercentage = 0.1 + (0.8 * (count - min) / (max - min));  // Keep between 10% and 80% of bar width
     return weightedPercentage
   }
 
-  wordsByCount = Object.keys(wordsByCount)
-    .sort((a: string, b: string) => wordsByCount[b].count - wordsByCount[a].count)
+  const sortedWords: WordCountItem[] = wordKeys
+    .sort((a: string, b: string) => wordsByCount[b]!.count - wordsByCount[a]!.count)
     .map((key: string) => {
-      wordsByCount[key].value =
+      const item = wordsByCount[key]!;
+      item.value =
         (totalWordCount > 200)
-          ? calculateWeightedRatio(wordsByCount[key].count)
-          : calculateSimpleRatio(wordsByCount[key].count);
+          ? calculateWeightedRatio(item.count)
+          : calculateSimpleRatio(item.count);
 
-      return wordsByCount[key];
+      return item;
     });
 
-  return wordsByCount;
+  return sortedWords;
 }
 
 export const deleteAllTranscripts = async () => {

@@ -1,20 +1,16 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import AppLoading from 'expo-app-loading';
-
 import { useFonts } from 'expo-font';
 
 import MainNavigator from './src/navigation/MainNavigator';
-
-import {
-  createAllDirectories,
-} from './src/utils/localStorageUtils';
-
-import { colors } from './src/styles';
 import { VideosProvider } from './src/context/VideosContext';
 import { UserProvider } from './src/context/UserContext';
+import { FullPageSpinner } from './src/components/Spinner';
+import { createAllDirectories } from './src/utils/localStorageUtils';
+import { colors } from './src/styles';
 
-const App = (): JSX.Element => {
+
+const App = () => {
   const [isLoaded, setIsLoaded] = React.useState<boolean>(false);
   const [inTimeout, setInTimeout] = React.useState<boolean>(true);
 
@@ -31,7 +27,7 @@ const App = (): JSX.Element => {
     // See https://stackoverflow.com/questions/38939917/removing-console-log-from-react-native-app
 
     if (!__DEV__) {
-      console.log = () => {};
+      console.log = () => { };
     }
 
     // TODO: Disabling warning logs should be straightforward but does not work
@@ -63,16 +59,16 @@ const App = (): JSX.Element => {
 
   return (
     <UserProvider>
-        {
-          !fontsLoaded || !isLoaded || inTimeout
+      {
+        !fontsLoaded || !isLoaded || inTimeout
           ?
-          <AppLoading />
+          <FullPageSpinner />
           :
           <VideosProvider>
             <MainNavigator></MainNavigator>
           </VideosProvider>
 
-        }
+      }
     </UserProvider>
   )
 }

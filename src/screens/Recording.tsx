@@ -1,19 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable, ScrollView, Alert } from 'react-native';
+import { type StackNavigationProp } from '@react-navigation/stack';
 
-import { Camera } from 'expo-camera';
-import { Audio } from 'expo-av';
+import { CameraView, type CameraType } from 'expo-camera';
+import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import UserContext from '../context/UserContext';
-
 import { checkRecordingPermissions } from '../utils/permissions';
 import { VIDEO_DIRECTORY, THUMBNAIL_DIRECTORY } from '../utils/localStorageUtils';
-
-import { text, containers, colors, icons, spacings, dimensions } from '../styles';
-
 import PulseAnimation from '../components/PulseAnimation';
 import GoBack from '../components/GoBack';
 import SpeechToText from '../components/SpeechToText';
@@ -25,22 +22,33 @@ import SignInButton from '../components/SignInButton';
 import TutorialImageModal from '../components/TutorialImageModal';
 import VideosContext from '../context/VideosContext';
 import { getImagesByDeviceSize } from '../utils/images';
+import { text, containers, colors, icons, spacings, dimensions } from '../styles';
+import { type AppStackParamsList } from '../types/navigation';
+import { User } from '../types/user';
+
+type Props = {
+  navigation: StackNavigationProp<AppStackParamsList, 'Recording'>;
+}
 
 const MAX_DURATION = 600;  // seconds
 
 // NOTE: This component unmounts completely when blurred. See AppStack => TabScreen.Recording
-export const Recording = ({ navigation }: any): JSX.Element => {
-  const { user, setUser } = React.useContext(UserContext);
-  const { videosCount } = React.useContext(VideosContext);
+export const Recording = ({ navigation }: Props) => {
+  const userContext = React.useContext(UserContext);
+  if (!userContext) throw new Error('UserContext must be used within a provider');
+  const { user, setUser } = userContext;
+
+  const videosContext = React.useContext(VideosContext);
+  if (!videosContext) throw new Error('VideosContext must be used within a provider');
+  const { videosCount } = videosContext;
 
   // TODO: experiment with adding loading states (carefully) to improve UX
-  const cameraRef = React.useRef(null);
+  const cameraRef = React.useRef<CameraView>(null);
   const [finalTranscript, setFinalTranscript] = React.useState<string>('');
   const [recordingFinished, setRecordingFinished] = React.useState<boolean>(false);
-  const [hasPermission, setHasPermission] = React.useState<null | boolean>(false);
-  const [type, setType] = React.useState(Camera.Constants.Type.front);
-  const [isRecording, setIsRecording] = React.useState<null | boolean>(null);
-  const [isCameraOn, setIsCameraOn] = React.useState<null | boolean>(true);
+  const [facing, setFacing] = React.useState<CameraType>('front');
+  const [isRecording, setIsRecording] = React.useState<boolean>(false);
+  const [isCameraOn, setIsCameraOn] = React.useState<boolean>(true);
   const [videoStorePath, setVideoStorePath] = React.useState<string>('');
   const [tutorialShouldShow, setTutorialShouldShow] = React.useState<boolean>(videosCount < 1);
 
@@ -61,7 +69,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       // OR send them back to home and request permissions again there
       // NOTE: Expo seems to ask one more permission for some reason
 
-      await setHasPermission(await checkRecordingPermissions());
+      await checkRecordingPermissions()
     }
 
     asyncWrapper();
@@ -83,12 +91,12 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // "Callback method" for when the final transcript is ready.
   // Note: isRecording must be false, meaning stopRecording() was explicitly called.
   // Otherwise, if isRecording is just null, means that we have not begun recording,
-    // or we have simply switched the camera type between front or back.
+  // or we have simply switched the camera type between front or back.
   React.useEffect(() => {
     if ((finalTranscript.length > 0) &&
-        (videoStorePath.length > 0) &&
-        (recordingFinished) &&
-        (isRecording===false)) {
+      (videoStorePath.length > 0) &&
+      (recordingFinished) &&
+      (isRecording === false)) {
 
       // finalTranscript has been updated, meaning we have the final transcript result passed up from SpeechToText
       // Now we can move to the next page with the final transcript result
@@ -103,12 +111,12 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
   const flipCameraCallback = () => {
     const flipCamera = () => {
-      setIsRecording(null);
+      setIsRecording(false);
 
-      setType(
-        type === Camera.Constants.Type.back
-          ? Camera.Constants.Type.front
-          : Camera.Constants.Type.back
+      setFacing(
+        facing === 'back'
+          ? 'front'
+          : 'back'
       );
     }
 
@@ -129,7 +137,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       );
 
       // TODO: can make a specific state for this, like flipCameraNotified
-      let updatedUser = {...user, ...{ tutorialMode: false }};  // Merge old user object with new fields
+      let updatedUser = { ...user, tutorialMode: false } as User;  // Merge old user object with new fields
       setUser(updatedUser);
     } else {
       // User already knows this, let them flip the camera at will
@@ -142,7 +150,12 @@ export const Recording = ({ navigation }: any): JSX.Element => {
       if (cameraRef) {
         setIsRecording(true);
 
-        let video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
+        if (!cameraRef.current) return;
+        const video = await cameraRef.current.recordAsync({ maxDuration: MAX_DURATION });
+        if (!video) {
+          setIsRecording(false);
+          return;
+        }
 
         // TODO: SHOULD NOT NEED THIS AT ALL,
         // speechToTextPermission handled in SpeechToText.tsx
@@ -156,7 +169,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           speechToTextPermission: true
         }
 
-        let updatedUser = {...user, ...updates};  // Merge old user object with new fields
+        let updatedUser = { ...user, ...updates } as User;  // Merge old user object with new fields
         setUser(updatedUser);
 
         // Create video and thumbnail files.
@@ -165,16 +178,16 @@ export const Recording = ({ navigation }: any): JSX.Element => {
         setVideoStorePath(videoStorePath);
 
         // Handles the logic for extracting the video from storage and saving thumbnail
-        FileSystem.copyAsync({'from': video.uri, 'to': videoStorePath }).then(
+        FileSystem.copyAsync({ 'from': video.uri, 'to': videoStorePath }).then(
           () => {
             VideoThumbnails.getThumbnailAsync(
               videoStorePath,
               { time: 0 }
             ).then(
-              ( { uri } ) => {
+              ({ uri }) => {
                 let thumbnailPath = THUMBNAIL_DIRECTORY +
                   timestamp.toString() + ".jpg";
-                FileSystem.copyAsync({'from': uri, 'to': thumbnailPath });
+                FileSystem.copyAsync({ 'from': uri, 'to': thumbnailPath });
               }
             ).catch(
               error => {
@@ -184,18 +197,18 @@ export const Recording = ({ navigation }: any): JSX.Element => {
           }
         )
       }
-    } catch(err){
-        console.log(err);
+    } catch (err) {
+      console.log(err);
     }
   };
 
   // Currently unused, as opting for no direct "return to gallery" button
   const navigateToGallery = () => {
-    navigation.navigate('Gallery');
+    navigation.navigate('TabNavigator', { screen: 'Gallery' });
   }
 
   const navigateToRating = () => {
-      navigation.navigate('Rating', {
+    navigation.navigate('Rating', {
       finalResult: finalTranscript,
       fileBaseName: timestamp.toString(),
       isCameraOn: isCameraOn,
@@ -209,8 +222,9 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const stopRecording = async () => {
     try {
       setIsRecording(false);
+      if (!cameraRef.current) return;
       await cameraRef.current.stopRecording();
-    } catch(err: any) {
+    } catch (err: Error | unknown) {
       console.log("[ERROR] Recording.tsx: stopRecording", err);
     }
   }
@@ -240,10 +254,10 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: true,
       staysActiveInBackground: true,
-      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
-      playsInSilentModeIOS: true,       // this option is unreliable at the moment
+      interruptionModeIOS: InterruptionModeIOS.DuckOthers,
+      playsInSilentModeIOS: true,  // this option is unreliable at the moment
       shouldDuckAndroid: false,
-      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+      interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
       playThroughEarpieceAndroid: false,
     });
 
@@ -252,7 +266,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     console.log(">>>2. Recording: resetting audio");
     try {
       console.log(">>>Resetting recording");
-      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
       await recording.stopAndUnloadAsync()
       await Audio.setIsEnabledAsync(true);
     } catch (error) {
@@ -264,7 +278,7 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   // Currently not used, as this feature is not requested right now
   const renderGalleryIcon = () => {
     return (
-      <Pressable onPress={navigateToGallery} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+      <Pressable onPress={navigateToGallery} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
         <MaterialCommunityIcons name={'folder-multiple-image'} style={[icons.MEDIUM, { color: 'white' }]} />
       </Pressable>
     )
@@ -276,20 +290,20 @@ export const Recording = ({ navigation }: any): JSX.Element => {
     return (
       <AudioOverlay>
         <View style={styles.captionContainer}>
-          <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
+          <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult} />
         </View>
 
         {
           isRecording
-          ?
-          <AudioBubbles shouldBegin={isRecording} />
-          :
-          <View style={styles.featureContainer}>
-            <View style={{ padding: spacings.MEDIUM }}>
-              <Text style={styles.featureText}>Press the button below to begin your recording.</Text>
+            ?
+            <AudioBubbles shouldBegin={isRecording} />
+            :
+            <View style={styles.featureContainer}>
+              <View style={{ padding: spacings.MEDIUM }}>
+                <Text style={styles.featureText}>Press the button below to begin your recording.</Text>
+              </View>
+              <SignInButton onPress={startRecording} background={colors.HIGHLIGHT}><Text style={text.h4}>Record</Text></SignInButton>
             </View>
-            <SignInButton onPress={startRecording} background={colors.HIGHLIGHT}><Text style={text.h4}>Record</Text></SignInButton>
-          </View>
         }
 
         <View style={styles.recordContainer}>
@@ -304,20 +318,18 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const renderRecordOptions = (recording: boolean) => {
     return (
       isRecording
-      ?
+      &&
       <View style={styles.scrollContainer}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentOffset={{x: 0, y: 0}}
+          contentOffset={{ x: 0, y: 0 }}
         >
           <View style={styles.numberButtonContainer}><Pressable><Text style={styles.numbersText}>15</Text></Pressable></View>
           <View style={styles.numberButtonContainer}><Pressable><Text style={styles.numbersText}>30</Text></Pressable></View>
           <View style={styles.numberButtonContainer}><Pressable><Text style={styles.numbersText}>60</Text></Pressable></View>
         </ScrollView>
       </View>
-      :
-      <></>
     )
   }
 
@@ -332,28 +344,28 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const renderRecordIcon = () => {
     return (
       isRecording
-      ?
-      <PulseAnimation>
-        <Pressable onPress={finishRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}, styles.recordIcon]}>
+        ?
+        <PulseAnimation>
+          <Pressable onPress={finishRecording} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
+            <View style={styles.centeredContainer}>
+              <View style={styles.recordCircleOutline}></View>
+              <View style={styles.recordSquare}></View>
+            </View>
+          </Pressable>
+        </PulseAnimation>
+        :
+        <Pressable onPress={startRecording} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
           <View style={styles.centeredContainer}>
             <View style={styles.recordCircleOutline}></View>
-            <View style={styles.recordSquare}></View>
+            <View style={styles.recordCircle}></View>
           </View>
         </Pressable>
-      </PulseAnimation>
-      :
-      <Pressable onPress={startRecording} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
-        <View style={styles.centeredContainer}>
-          <View style={styles.recordCircleOutline}></View>
-          <View style={styles.recordCircle}></View>
-        </View>
-      </Pressable>
     )
   }
 
   // Resets currentPathway when leaving recording screen
   const backAndReset = async () => {
-    let updatedUser = { ...user, ...{ currentPathway: " " } }
+    let updatedUser = { ...user, currentPathway: " " } as User
     setUser(updatedUser);
     navigation.goBack();
   }
@@ -362,15 +374,15 @@ export const Recording = ({ navigation }: any): JSX.Element => {
   const renderCamera = () => {
     return (
       <>
-        <GoBack callback={() => backAndReset()}/>
+        <GoBack callback={() => backAndReset()} />
 
         <View style={styles.cameraToggleContainer}>
-          <Pressable onPress={flipCameraCallback} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+          <Pressable onPress={flipCameraCallback} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
             <CustomIcon name='flip_camera' style={styles.flipCameraIcon} />
           </Pressable>
 
           <View style={styles.cameraOnToggleContainer}>
-            <Pressable onPress={toggleCameraOn} style={({pressed}) => [{opacity: pressed ? 0.3 : 1}]}>
+            <Pressable onPress={toggleCameraOn} style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}>
               {renderCameraToggleIcon()}
             </Pressable>
           </View>
@@ -378,32 +390,32 @@ export const Recording = ({ navigation }: any): JSX.Element => {
 
         {
           isCameraOn
-          ?
-          <>
-            <Camera
-              style={styles.cameraContainer}
-              type={type}
-              ref={cameraRef}
-              onCameraReady={() => setIsLoading(false) }
-            >
-              <View style={styles.captionContainer}>
-                <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult}/>
-              </View>
+            ?
+            <>
+              <CameraView
+                style={styles.cameraContainer}
+                facing={facing}
+                ref={cameraRef}
+                onCameraReady={() => setIsLoading(false)}
+              >
+                <View style={styles.captionContainer}>
+                  <SpeechToText isRecording={isRecording} getTranscriptResult={getTranscriptResult} />
+                </View>
 
-              <View style={styles.recordContainer}>
-                {renderRecordIcon()}
-              </View>
-            </Camera>
-          </>
-          :
-          <Camera
-            style={styles.cameraContainer}
-            type={type}
-            ref={cameraRef}
-            onCameraReady={() => setIsLoading(false) }
-          >
-            {renderAudioRecordingScreen()}
-          </Camera>
+                <View style={styles.recordContainer}>
+                  {renderRecordIcon()}
+                </View>
+              </CameraView>
+            </>
+            :
+            <CameraView
+              style={styles.cameraContainer}
+              facing={facing}
+              ref={cameraRef}
+              onCameraReady={() => setIsLoading(false)}
+            >
+              {renderAudioRecordingScreen()}
+            </CameraView>
         }
       </>
     );

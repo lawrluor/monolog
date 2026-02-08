@@ -6,16 +6,16 @@ import { ActionButton } from './SignInButton';
 
 type Props = {
   summaryText: string;
-  callback: () => void;
+  callback?: () => void;
 }
 
 const VistaSummaryText = ({ summaryText, callback }: Props) => {
   return (
     <View>
       <Text style={styles.summaryText}>{summaryText}</Text>
-      <View style={{ alignItems: 'center', marginTop: spacings.MEDIUM }}>
+      {callback && <View style={{ alignItems: 'center', marginTop: spacings.MEDIUM }}>
         <ActionButton callback={callback} text={"Record"} />
-      </View>
+      </View>}
     </View>
   )
 }
